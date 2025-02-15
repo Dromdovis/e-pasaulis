@@ -14,8 +14,15 @@
   }
 }
 
+@layer base {
+  :root {
+    --primary: 210 50% 50%;
+    --background: #ffffff;
+    --foreground: #ededed;
+  }
+}
+
 body {
-  color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--foreground);
 }
