@@ -1,18 +1,22 @@
-import type { Config } from "tailwindcss";
+// tailwind.config.js
+import { colors } from './src/lib/colors';
 
-export default {
+/** @type {import('tailwindcss').Config} */
+module.exports = {
   content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        ...colors,
+        success: '#10b981',
+        error: '#ef4444',
+        warning: '#f59e0b',
       },
     },
   },
   plugins: [],
-} satisfies Config;
+}

@@ -1,5 +1,5 @@
 // src/components/CategorySidebar.tsx
-'use client';
+"use client";
 
 interface Category {
   id: string;
@@ -7,9 +7,14 @@ interface Category {
   slug: string;
 }
 
-export default function CategorySidebar({ categories }: { categories: Category[] }) {
+export default function CategorySidebar({
+  categories,
+}: {
+  categories: Category[];
+}) {
   return (
-    <aside className="w-64 min-h-screen bg-white shadow-lg p-6 hidden md:block sticky top-0">
+    // src/components/CategorySidebar.tsx (partial update)
+    <aside className="w-64 min-h-screen bg-[rgb(var(--sidebar-bg))] border-r border-black/5 p-6 hidden md:block sticky top-0">
       <h2 className="text-xl font-bold mb-4">Categories</h2>
       <div className="overflow-y-auto max-h-[calc(100vh-8rem)]">
         <ul className="space-y-2">
