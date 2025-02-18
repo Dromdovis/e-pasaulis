@@ -6,12 +6,12 @@ import { Globe, UserCircle, LogOut, ShoppingCart, Heart } from "lucide-react";
 import Link from "next/link";
 import { pb } from "@/lib/db";
 import { useRouter } from "next/navigation";
-import { useStore } from "@/lib/store";
+import { useStore, StoreState } from '@/lib/store'; 
 
 const Navbar = () => {
   const router = useRouter();
-  const cart = useStore((state) => state.cart);
-  const favorites = useStore((state) => state.favorites);
+  const cart = useStore((state: StoreState) => state.cart);
+  const favorites = useStore((state: StoreState) => state.favorites);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userName, setUserName] = useState("");
 
