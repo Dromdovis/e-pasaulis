@@ -10,4 +10,5 @@ const pb = new PocketBase(process.env.NEXT_PUBLIC_POCKETBASE_URL);
 // Disable auto-cancellation globally
 pb.autoCancellation(false);
 
+// Export as named export
 export { pb }; 

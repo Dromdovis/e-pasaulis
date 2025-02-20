@@ -16,8 +16,6 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
-pb_data/*.db-shm
-pb_data/*.db-wal
 
 # testing
 /coverage
@@ -46,12 +44,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Database files
-pb_data/*.db
-pb_data/*.db-shm
-pb_data/*.db-wal
-pb_data/pocketbase.exe
-
 # Dependencies
 node_modules/
 .next/
@@ -62,8 +54,9 @@ node_modules/
 # PocketBase
 pocketbase
 pocketbase.exe
-pb_data/
-pb_migrations/
+pb_data/*
+pb_data_backup/
+!pb_migrations/
 
 # IDE and editor files
 .idea/
@@ -74,13 +67,3 @@ pb_migrations/
 # OS files
 .DS_Store
 Thumbs.db
-
-# Keep pb_data but ignore sensitive files
-pb_data/logs/
-pb_data/data.db-shm
-pb_data/data.db-wal
-pb_data/*.bak
-
-# But don't ignore the main database and migrations
-!pb_data/data.db
-!pb_migrations/

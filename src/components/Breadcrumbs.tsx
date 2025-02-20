@@ -17,7 +17,9 @@ export default function Breadcrumbs() {
     const fetchProductName = async () => {
       if (paths[0] === 'product' && paths[1]) {
         try {
-          const product = await pb.collection('products').getOne<Product>(paths[1]);
+          const product = await pb.collection('products').getOne<Product>(paths[1], {
+            requestKey: null
+          });
           setProductName(product.name);
         } catch (error) {
           console.error('Failed to fetch product:', error);
