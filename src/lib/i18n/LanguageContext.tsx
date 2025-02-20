@@ -12,8 +12,8 @@ type LanguageContextType = {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  // Initialize with 'lt' and don't change it until after hydration
-  const [language, setLanguage] = useState<Language>('lt');
+  const defaultLocale = process.env.NEXT_PUBLIC_DEFAULT_LOCALE as Language || 'en';
+  const [language, setLanguage] = useState<Language>(defaultLocale);
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
