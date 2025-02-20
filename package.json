@@ -8,7 +8,7 @@
     "build": "bun --bun next build",
     "start": "bun --bun next start",
     "lint": "bun --bun next lint",
-    "populate": "node src/scripts/populate-db.js"
+    "populate": "bun src/scripts/populate-db.js"
   },
   "dependencies": {
     "@faker-js/faker": "^9.5.0",

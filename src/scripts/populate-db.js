@@ -344,16 +344,25 @@ async function initializeAdmin() {
   }
   
   async function cleanCollections() {
-    const collections = ['users', 'categories', 'products', 'reviews', 'orders'];
+    const collections = ['reviews', 'orders', 'products', 'categories', 'users'];  // Changed order to respect relations
     
     for (const collection of collections) {
       try {
-        const records = await pb.collection(collection).getFullList();
+        const records = await pb.collection(collection).getFullList({
+          requestKey: null
+        });
+        
+        // Delete records one by one
         for (const record of records) {
-          await pb.collection(collection).delete(record.id);
+          try {
+            await pb.collection(collection).delete(record.id);
+          } catch (error) {
+            console.error(`Failed to delete record ${record.id} from ${collection}:`, error.response?.data);
+          }
         }
+        console.log(`Cleaned ${collection} collection`);
       } catch (error) {
-        console.error(`Error cleaning ${collection}:`, error);
+        console.error(`Error cleaning ${collection}:`, error.response?.data);
       }
     }
   }
@@ -443,6 +452,7 @@ async function createProducts(createdCategories) {
     const createdProducts = [];
     
     for (const category of createdCategories) {
+        // Get the templates for this category
         const categoryTemplates = productTemplates[category.name] || [];
         
         // Create products for each category
@@ -454,16 +464,22 @@ async function createProducts(createdCategories) {
                 price: Number((template.basePrice + priceVariation).toFixed(2)),
                 stock: faker.number.int({ min: 0, max: 50 }),
                 category: category.id,
-                specifications: template.specs,
+                // Add the specifications field
+                specifications: template.specs || {},
                 slug: faker.helpers.slugify(template.name).toLowerCase()
             };
 
             try {
+                console.log(`Creating product: ${product.name} with specs:`, product.specifications);
                 const createdProduct = await pb.collection('products').create(product);
                 createdProducts.push(createdProduct);
                 console.log(`Created product: ${product.name} in category: ${category.name}`);
             } catch (error) {
-                console.error(`Failed to create product ${product.name}:`, error);
+                console.error(`Failed to create product ${product.name}:`, {
+                    error: error.message,
+                    data: error.data,
+                    product: product
+                });
             }
         }
     }
@@ -472,32 +488,66 @@ async function createProducts(createdCategories) {
 
 async function createCategories() {
     const createdCategories = [];
+    
     for (const category of categories) {
         try {
-            const record = await pb.collection('categories').create(category);
+            // Log the category data being sent
+            console.log('Creating category:', category);
+            
+            // Add required fields based on your schema
+            const categoryData = {
+                ...category,
+                name: category.name,
+                slug: category.slug,
+                description: category.description
+            };
+
+            const record = await pb.collection('categories').create(categoryData);
+            console.log('Category created:', record.name);
             createdCategories.push(record);
         } catch (error) {
-            console.error('Category creation error:', error);
+            console.error('Category creation error:', {
+                data: error.response?.data,
+                message: error.message,
+                category: category
+            });
         }
     }
     return createdCategories;
 }
 
 async function populateDatabase() {
-    await initializeAdmin();
-    await cleanCollections();
-
+    console.log('Starting database population...');
+    
     try {
-        const users = await createUsers();
-        const createdCategories = await createCategories();
-        const createdProducts = await createProducts(createdCategories);
+        await initializeAdmin();
+        console.log('Admin initialized');
         
-        await createReviews(createdProducts, users);
-        await createOrders(users, createdProducts);
+        await cleanCollections();
+        console.log('Collections cleaned');
+        
+        const users = await createUsers();
+        console.log(`Created ${users.length} users`);
+        
+        const createdCategories = await createCategories();
+        console.log(`Created ${createdCategories.length} categories`);
+        
+        if (createdCategories.length === 0) {
+            throw new Error('No categories were created. Stopping population.');
+        }
+        
+        const createdProducts = await createProducts(createdCategories);
+        console.log(`Created ${createdProducts.length} products`);
+        
+        if (createdProducts.length > 0) {
+            await createReviews(createdProducts, users);
+            await createOrders(users, createdProducts);
+        }
 
         console.log('Database population completed successfully!');
     } catch (error) {
         console.error('Database population error:', error);
+        process.exit(1);
     }
 }
 
