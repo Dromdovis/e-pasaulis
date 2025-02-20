@@ -24,10 +24,11 @@ An e-commerce platform built with Next.js, PocketBase, and Bun.
    ./pocketbase serve
    ```
 
-4. **Important**: When PocketBase starts for the first time, it will prompt you to create an admin account in the Admin UI:
+4. **Important**: When PocketBase starts for the first time:
    - Open http://127.0.0.1:8090/_/
    - Create your admin account
-   - The database will already be populated with all collections and data
+   - The database will automatically apply all migrations
+   - Note: Product specifications are now stored directly in the products collection
 
 5. In a new terminal, start the development server:
    ```bash

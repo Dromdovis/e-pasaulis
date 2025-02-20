@@ -20,33 +20,27 @@ export default function ProductDetails({ productId }: { productId: string }) {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
-        if (!productId) return;
-
-        const productData = await pb.collection('products').getOne<Product>(productId, {
-          $cancelKey: productId,
+        const fetchedProduct = await pb.collection('products').getOne<Product>(productId, {
+          requestKey: null,
+          expand: 'category' // Add this if you need category information
         });
-
-        if (!productData || typeof productData.price !== 'number') {
-          console.error('Invalid product data:', productData);
-          return;
-        }
-
-        setProduct(productData);
-        setSelectedImage(productData.image || '');
-      } catch (error: Error | unknown) {
-        if (error instanceof Error) {
-          console.error('Failed to fetch product data:', error.message);
-        }
+        setProduct(fetchedProduct);
+        setSelectedImage(fetchedProduct.image || '');
+      } catch (error) {
+        console.error('Failed to fetch product data:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
+    if (productId) {
+      fetchData();
+    }
 
     return () => {
-      pb.cancelRequest(productId);
+      // Cleanup if needed
     };
   }, [productId]);
 
@@ -56,6 +50,7 @@ export default function ProductDetails({ productId }: { productId: string }) {
   };
 
   const handleAddToCart = async () => {
+    if (!product) return;
     try {
       await addToCart(productId);
     } catch (error) {
@@ -64,6 +59,7 @@ export default function ProductDetails({ productId }: { productId: string }) {
   };
 
   const handleToggleFavorite = async () => {
+    if (!product) return;
     try {
       await toggleFavorite(productId);
     } catch (error) {
@@ -85,8 +81,33 @@ export default function ProductDetails({ productId }: { productId: string }) {
     }
   };
 
-  if (loading || !product) {
-    return <div className="p-8">Loading...</div>;
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto p-8">
+        <div className="animate-pulse">
+          <div className="h-8 w-64 bg-gray-200 rounded mb-8"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="aspect-square bg-gray-200 rounded"></div>
+            <div className="space-y-4">
+              <div className="h-8 w-48 bg-gray-200 rounded"></div>
+              <div className="h-24 w-full bg-gray-200 rounded"></div>
+              <div className="h-12 w-full bg-gray-200 rounded"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="max-w-7xl mx-auto p-8">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-gray-900">Product not found</h2>
+          <p className="mt-2 text-gray-600">The product you're looking for doesn't exist or has been removed.</p>
+        </div>
+      </div>
+    );
   }
 
   return (
