@@ -41,3 +41,19 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Database files
+pb_data/*.db
+pb_data/*.db-shm
+pb_data/*.db-wal
+pb_data/pocketbase.exe
+
+# Dependencies
+node_modules/
+.next/
+
+# Environment files
+.env.local
+
+# System files
+.DS_Store
