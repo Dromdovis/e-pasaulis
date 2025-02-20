@@ -14,26 +14,31 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const defaultLocale = process.env.NEXT_PUBLIC_DEFAULT_LOCALE as Language || 'en';
   const [language, setLanguage] = useState<Language>(defaultLocale);
-  const [isClient, setIsClient] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setIsClient(true);
     const savedLang = localStorage.getItem('language') as Language;
     if (savedLang && (savedLang === 'en' || savedLang === 'lt')) {
       setLanguage(savedLang);
+    } else {
+      // If no language preference exists, set the default language
+      localStorage.setItem('language', defaultLocale);
     }
-  }, []);
+    setMounted(true);
+  }, [defaultLocale]);
 
   const handleSetLanguage = (lang: Language) => {
     setLanguage(lang);
-    if (isClient) {
-      localStorage.setItem('language', lang);
-    }
+    localStorage.setItem('language', lang);
   };
 
   const t = (key: keyof typeof translations.en): string => {
     return translations[language][key] || key;
   };
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage: handleSetLanguage, t }}>

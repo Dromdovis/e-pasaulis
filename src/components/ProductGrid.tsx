@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { Product } from '@/types';
 import { pb } from '@/lib/db';
 import ProductCard from './ProductCard';
@@ -16,6 +16,11 @@ export default function ProductGrid({ initialProducts, totalProducts }: ProductG
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(initialProducts.length < totalProducts);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const loadMore = async () => {
     if (loading || !hasMore) return;
@@ -53,14 +58,7 @@ export default function ProductGrid({ initialProducts, totalProducts }: ProductG
             disabled={loading}
             className="px-6 py-3 bg-white dark:bg-gray-800 rounded-lg shadow hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? (
-              <div className="flex items-center">
-                <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-700 rounded-full animate-spin mr-2"></div>
-                {t('loading')}
-              </div>
-            ) : (
-              t('load_more')
-            )}
+            {!mounted ? '' : loading ? t('loading') : t('load_more')}
           </button>
         </div>
       )}

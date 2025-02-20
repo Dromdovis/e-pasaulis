@@ -19,8 +19,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang={process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'en'} suppressHydrationWarning>
-      <body suppressHydrationWarning>
+    <html lang={process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'en'}>
+      <body>
         <LanguageProvider>
           <div className="min-h-screen flex flex-col">
             <Navbar />
