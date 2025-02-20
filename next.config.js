@@ -2,8 +2,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Disable font optimization since it's causing issues
-  optimizeFonts: false,
-  // Add other necessary configurations
   images: {
     remotePatterns: [
       {
