@@ -1,57 +1,34 @@
 // src/app/page.tsx
-import PocketBase from 'pocketbase';
-import ProductCard from '@/components/ProductCard';
+import { Suspense } from 'react';
 import CategorySidebar from '@/components/CategorySidebar';
 import StoreInitializer from '@/components/StoreInitializer';
+import ProductGrid from '@/components/ProductGrid';
+import Footer from '@/components/Footer';
+import type { Category, Product } from '@/types';
+import { pb } from '@/lib/db';
 
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  stock: number;
-  image: string; // PocketBase file field
-  category: string;
+async function fetchCategories(): Promise<Category[]> {
+  const response = await pb.collection('categories').getList<Category>(1, 50);
+  return response.items;
 }
 
-interface Category {
-  id: string;
-  name: string;
-  slug: string;
-}
-
-async function getInitialData() {
-  const pb = new PocketBase('http://127.0.0.1:8090');
-  const [products, categories] = await Promise.all([
-    pb.collection('products').getList<Product>(1, 50, {
-      sort: '-created',
-      expand: 'category'
-    }),
-    pb.collection('categories').getList<Category>()
-  ]);
-  
-  return {
-    products: products.items,
-    categories: categories.items
-  };
+async function fetchProducts() {
+  const response = await pb.collection('products').getList<Product>(1, 50);
+  return { products: response.items, total: response.totalItems };
 }
 
 export default async function Home() {
-  const { products, categories } = await getInitialData();
+  const categories = await fetchCategories();
+  const { products, total } = await fetchProducts();
 
   return (
-    <>
-      <StoreInitializer />
-      <div className="flex min-h-screen">
+    <div className="container mx-auto px-4">
+      <div className="flex gap-8 relative">
         <CategorySidebar categories={categories} />
-        <main className="flex-1 p-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        </main>
+        <div className="flex-1">
+          <ProductGrid initialProducts={products} totalProducts={total} />
+        </div>
       </div>
-    </>
+    </div>
   );
 }

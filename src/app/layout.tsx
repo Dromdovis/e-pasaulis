@@ -1,14 +1,14 @@
 // src/app/layout.tsx
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
+import './globals.css';
 import Navbar from "@/components/Navbar";
-
-const inter = Inter({ subsets: ["latin"] });
+import Breadcrumbs from "@/components/Breadcrumbs";
+import { Suspense } from 'react';
+import Loading from './loading';
 
 export const metadata: Metadata = {
-  title: "e-pasaulis",
-  description: "Your world of e-commerce",
+  title: "E-Pasaulis",
+  description: "Your one-stop e-commerce solution",
 };
 
 export default function RootLayout({
@@ -17,10 +17,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <Navbar />
-        {children}
+    <html lang="lt">
+      <body>
+        <div className="min-h-screen flex flex-col">
+          <Navbar />
+          <Breadcrumbs />
+          <Suspense fallback={<Loading />}>
+            <main className="flex-1 container mx-auto px-4 py-6">
+              {children}
+            </main>
+          </Suspense>
+        </div>
       </body>
     </html>
   );

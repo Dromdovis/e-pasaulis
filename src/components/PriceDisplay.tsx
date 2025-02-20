@@ -8,6 +8,10 @@ interface PriceDisplayProps {
   }
   
   export default function PriceDisplay({ price, className = '' }: PriceDisplayProps) {
+    if (typeof price !== 'number') {
+      return null;
+    }
+    
     const { whole, decimal } = formatPrice(price);
     
     return (

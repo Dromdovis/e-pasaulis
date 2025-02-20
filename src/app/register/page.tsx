@@ -5,9 +5,11 @@ import { useRouter } from 'next/navigation';
 import { pb } from '@/lib/db';
 import Link from 'next/link';
 import { Eye, EyeOff } from 'lucide-react';
+import { useStore } from '@/lib/store';
 
 export default function Register() {
   const router = useRouter();
+  const { clearLocalData } = useStore();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -25,13 +27,25 @@ export default function Register() {
     setLoading(true);
 
     try {
+      // Clear any existing auth state and local data
+      pb.authStore.clear();
+      clearLocalData();
+
+      // Create the user account
       await pb.collection('users').create(formData);
+      
+      // Authenticate the user
       await pb.collection('users').authWithPassword(formData.email, formData.password);
+      
+      // Navigate to home page
       router.push('/');
-      router.refresh();
-    } catch (err) {
-      console.error('Registration error:', err);
-      setError('Registration failed. Please check your details.');
+      
+      // Force a full page refresh to ensure clean state
+      window.location.href = '/';
+    } catch (error: Error | unknown) {
+      console.error('Registration error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Registration failed. Please check your details.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

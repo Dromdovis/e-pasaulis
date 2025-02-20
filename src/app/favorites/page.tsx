@@ -4,26 +4,7 @@ import { useEffect, useState } from 'react';
 import { useStore } from '@/lib/store';
 import { pb } from '@/lib/db';
 import ProductCard from '@/components/ProductCard';
-
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  stock: number;
-}
-
-interface ProductRecord {
-  collectionId: string;
-  collectionName: string;
-  created: string;
-  updated: string;
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  stock: number;
-}
+import type { Product } from '@/types';
 
 export default function FavoritesPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -31,35 +12,39 @@ export default function FavoritesPage() {
   const { favorites } = useStore();
 
   useEffect(() => {
+    let isSubscribed = true;
+
     const fetchFavorites = async () => {
       try {
         if (favorites.length === 0) {
           setProducts([]);
+          setLoading(false);
           return;
         }
 
-        const response = await pb.collection('products').getList<ProductRecord>(1, 50, {
-          filter: `id in "${favorites.join('","')}"`,
+        const filterConditions = favorites.map(id => `id = "${id}"`).join(' || ');
+        const response = await pb.collection('products').getList<Product>(1, 50, {
+          filter: filterConditions,
+          requestKey: null,
         });
 
-        // PocketBase response is now properly typed
-        const mappedProducts: Product[] = response.items.map(item => ({
-          id: item.id,
-          name: item.name,
-          description: item.description,
-          price: item.price,
-          stock: item.stock,
-        }));
-
-        setProducts(mappedProducts);
-      } catch (error) {
+        if (isSubscribed) {
+          setProducts(response.items);
+        }
+      } catch (error: Error | unknown) {
         console.error('Failed to fetch favorites:', error);
       } finally {
-        setLoading(false);
+        if (isSubscribed) {
+          setLoading(false);
+        }
       }
     };
 
     fetchFavorites();
+
+    return () => {
+      isSubscribed = false;
+    };
   }, [favorites]);
 
   if (loading) {
@@ -70,7 +55,7 @@ export default function FavoritesPage() {
     return (
       <div className="p-8 text-center">
         <h1 className="text-2xl font-bold mb-4">Your Favorites</h1>
-        <p className="text-gray-600">You haven't added any products to your favorites yet.</p>
+        <p>Couldn&apos;t find any favorites</p>
       </div>
     );
   }

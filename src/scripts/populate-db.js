@@ -37,76 +37,299 @@ const categories = [
     { name: "Spausdintuvai", slug: "spausdintuvai", description: "Spausdintuvai ir skeneriai" }
 ];
 
-// Product template data
-const productTemplates = [
-    { name: "Lenovo Legion 5", basePrice: 999.99 },
-    { name: "ASUS ROG Strix", basePrice: 1299.99 },
-    { name: "Dell XPS 13", basePrice: 1499.99 },
-    { name: "iPhone 13 Pro", basePrice: 999.99 },
-    { name: "Samsung Galaxy S21", basePrice: 899.99 },
-    { name: "iPad Pro", basePrice: 799.99 },
-    { name: "LG UltraGear", basePrice: 349.99 },
-    { name: "Razer BlackWidow", basePrice: 129.99 },
-    { name: "Logitech MX Master", basePrice: 99.99 },
-    { name: "Sony WH-1000XM4", basePrice: 349.99 },
-    { name: "NVIDIA RTX 3080", basePrice: 699.99 },
-    { name: "AMD Ryzen 9", basePrice: 549.99 },
-    { name: "Corsair Vengeance RAM", basePrice: 89.99 },
-    { name: "Samsung 970 EVO", basePrice: 149.99 },
-    { name: "Corsair RM850x", basePrice: 129.99 },
-    { name: "Noctua NH-D15", basePrice: 89.99 },
-    { name: "Fractal Design Meshify", basePrice: 89.99 },
-    { name: "ASUS ROG Strix B550", basePrice: 179.99 },
-    { name: "TP-Link Archer", basePrice: 79.99 },
-    { name: "Windows 11 Pro", basePrice: 199.99 }
-];
-
-const specificationTemplates = {
-    "Nešiojami kompiuteriai": [
-        { name: "Procesorius", values: ["Intel Core i7", "AMD Ryzen 7", "Intel Core i9", "AMD Ryzen 9", "Intel Core i5"] },
-        { name: "Atmintis", values: ["8GB DDR4", "16GB DDR4", "32GB DDR4", "64GB DDR4"] },
-        { name: "Diskas", values: ["512GB NVMe SSD", "1TB NVMe SSD", "2TB NVMe SSD", "1TB SSD + 1TB HDD"] },
-        { name: "Ekranas", values: ["15.6\" FHD", "14\" QHD", "17\" FHD", "16\" QHD", "13.3\" FHD"] },
-        { name: "Vaizdo plokštė", values: ["NVIDIA RTX 3060", "NVIDIA RTX 3070", "NVIDIA RTX 3080", "AMD Radeon RX 6700M"] }
-    ],
-    "Mobilieji telefonai": [
-        { name: "Ekranas", values: ["6.1\" OLED", "6.7\" AMOLED", "6.4\" LCD", "6.9\" AMOLED"] },
-        { name: "Atmintis", values: ["128GB", "256GB", "512GB", "1TB"] },
-        { name: "RAM", values: ["6GB", "8GB", "12GB", "16GB"] },
-        { name: "Kamera", values: ["48MP + 12MP + 8MP", "108MP + 12MP + 10MP", "50MP + 12MP + 10MP"] },
-        { name: "Baterija", values: ["4000mAh", "4500mAh", "5000mAh", "5500mAh"] }
-    ],
-    "Monitoriai": [
-        { name: "Rezoliucija", values: ["1920x1080", "2560x1440", "3840x2160", "5120x1440"] },
-        { name: "Atsinaujinimo dažnis", values: ["60Hz", "144Hz", "165Hz", "240Hz", "360Hz"] },
-        { name: "Ekrano dydis", values: ["24\"", "27\"", "32\"", "34\" ultrawide", "49\" super ultrawide"] },
-        { name: "Panelės tipas", values: ["IPS", "VA", "TN", "OLED"] },
-        { name: "Atsako laikas", values: ["1ms", "4ms", "5ms"] }
-    ],
-    "Procesoriai": [
-        { name: "Branduolių skaičius", values: ["6 branduoliai", "8 branduoliai", "12 branduoliai", "16 branduoliai"] },
-        { name: "Dažnis", values: ["3.6GHz", "4.2GHz", "4.5GHz", "5.0GHz"] },
-        { name: "Cache", values: ["32MB", "64MB", "96MB", "128MB"] },
-        { name: "TDP", values: ["65W", "95W", "105W", "125W"] },
-        { name: "Palaikoma RAM", values: ["DDR4-3200", "DDR4-3600", "DDR5-4800", "DDR5-5200"] }
-    ],
-    "Vaizdo plokštės": [
-        { name: "Atmintis", values: ["8GB GDDR6", "10GB GDDR6X", "12GB GDDR6X", "16GB GDDR6X"] },
-        { name: "Branduolių dažnis", values: ["1.5GHz", "1.7GHz", "1.9GHz", "2.1GHz"] },
-        { name: "Energijos sąnaudos", values: ["200W", "250W", "300W", "350W"] },
-        { name: "DirectX versija", values: ["DirectX 12", "DirectX 12 Ultimate"] },
-        { name: "Aušinimo tipas", values: ["2 ventiliatoriai", "3 ventiliatoriai", "Skysčiu aušinama"] }
-    ],
-    "DEFAULT": [
-        { name: "Garantija", values: ["12 mėnesių", "24 mėnesių", "36 mėnesių"] },
-        { name: "Gamintojas", values: ["ASUS", "MSI", "Lenovo", "Dell", "HP", "Apple"] },
-        { name: "Būklė", values: ["Nauja", "Demonstracinė", "Atnaujinta"] },
-        { name: "Pristatymo laikas", values: ["1-2 d.d.", "2-3 d.d.", "3-5 d.d."] },
-        { name: "Prekės likutis", values: ["Yra sandėlyje", "Pristatoma per 7 d.d.", "Pagal užsakymą"] }
-    ]
+// Product templates with proper categorization
+const productTemplates = {
+  "Nešiojami kompiuteriai": [
+    {
+      name: "Lenovo Legion Pro 7i",
+      basePrice: 2499.99,
+      specs: {
+        "Procesorius": "Intel Core i9-13900HX",
+        "Atmintis": "32GB DDR5-5600MHz",
+        "Diskas": "2TB PCIe Gen4 NVMe SSD",
+        "Ekranas": "16\" WQXGA (2560x1600) IPS 240Hz",
+        "Vaizdo plokštė": "NVIDIA GeForce RTX 4090 16GB GDDR6",
+        "Garantija": "36 mėnesiai",
+        "Operacinė sistema": "Windows 11 Pro",
+        "Baterija": "99.9Wh",
+        "Svoris": "2.8 kg"
+      }
+    },
+    {
+      name: "ASUS ROG Zephyrus G14",
+      basePrice: 1799.99,
+      specs: {
+        "Procesorius": "AMD Ryzen 9 7940HS",
+        "Atmintis": "16GB DDR5-4800MHz",
+        "Diskas": "1TB PCIe Gen4 NVMe SSD",
+        "Ekranas": "14\" QHD+ (2560x1600) IPS 165Hz",
+        "Vaizdo plokštė": "NVIDIA GeForce RTX 4070 8GB GDDR6",
+        "Garantija": "24 mėnesiai",
+        "Operacinė sistema": "Windows 11 Home",
+        "Baterija": "76Wh",
+        "Svoris": "1.72 kg"
+      }
+    },
+    {
+      name: "MacBook Pro 16",
+      basePrice: 2899.99,
+      specs: {
+        "Procesorius": "Apple M2 Pro 12-core",
+        "Atmintis": "32GB vieninga atmintis",
+        "Diskas": "1TB SSD",
+        "Ekranas": "16\" Liquid Retina XDR (3456x2234) 120Hz",
+        "Vaizdo plokštė": "19-core GPU",
+        "Garantija": "24 mėnesiai",
+        "Operacinė sistema": "macOS Sonoma",
+        "Baterija": "100Wh",
+        "Svoris": "2.15 kg"
+      }
+    }
+  ],
+  "Vaizdo plokštės": [
+    {
+      name: "ASUS ROG STRIX GeForce RTX 4090 OC",
+      basePrice: 1999.99,
+      specs: {
+        "Atmintis": "24GB GDDR6X",
+        "Branduolių dažnis": "2.61 GHz (OC režimas)",
+        "Atminties dažnis": "21 Gbps",
+        "Energijos sąnaudos": "450W",
+        "Rekomenduojamas PSU": "1000W",
+        "Aušinimo tipas": "ROG patented vapor chamber with 3.5-slot heatsink",
+        "Jungtys": "2x HDMI 2.1, 3x DisplayPort 1.4a",
+        "Garantija": "36 mėnesiai",
+        "Papildoma informacija": "0dB technologija, RGB Aura Sync"
+      }
+    },
+    {
+      name: "MSI Gaming X Trio GeForce RTX 4080 SUPER",
+      basePrice: 1299.99,
+      specs: {
+        "Atmintis": "16GB GDDR6X",
+        "Branduolių dažnis": "2.55 GHz (Boost)",
+        "Atminties dažnis": "23 Gbps",
+        "Energijos sąnaudos": "320W",
+        "Rekomenduojamas PSU": "850W",
+        "Aušinimo tipas": "TRI FROZR 3 su TORX Fan 5.0",
+        "Jungtys": "1x HDMI 2.1, 3x DisplayPort 1.4a",
+        "Garantija": "36 mėnesiai",
+        "Papildoma informacija": "Zero Frozr, Mystic Light RGB"
+      }
+    }
+  ],
+  "Monitoriai": [
+    {
+      name: "Samsung Odyssey OLED G9",
+      basePrice: 1599.99,
+      specs: {
+        "Ekrano dydis": "49\" ultrawide",
+        "Rezoliucija": "5120x1440 (DQHD)",
+        "Atsinaujinimo dažnis": "240Hz",
+        "Panelės tipas": "OLED",
+        "Atsako laikas": "0.03ms GtG",
+        "HDR": "VESA DisplayHDR True Black 400",
+        "Kontrastas": "1,000,000:1",
+        "Jungtys": "1x DisplayPort 1.4, 1x Micro HDMI 2.1, USB hub",
+        "Garantija": "24 mėnesiai",
+        "Papildoma informacija": "AMD FreeSync Premium Pro, CoreSync"
+      }
+    },
+    {
+      name: "LG UltraGear 27GR95QE",
+      basePrice: 899.99,
+      specs: {
+        "Ekrano dydis": "27\"",
+        "Rezoliucija": "2560x1440 (QHD)",
+        "Atsinaujinimo dažnis": "240Hz",
+        "Panelės tipas": "OLED",
+        "Atsako laikas": "0.03ms GtG",
+        "HDR": "HDR10",
+        "Kontrastas": "1,500,000:1",
+        "Jungtys": "2x HDMI 2.1, 1x DisplayPort 1.4, USB hub",
+        "Garantija": "24 mėnesiai",
+        "Papildoma informacija": "NVIDIA G-SYNC, AMD FreeSync Premium"
+      }
+    }
+  ],
+  "Procesoriai": [
+    {
+      name: "Intel Core i9-14900K",
+      basePrice: 589.99,
+      specs: {
+        "Branduoliai": "24 (8P + 16E)",
+        "Gijos": "32",
+        "Bazinis dažnis": "3.2 GHz",
+        "Turbo dažnis": "6.0 GHz",
+        "Cache": "36MB L3",
+        "TDP": "125W",
+        "Palaikoma RAM": "DDR4-3200 / DDR5-5600",
+        "Integruota grafika": "Intel UHD Graphics 770",
+        "Garantija": "36 mėnesiai",
+        "Lizdas": "LGA 1700"
+      }
+    },
+    {
+      name: "AMD Ryzen 9 7950X3D",
+      basePrice: 699.99,
+      specs: {
+        "Branduoliai": "16",
+        "Gijos": "32",
+        "Bazinis dažnis": "4.2 GHz",
+        "Turbo dažnis": "5.7 GHz",
+        "Cache": "144MB (128MB L3 + 16MB L2)",
+        "TDP": "120W",
+        "Palaikoma RAM": "DDR5-5200",
+        "Integruota grafika": "AMD Radeon Graphics",
+        "Garantija": "36 mėnesiai",
+        "Lizdas": "AM5"
+      }
+    }
+  ],
+  "Mobilieji telefonai": [
+    {
+      name: "Samsung Galaxy S24 Ultra",
+      basePrice: 1399.99,
+      specs: {
+        "Ekranas": "6.8\" Dynamic AMOLED 2X, 3088 x 1440",
+        "Procesorius": "Snapdragon 8 Gen 3",
+        "Atmintis": "12GB RAM, 512GB UFS 4.0",
+        "Kamera": "200MP + 50MP + 12MP + 10MP",
+        "Baterija": "5000mAh",
+        "Operacinė sistema": "Android 14, One UI 6.1",
+        "Garantija": "24 mėnesiai",
+        "Papildoma informacija": "IP68, S Pen, 5G"
+      }
+    },
+    {
+      name: "iPhone 15 Pro Max",
+      basePrice: 1299.99,
+      specs: {
+        "Ekranas": "6.7\" Super Retina XDR OLED",
+        "Procesorius": "A17 Pro chip",
+        "Atmintis": "8GB RAM, 256GB",
+        "Kamera": "48MP + 12MP + 12MP",
+        "Baterija": "4441mAh",
+        "Operacinė sistema": "iOS 17",
+        "Garantija": "12 mėnesiai",
+        "Papildoma informacija": "Dynamic Island, USB-C, Titanium frame"
+      }
+    }
+  ],
+  "Klaviatūros": [
+    {
+      name: "Logitech G915 TKL",
+      basePrice: 229.99,
+      specs: {
+        "Tipas": "Mechaninė",
+        "Jungimas": "Bevielė LIGHTSPEED / Bluetooth",
+        "Jungikliai": "GL Tactile",
+        "Apšvietimas": "RGB per klavišą",
+        "Baterijos laikas": "Iki 40 valandų",
+        "Medžiaga": "Aliuminio-magnio lydinys",
+        "Garantija": "24 mėnesiai",
+        "Papildoma informacija": "Low-profile dizainas, Media kontrolės"
+      }
+    },
+    {
+      name: "Razer BlackWidow V4 Pro",
+      basePrice: 229.99,
+      specs: {
+        "Tipas": "Mechaninė",
+        "Jungimas": "Laidinis USB-C",
+        "Jungikliai": "Razer Green",
+        "Apšvietimas": "Razer Chroma RGB",
+        "Papildomos funkcijos": "8 makro klavišai, skaitmeninis blokas",
+        "Medžiaga": "Aliuminis, plastikas",
+        "Garantija": "24 mėnesiai",
+        "Papildoma informacija": "Riešo atrama, media valdikliai"
+      }
+    }
+  ],
+  "Pelės": [
+    {
+      name: "Logitech G Pro X Superlight",
+      basePrice: 159.99,
+      specs: {
+        "Sensorius": "HERO 25K",
+        "DPI": "25,600",
+        "Svoris": "63g",
+        "Jungimas": "LIGHTSPEED Wireless",
+        "Baterijos laikas": "70 valandų",
+        "Mygtukai": "5 programuojami",
+        "Garantija": "24 mėnesiai",
+        "Papildoma informacija": "PTFE kojelės, Zero-additive PTFE"
+      }
+    }
+  ],
+  "Ausinės": [
+    {
+      name: "SteelSeries Arctis Nova Pro Wireless",
+      basePrice: 349.99,
+      specs: {
+        "Tipas": "Bevielės žaidimų ausinės",
+        "Garsiakalbiai": "40mm Neodymium",
+        "Dažnių diapazonas": "10-40,000 Hz",
+        "Mikrofonas": "ClearCast Gen 2",
+        "Baterija": "Dviguba keičiama sistema",
+        "Jungimas": "2.4GHz / Bluetooth 5.0",
+        "Garantija": "24 mėnesiai",
+        "Papildoma informacija": "Active Noise Cancellation, ChatMix"
+      }
+    }
+  ],
+  "Pagrindinės plokštės": [
+    {
+      name: "ASUS ROG MAXIMUS Z790 HERO",
+      basePrice: 629.99,
+      specs: {
+        "Procesorių lizdas": "LGA 1700",
+        "Lustų rinkinys": "Intel Z790",
+        "RAM palaikymas": "DDR5-7800+",
+        "RAM slotai": "4x DIMM, max 128GB",
+        "PCIe slotai": "2x PCIe 5.0 x16",
+        "M.2 slotai": "5x PCIe 4.0",
+        "LAN": "Intel 2.5Gb",
+        "WiFi": "WiFi 6E",
+        "Garantija": "36 mėnesiai",
+        "Papildoma informacija": "Thunderbolt 4, USB 3.2 Gen 2x2"
+      }
+    }
+  ],
+  "Kietieji diskai": [
+    {
+      name: "Samsung 990 PRO 2TB",
+      basePrice: 199.99,
+      specs: {
+        "Talpa": "2TB",
+        "Sąsaja": "PCIe 4.0 x4 NVMe",
+        "Skaitymo greitis": "7450 MB/s",
+        "Rašymo greitis": "6900 MB/s",
+        "Forma": "M.2 2280",
+        "TBW": "1200TB",
+        "DRAM": "2GB LPDDR4",
+        "Garantija": "5 metai",
+        "Papildoma informacija": "Samsung V-NAND, Pascal Controller"
+      }
+    }
+  ],
+  "Maitinimo blokai": [
+    {
+      name: "Corsair HX1500i",
+      basePrice: 399.99,
+      specs: {
+        "Galia": "1500W",
+        "Efektyvumas": "80 PLUS Platinum",
+        "Modulinis": "Pilnai modulinis",
+        "Ventiliatorius": "140mm Magnetic Levitation",
+        "Apsaugos": "OVP, UVP, OCP, OTP, SCP",
+        "Sertifikatai": "80 PLUS Platinum, Cybenetics Platinum",
+        "Garantija": "10 metų",
+        "Papildoma informacija": "iCUE suderinamumas, Zero RPM mode"
+      }
+    }
+  ]
 };
-
-
 
 async function initializeAdmin() {
     try {
@@ -121,7 +344,7 @@ async function initializeAdmin() {
   }
   
   async function cleanCollections() {
-    const collections = ['users', 'categories', 'products', 'specifications', 'reviews', 'orders'];
+    const collections = ['users', 'categories', 'products', 'reviews', 'orders'];
     
     for (const collection of collections) {
       try {
@@ -135,36 +358,26 @@ async function initializeAdmin() {
     }
   }
 
-async function createSpecifications(createdProducts, createdCategories) {
-    for (const product of createdProducts) {
-        const category = createdCategories.find(c => c.id === product.category);
-        const templates = specificationTemplates[category.name] || specificationTemplates["DEFAULT"];
-        
-        for (const template of templates) {
-            try {
-                await pb.collection('specifications').create({
-                    name: template.name,
-                    value: template.values[Math.floor(Math.random() * template.values.length)],
-                    product_id: product.id  // Explicit relation
-                });
-            } catch (error) {
-                console.error('Specification creation error:', error);
-            }
-        }
-    }
-}
-
 async function createReviews(createdProducts, users) {
     for (let i = 0; i < 20; i++) {
         try {
-            await pb.collection('reviews').create({
+            const review = {
                 rating: faker.number.int({ min: 3, max: 5 }),
                 comment: faker.lorem.paragraph(),
-                product_id: createdProducts[Math.floor(Math.random() * createdProducts.length)].id,
-                user_id: users[Math.floor(Math.random() * users.length)].id
-            });
+                product: createdProducts[Math.floor(Math.random() * createdProducts.length)].id,
+                user: users[Math.floor(Math.random() * users.length)].id
+            };
+            
+            console.log('Creating review:', review);
+            
+            await pb.collection('reviews').create(review);
+            console.log('Review created successfully');
         } catch (error) {
-            console.error('Review creation error:', error);
+            console.error('Review creation error:', {
+                message: error.message,
+                data: error.response?.data,
+                originalError: error.originalError
+            });
         }
     }
 }
@@ -175,23 +388,33 @@ async function createOrders(users, createdProducts) {
         const orderItems = Array.from(
             { length: faker.number.int({ min: 1, max: 3 }) },
             () => ({
-                product_id: createdProducts[Math.floor(Math.random() * createdProducts.length)].id,
+                product: createdProducts[Math.floor(Math.random() * createdProducts.length)].id,
                 quantity: faker.number.int({ min: 1, max: 5 })
             })
         );
 
         try {
-            await pb.collection('orders').create({
+            const order = {
                 user_id: user.id,
                 items: orderItems,
                 total: orderItems.reduce((sum, item) => {
-                    const product = createdProducts.find(p => p.id === item.product_id);
+                    const product = createdProducts.find(p => p.id === item.product);
                     return sum + (product.price * item.quantity);
                 }, 0),
                 status: faker.helpers.arrayElement(['pending', 'processing', 'shipped'])
-            });
+            };
+            
+            console.log('Creating order:', order);
+            
+            await pb.collection('orders').create(order);
+            console.log('Order created successfully');
         } catch (error) {
-            console.error('Order creation error:', error);
+            console.error('Order creation error:', {
+                message: error.message,
+                data: error.response?.data,
+                originalError: error.originalError,
+                attemptedData: order
+            });
         }
     }
 }
@@ -217,28 +440,31 @@ async function createUsers() {
 }
 
 async function createProducts(createdCategories) {
-    // Authenticate admin first
-    
     const createdProducts = [];
-    for (const template of productTemplates) {
-        const category = createdCategories[Math.floor(Math.random() * createdCategories.length)];
-        const product = {
-            name: template.name,
-            description: faker.commerce.productDescription(),
-            price: Number((template.basePrice + faker.number.float({ min: 0, max: 200, precision: 0.01 })).toFixed(2)),
-            stock: Number(faker.number.int({ min: 5, max: 100 })),
-            category: category.id,
-            slug: faker.helpers.slugify(template.name).toLowerCase()
-        };
+    
+    for (const category of createdCategories) {
+        const categoryTemplates = productTemplates[category.name] || [];
         
-        try {
-            const createdProduct = await pb.collection('products').create(product);
-            createdProducts.push(createdProduct);
-        } catch (error) {
-            console.error('Product creation error:', {
-                message: error.message,
-                details: error.response?.data
-            });
+        // Create products for each category
+        for (const template of categoryTemplates) {
+            const priceVariation = faker.number.float({ min: -50, max: 100, precision: 0.01 });
+            const product = {
+                name: template.name,
+                description: faker.commerce.productDescription(),
+                price: Number((template.basePrice + priceVariation).toFixed(2)),
+                stock: faker.number.int({ min: 0, max: 50 }),
+                category: category.id,
+                specifications: template.specs,
+                slug: faker.helpers.slugify(template.name).toLowerCase()
+            };
+
+            try {
+                const createdProduct = await pb.collection('products').create(product);
+                createdProducts.push(createdProduct);
+                console.log(`Created product: ${product.name} in category: ${category.name}`);
+            } catch (error) {
+                console.error(`Failed to create product ${product.name}:`, error);
+            }
         }
     }
     return createdProducts;
@@ -258,10 +484,7 @@ async function createCategories() {
 }
 
 async function populateDatabase() {
-
     await initializeAdmin();
-        
-
     await cleanCollections();
 
     try {
@@ -269,7 +492,6 @@ async function populateDatabase() {
         const createdCategories = await createCategories();
         const createdProducts = await createProducts(createdCategories);
         
-        await createSpecifications(createdProducts, createdCategories);
         await createReviews(createdProducts, users);
         await createOrders(users, createdProducts);
 
