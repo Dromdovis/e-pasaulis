@@ -15,8 +15,20 @@ const pb = new PocketBase(process.env.NEXT_PUBLIC_POCKETBASE_URL || 'http://127.
 
 // Complete list of electronics store categories
 const categories = [
-    { name: "Nešiojami kompiuteriai", slug: "nesiojami-kompiuteriai", description: "Plataus asortimento nešiojami kompiuteriai" },
-    { name: "Stacionarūs kompiuteriai", slug: "stacionarus-kompiuteriai", description: "Galingi stacionarūs kompiuteriai" },
+    { 
+        name_en: "Laptops",
+        name_lt: "Nešiojami kompiuteriai",
+        slug: "laptops",
+        description_en: "Wide range of laptops",
+        description_lt: "Plataus asortimento nešiojami kompiuteriai"
+    },
+    { 
+        name_en: "Desktop Computers",
+        name_lt: "Stacionarūs kompiuteriai",
+        slug: "desktops",
+        description_en: "Powerful desktop computers",
+        description_lt: "Galingi stacionarūs kompiuteriai"
+    },
     { name: "Mobilieji telefonai", slug: "mobilieji-telefonai", description: "Išmanieji telefonai ir aksesuarai" },
     { name: "Planšetiniai kompiuteriai", slug: "plansetiniai-kompiuteriai", description: "Planšetės visiems poreikiams" },
     { name: "Monitoriai", slug: "monitoriai", description: "Aukštos kokybės monitoriai" },
@@ -453,7 +465,7 @@ async function createProducts(createdCategories) {
     
     for (const category of createdCategories) {
         // Get the templates for this category
-        const categoryTemplates = productTemplates[category.name] || [];
+        const categoryTemplates = productTemplates[category.name_lt] || [];
         
         // Create products for each category
         for (const template of categoryTemplates) {
@@ -473,7 +485,7 @@ async function createProducts(createdCategories) {
                 console.log(`Creating product: ${product.name} with specs:`, product.specifications);
                 const createdProduct = await pb.collection('products').create(product);
                 createdProducts.push(createdProduct);
-                console.log(`Created product: ${product.name} in category: ${category.name}`);
+                console.log(`Created product: ${product.name} in category: ${category.name_lt}`);
             } catch (error) {
                 console.error(`Failed to create product ${product.name}:`, {
                     error: error.message,
@@ -491,26 +503,21 @@ async function createCategories() {
     
     for (const category of categories) {
         try {
-            // Log the category data being sent
             console.log('Creating category:', category);
             
-            // Add required fields based on your schema
             const categoryData = {
-                ...category,
-                name: category.name,
+                name_en: category.name_en,
+                name_lt: category.name_lt,
                 slug: category.slug,
-                description: category.description
+                description_en: category.description_en,
+                description_lt: category.description_lt
             };
 
             const record = await pb.collection('categories').create(categoryData);
-            console.log('Category created:', record.name);
+            console.log('Category created:', record.name_en);
             createdCategories.push(record);
         } catch (error) {
-            console.error('Category creation error:', {
-                data: error.response?.data,
-                message: error.message,
-                category: category
-            });
+            console.error('Category creation error:', error);
         }
     }
     return createdCategories;

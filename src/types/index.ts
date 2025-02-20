@@ -1,8 +1,13 @@
 // src/types/index.ts
 export interface Category {
   id: string;
-  name: string;
+  name_en: string;
+  name_lt: string;
+  description_en: string;
+  description_lt: string;
   slug: string;
+  created: string;
+  updated: string;
 }
 
 export interface Product {

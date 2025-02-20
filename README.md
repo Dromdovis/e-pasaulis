@@ -1,66 +1,77 @@
 # E-Pasaulis - Electronics E-commerce Platform
 
-An e-commerce platform built with Next.js, PocketBase, and Bun.
+## Quick Start
 
-## Prerequisites
+1. **Clone and Install**
+```bash
+git clone https://github.com/your-username/e-pasaulis.git
+cd e-pasaulis
+bun install
+```
 
-- [Bun](https://bun.sh/) (v1.0.0 or higher)
-- [Node.js](https://nodejs.org/) (v18.0.0 or higher)
+2. **Set up Environment**
+```bash
+cp .env.example .env
+# Update .env with your values
+```
 
-## Setup After Clone
+3. **Set up Database**
+- Download [PocketBase](https://pocketbase.io/docs/) for your platform
+- Place executable in project root
+- Download initial database backup from [Releases](link-to-your-release)
+- Extract backup to `pb_data` folder
 
-1. Download PocketBase for your platform from https://pocketbase.io/docs/
+4. **Start Development**
+```bash
+# Terminal 1: Start PocketBase
+.\pocketbase.exe serve  # or ./pocketbase serve
 
-2. Place the PocketBase executable in your project root:
-   - Windows: `pocketbase.exe`
-   - Unix/MacOS: `pocketbase`
+# Terminal 2: Start Next.js
+bun dev
+```
 
-3. Start PocketBase:
-   ```bash
-   # Windows
-   .\pocketbase.bat
+## Database Management
 
-   # Unix/MacOS
-   ./pocketbase serve
-   ```
+### Backup
+```bash
+.\backup-db.bat
+```
+Backups are stored in `pb_data_backup/`
 
-4. **Important**: When PocketBase starts for the first time:
-   - Open http://127.0.0.1:8090/_/
-   - Create your admin account
-   - The database will automatically apply all migrations
-   - Note: Product specifications are now stored directly in the products collection
+### Restore
+1. Stop PocketBase
+2. Replace `pb_data` folder with backup contents
+3. Restart PocketBase
 
-5. In a new terminal, start the development server:
-   ```bash
-   bun install
-   bun dev
-   ```
+## Available Scripts
+- `bun dev` - Development server
+- `bun build` - Production build
+- `bun start` - Production server
+- `bun populate` - Initialize database
+- `bun update-translations` - Update translations
 
-## Scripts
-
-- `bun dev` - Start development server
-- `bun build` - Build for production
-- `bun start` - Start production server
-- `bun lint` - Run linter
-- `bun populate` - Populate database with sample data
+## Environment Variables
+```env
+NEXT_PUBLIC_POCKETBASE_URL=http://127.0.0.1:8090
+POCKETBASE_ADMIN_EMAIL=admin@e-pasaulis.lt
+POCKETBASE_ADMIN_PASSWORD=your_password
+```
 
 ## Project Structure
-
 ```
 e-pasaulis/
 ├── src/
-│   ├── app/         # Next.js app router pages
+│   ├── app/         # Next.js pages
 │   ├── components/  # React components
-│   ├── lib/         # Utility functions and configurations
-│   ├── scripts/     # Database scripts
-│   └── types/       # TypeScript type definitions
+│   ├── lib/         # Utilities
+│   ├── scripts/     # DB scripts
+│   └── types/       # TypeScript types
 ├── public/          # Static files
-├── pb_data/         # PocketBase data (gitignored)
-└── pb_migrations/   # PocketBase migrations
+├── pb_migrations/   # DB migrations
+└── pb_data/        # Database (gitignored)
 ```
 
 ## License
-
 MIT
 
 ## Getting Started
