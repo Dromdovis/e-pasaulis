@@ -1,4 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# E-Pasaulis - Electronics E-commerce Platform
+
+An e-commerce platform built with Next.js, PocketBase, and Bun.
+
+## Prerequisites
+
+- [Bun](https://bun.sh/) (v1.0.0 or higher)
+- [Node.js](https://nodejs.org/) (v18.0.0 or higher)
+
+## Setup
+
+1. Install dependencies:
+```bash
+bun install
+```
+
+2. Create a `.env` file in the root directory:
+```bash
+NEXT_PUBLIC_POCKETBASE_URL=http://127.0.0.1:8090
+```
+
+3. Start PocketBase server:
+- Windows: `.\pocketbase.bat`
+- Unix/MacOS: `./pocketbase.sh`
+
+4. Start the development server:
+```bash
+bun dev
+```
+
+## Scripts
+
+- `bun dev` - Start development server
+- `bun build` - Build for production
+- `bun start` - Start production server
+- `bun lint` - Run linter
+- `bun populate` - Populate database with sample data
+
+## Project Structure
+
+```
+e-pasaulis/
+├── src/
+│   ├── app/         # Next.js app router pages
+│   ├── components/  # React components
+│   ├── lib/         # Utility functions and configurations
+│   ├── scripts/     # Database scripts
+│   └── types/       # TypeScript type definitions
+├── public/          # Static files
+├── pb_data/         # PocketBase data (gitignored)
+└── pb_migrations/   # PocketBase migrations
+```
+
+## License
+
+MIT
 
 ## Getting Started
 
