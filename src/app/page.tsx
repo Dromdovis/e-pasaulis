@@ -13,7 +13,10 @@ async function fetchCategories(): Promise<Category[]> {
 }
 
 async function fetchProducts() {
-  const response = await pb.collection('products').getList<Product>(1, 50);
+  const response = await pb.collection('products').getList<Product>(1, 12, {
+    sort: '-created',
+    expand: 'category'
+  });
   return { products: response.items, total: response.totalItems };
 }
 

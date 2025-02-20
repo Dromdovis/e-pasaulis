@@ -7,9 +7,18 @@ import Link from "next/link";
 import Image from "next/image";
 import { pb } from '@/lib/db';
 import type { Product } from '@/types';  // Use the shared Product type
+import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { useState, useEffect } from 'react';
 
 export default function ProductCard({ product }: { product: Product }) {
   const { addToCart, toggleFavorite, favorites, cart } = useStore();
+  const { t } = useLanguage();
+  const [isClient, setIsClient] = useState(false);
+  
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const isFavorite = favorites.includes(product.id);
   const cartQuantity = cart.find(item => item.productId === product.id)?.quantity || 0;
 
@@ -83,15 +92,13 @@ export default function ProductCard({ product }: { product: Product }) {
               price={product.price}
               className="text-xl text-primary-600 dark:text-primary-400"
             />
-            <span
-              className={`text-sm ${
-                product.stock > 0
-                  ? "text-green-600 dark:text-green-400"
-                  : "text-red-600 dark:text-red-400"
-              }`}
-            >
-              {product.stock > 0 ? `${product.stock} in stock` : "Out of stock"}
-            </span>
+            <div className="text-sm text-gray-500 mt-1">
+              {isClient ? (
+                product.stock > 0 ? `${product.stock} ${t('in_stock')}` : t('out_of_stock')
+              ) : (
+                <span className="opacity-0">Loading...</span>
+              )}
+            </div>
           </div>
         </div>
       </div>

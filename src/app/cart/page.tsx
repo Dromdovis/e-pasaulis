@@ -8,12 +8,14 @@ import { Minus, Plus, Trash2, Heart, ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Product } from '@/types';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface CartProduct extends Product {
   quantity: number;
 }
 
 export default function CartPage() {
+  const { t } = useLanguage();
   const [products, setProducts] = useState<CartProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const { cart, removeFromCart, updateQuantity, toggleFavorite } = useStore();
@@ -95,7 +97,7 @@ export default function CartPage() {
     <div className="max-w-3xl mx-auto p-4">
       <div className="bg-white rounded-lg shadow-sm p-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-xl font-bold">Prekių krepšelis</h1>
+          <h1 className="text-xl font-bold">{t('cart')}</h1>
           <button
             onClick={handleAddAllToFavorites}
             className="flex items-center gap-2 text-gray-600 hover:text-red-500"
@@ -122,7 +124,7 @@ export default function CartPage() {
               <div className="flex-grow">
                 <h3 className="font-medium">{product.name}</h3>
                 <div className="text-sm text-gray-500 mt-1">
-                  {product.stock > 0 ? `${product.stock} in stock` : "Out of stock"}
+                  {product.stock > 0 ? `${product.stock} ${t('in_stock')}` : t('out_of_stock')}
                 </div>
               </div>
 
@@ -171,7 +173,7 @@ export default function CartPage() {
               className="flex items-center gap-2 px-6 py-2 text-blue-600 hover:text-blue-700"
             >
               <ArrowLeft size={20} />
-              <span>Grįžti</span>
+              <span>{t('continue_shopping')}</span>
             </Link>
             <button 
               className="px-8 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"

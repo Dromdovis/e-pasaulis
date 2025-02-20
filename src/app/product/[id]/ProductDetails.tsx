@@ -6,12 +6,14 @@ import { ShoppingCart, Heart } from 'lucide-react';
 import Image from 'next/image';
 import PriceDisplay from '@/components/PriceDisplay';
 import type { Product } from '@/types';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export default function ProductDetails({ productId }: { productId: string }) {
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedImage, setSelectedImage] = useState('');
   const [loading, setLoading] = useState(true);
   const { addToCart, toggleFavorite, favorites, cart } = useStore();
+  const { t } = useLanguage();
   
   const isFavorite = favorites.includes(productId);
   const cartQuantity = cart.find(item => item.productId === productId)?.quantity || 0;
@@ -149,7 +151,7 @@ export default function ProductDetails({ productId }: { productId: string }) {
                     <PriceDisplay price={product.price} />
                   </div>
                   <div className="text-sm text-gray-500 mt-1">
-                    {product.stock > 0 ? `${product.stock} in stock` : "Out of stock"}
+                    {product.stock > 0 ? `${product.stock} ${t('in_stock')}` : t('out_of_stock')}
                   </div>
                 </div>
                 <button
@@ -182,7 +184,7 @@ export default function ProductDetails({ productId }: { productId: string }) {
                     </span>
                   )}
                 </div>
-                {product.stock > 0 ? 'Į krepšelį' : 'Prekės nėra'}
+                {product.stock > 0 ? t('add_to_cart') : t('out_of_stock')}
               </button>
 
               <div className="text-sm text-gray-600">
@@ -196,7 +198,7 @@ export default function ProductDetails({ productId }: { productId: string }) {
       {/* Specifications Section */}
       {product && product.specifications && Object.keys(product.specifications).length > 0 && (
         <div id="specifications" className="mt-12 pt-8 border-t">
-          <h2 className="text-xl font-semibold mb-6">Specifikacijos:</h2>
+          <h2 className="text-xl font-semibold mb-6">{t('specifications')}:</h2>
           <div className="bg-white rounded-lg border border-gray-200">
             <div className="divide-y">
               {Object.entries(product.specifications || {}).map(([key, value], index) => (

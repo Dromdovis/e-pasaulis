@@ -6,8 +6,10 @@ import { useRouter } from 'next/navigation';
 import { pb } from '@/lib/db';
 import Link from 'next/link';
 import { Eye, EyeOff } from 'lucide-react';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export default function Login() {
+  const { t } = useLanguage();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -33,13 +35,13 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="bg-white p-8 rounded-lg shadow-md w-96">
-        <h1 className="text-2xl font-bold mb-6">Login</h1>
+        <h1 className="text-2xl font-bold mb-6">{t('login')}</h1>
         {error && <div className="mb-4 p-2 bg-red-50 text-red-500 rounded">{error}</div>}
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="email"
-            placeholder="Email"
+            placeholder={t('email')}
             required
             className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
             onChange={e => setFormData(prev => ({...prev, email: e.target.value}))}
@@ -47,7 +49,7 @@ export default function Login() {
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
-              placeholder="Password"
+              placeholder={t('password')}
               required
               className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
               onChange={e => setFormData(prev => ({...prev, password: e.target.value}))}
@@ -65,12 +67,12 @@ export default function Login() {
             disabled={loading}
             className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 disabled:bg-blue-300"
           >
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? t('logging_in') : t('login')}
           </button>
           <div className="text-center text-sm text-gray-600">
-            Don't have an account?{' '}
+            {t('dont_have_account')}{' '}
             <Link href="/register" className="text-blue-600 hover:underline">
-              Register
+              {t('register')}
             </Link>
           </div>
         </form>
