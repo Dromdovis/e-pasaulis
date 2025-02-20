@@ -74,3 +74,13 @@ pb_migrations/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Keep pb_data but ignore sensitive files
+pb_data/logs/
+pb_data/data.db-shm
+pb_data/data.db-wal
+pb_data/*.bak
+
+# But don't ignore the main database and migrations
+!pb_data/data.db
+!pb_migrations/

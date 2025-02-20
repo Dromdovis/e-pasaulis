@@ -7,26 +7,33 @@ An e-commerce platform built with Next.js, PocketBase, and Bun.
 - [Bun](https://bun.sh/) (v1.0.0 or higher)
 - [Node.js](https://nodejs.org/) (v18.0.0 or higher)
 
-## Setup
+## Setup After Clone
 
-1. Install dependencies:
-```bash
-bun install
-```
+1. Download PocketBase for your platform from https://pocketbase.io/docs/
 
-2. Create a `.env` file in the root directory:
-```bash
-NEXT_PUBLIC_POCKETBASE_URL=http://127.0.0.1:8090
-```
+2. Place the PocketBase executable in your project root:
+   - Windows: `pocketbase.exe`
+   - Unix/MacOS: `pocketbase`
 
-3. Start PocketBase server:
-- Windows: `.\pocketbase.bat`
-- Unix/MacOS: `./pocketbase.sh`
+3. Start PocketBase:
+   ```bash
+   # Windows
+   .\pocketbase.bat
 
-4. Start the development server:
-```bash
-bun dev
-```
+   # Unix/MacOS
+   ./pocketbase serve
+   ```
+
+4. **Important**: When PocketBase starts for the first time, it will prompt you to create an admin account in the Admin UI:
+   - Open http://127.0.0.1:8090/_/
+   - Create your admin account
+   - The database will already be populated with all collections and data
+
+5. In a new terminal, start the development server:
+   ```bash
+   bun install
+   bun dev
+   ```
 
 ## Scripts
 
