@@ -9,6 +9,8 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
+pb_data/*.db-shm
+pb_data/*.db-wal
 
 # testing
 /coverage
