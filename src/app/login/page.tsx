@@ -22,9 +22,14 @@ export default function Login() {
     setLoading(true);
     
     try {
-      await pb.collection('users').authWithPassword(formData.email, formData.password);
-      router.push('/');
+      // Authenticate with PocketBase
+      const authData = await pb.collection('users').authWithPassword(formData.email, formData.password);
+      
+      // Force a router refresh to update server components
       router.refresh();
+      
+      // Navigate to home page and force a full page refresh
+      window.location.href = '/';
     } catch {
       setError('Invalid credentials');
     } finally {

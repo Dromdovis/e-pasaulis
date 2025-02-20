@@ -37,10 +37,10 @@ export default function Register() {
       // Authenticate the user
       await pb.collection('users').authWithPassword(formData.email, formData.password);
       
-      // Navigate to home page
-      router.push('/');
+      // Force a router refresh to update server components
+      router.refresh();
       
-      // Force a full page refresh to ensure clean state
+      // Navigate to home page with a full page refresh
       window.location.href = '/';
     } catch (error: Error | unknown) {
       console.error('Registration error:', error);

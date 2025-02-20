@@ -13,11 +13,17 @@ async function fetchCategories(): Promise<Category[]> {
 }
 
 async function fetchProducts() {
-  const response = await pb.collection('products').getList<Product>(1, 12, {
-    sort: '-created',
-    expand: 'category'
-  });
-  return { products: response.items, total: response.totalItems };
+  try {
+    const response = await pb.collection('products').getList<Product>(1, 12, {
+      sort: '-created',
+      expand: 'category',
+      requestKey: null // Disable auto-cancellation for this request
+    });
+    return { products: response.items, total: response.totalItems };
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    return { products: [], total: 0 };
+  }
 }
 
 export default async function Home() {
