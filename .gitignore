@@ -1,5 +1,10 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# Environment variables
+.env
+.env.local
+.env.*.local
+
 # dependencies
 /node_modules
 /.pnp
@@ -32,9 +37,6 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
-
 # vercel
 .vercel
 
@@ -52,9 +54,6 @@ pb_data/pocketbase.exe
 node_modules/
 .next/
 
-# Environment files
-.env.local
-
 # System files
 .DS_Store
 
@@ -63,3 +62,13 @@ pocketbase
 pocketbase.exe
 pb_data/
 pb_migrations/
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db

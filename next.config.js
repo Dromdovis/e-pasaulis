@@ -15,7 +15,15 @@ const nextConfig = {
   },
   typescript: {
     ignoreBuildErrors: false,
-  }
+  },
+  i18n: {
+    // List all languages you want to support
+    locales: ['en', 'lt'],
+    // Default language
+    defaultLocale: 'en',
+    // Optional: automatically detect user language
+    localeDetection: true,
+  },
 };
 
 module.exports = nextConfig;
