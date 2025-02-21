@@ -31,7 +31,7 @@ export default function Login() {
       // Navigate to home page and force a full page refresh
       window.location.href = '/';
     } catch {
-      setError('Invalid credentials');
+      setError(t('invalid_credentials'));
     } finally {
       setLoading(false);
     }

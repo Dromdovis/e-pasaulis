@@ -6,10 +6,12 @@ import { pb } from '@/lib/db';
 import Link from 'next/link';
 import { Eye, EyeOff } from 'lucide-react';
 import { useStore } from '@/lib/store';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export default function Register() {
   const router = useRouter();
   const { clearLocalData } = useStore();
+  const { t } = useLanguage();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -25,6 +27,20 @@ export default function Register() {
     e.preventDefault();
     setError('');
     setLoading(true);
+
+    // Validate passwords match
+    if (formData.password !== formData.passwordConfirm) {
+      setError(t('passwords_dont_match'));
+      setLoading(false);
+      return;
+    }
+
+    // Validate password length
+    if (formData.password.length < 8) {
+      setError(t('password_too_short'));
+      setLoading(false);
+      return;
+    }
 
     try {
       // Clear any existing auth state and local data
@@ -42,10 +58,17 @@ export default function Register() {
       
       // Navigate to home page with a full page refresh
       window.location.href = '/';
-    } catch (error: Error | unknown) {
+    } catch (error: any) {
       console.error('Registration error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Registration failed. Please check your details.';
-      setError(errorMessage);
+      
+      // Handle specific error cases
+      if (error.data?.data?.email?.code === 'validation_not_unique') {
+        setError(t('email_already_exists'));
+      } else if (error.data?.data?.email?.code === 'validation_invalid_email') {
+        setError(t('invalid_email'));
+      } else {
+        setError(t('registration_failed'));
+      }
     } finally {
       setLoading(false);
     }
@@ -54,20 +77,20 @@ export default function Register() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="bg-white p-8 rounded-lg shadow-md w-96">
-        <h1 className="text-2xl font-bold mb-6">Register</h1>
+        <h1 className="text-2xl font-bold mb-6">{t('register')}</h1>
         {error && <div className="mb-4 p-2 bg-red-50 text-red-500 rounded">{error}</div>}
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="text"
-            placeholder="Name"
+            placeholder={t('name')}
             required
             className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
             onChange={e => setFormData(prev => ({...prev, name: e.target.value}))}
           />
           <input
             type="email"
-            placeholder="Email"
+            placeholder={t('email')}
             required
             className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
             onChange={e => setFormData(prev => ({...prev, email: e.target.value}))}
@@ -75,7 +98,7 @@ export default function Register() {
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
-              placeholder="Password"
+              placeholder={t('password')}
               required
               className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
               onChange={e => setFormData(prev => ({...prev, password: e.target.value}))}
@@ -91,7 +114,7 @@ export default function Register() {
           <div className="relative">
             <input
               type={showConfirmPassword ? "text" : "password"}
-              placeholder="Confirm Password"
+              placeholder={t('confirm_password')}
               required
               className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
               onChange={e => setFormData(prev => ({...prev, passwordConfirm: e.target.value}))}
@@ -109,12 +132,12 @@ export default function Register() {
             disabled={loading}
             className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 disabled:bg-blue-300"
           >
-            {loading ? 'Registering...' : 'Register'}
+            {loading ? t('registering') : t('register')}
           </button>
           <div className="text-center text-sm text-gray-600">
-            Already have an account?{' '}
+            {t('already_have_account')}{' '}
             <Link href="/login" className="text-blue-600 hover:underline">
-              Login
+              {t('login')}
             </Link>
           </div>
         </form>

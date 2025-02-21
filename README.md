@@ -121,3 +121,14 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
    - Adjust `NEXT_PUBLIC_POCKETBASE_URL` if using a different port/host
    - Update `NEXT_PUBLIC_SITE_URL` in production
    - Configure optional variables as needed
+
+## Database Setup
+
+1. Download PocketBase from https://pocketbase.io/docs/
+2. Place the executable in your project root
+3. Run initial setup:
+   ```bash
+   ./pocketbase serve
+   ```
+4. Access admin UI at http://127.0.0.1:8090/_/
+5. Create required collections and fields as documented in SCHEMA.md

@@ -50,3 +50,8 @@ Thumbs.db
 
 # Deployment
 .vercel
+
+# PocketBase
+/pb_migrations/
+/pocketbase
+/pocketbase.exe

@@ -85,6 +85,14 @@ export const translations = {
     newest: 'Newest',
     loading: 'Loading...',
     load_more: 'Load More',
+
+    // Error messages
+    invalid_credentials: 'Invalid credentials',
+    registration_failed: 'Registration failed. Please check your details.',
+    passwords_dont_match: 'Passwords do not match',
+    email_already_exists: 'Email already exists',
+    invalid_email: 'Invalid email address',
+    password_too_short: 'Password must be at least 8 characters long',
   },
   lt: {
     // Navigation
@@ -170,5 +178,13 @@ export const translations = {
     newest: 'Naujausi',
     loading: 'Kraunama...',
     load_more: 'Rodyti daugiau',
+
+    // Error messages
+    invalid_credentials: 'Neteisingi prisijungimo duomenys',
+    registration_failed: 'Registracija nepavyko. Patikrinkite savo duomenis.',
+    passwords_dont_match: 'Slaptažodžiai nesutampa',
+    email_already_exists: 'Toks el. paštas jau egzistuoja',
+    invalid_email: 'Neteisingas el. pašto adresas',
+    password_too_short: 'Slaptažodis turi būti bent 8 simbolių ilgio',
   }
 } as const; 

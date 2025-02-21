@@ -4,6 +4,7 @@ import type { Product } from '@/types';
 import { pb } from '@/lib/db';
 import ProductCard from './ProductCard';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import ProductCardSkeleton from './skeletons/ProductCardSkeleton';
 
 interface ProductGridProps {
   initialProducts: Product[];
@@ -17,9 +18,13 @@ export default function ProductGrid({ initialProducts, totalProducts }: ProductG
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(initialProducts.length < totalProducts);
   const [mounted, setMounted] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setMounted(true);
+    // Simulate loading delay (remove this in production if you don't need it)
+    const timer = setTimeout(() => setIsLoading(false), 500);
+    return () => clearTimeout(timer);
   }, []);
 
   const loadMore = async () => {
@@ -30,7 +35,8 @@ export default function ProductGrid({ initialProducts, totalProducts }: ProductG
       const nextPage = page + 1;
       const response = await pb.collection('products').getList<Product>(nextPage, 12, {
         sort: '-created',
-        expand: 'category'
+        expand: 'category',
+        requestKey: `products_page_${nextPage}`
       });
       
       setProducts(prev => [...prev, ...response.items as Product[]]);
@@ -42,6 +48,16 @@ export default function ProductGrid({ initialProducts, totalProducts }: ProductG
       setLoading(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {[...Array(8)].map((_, i) => (
+          <ProductCardSkeleton key={i} />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1">
