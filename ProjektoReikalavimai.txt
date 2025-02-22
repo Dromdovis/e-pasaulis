@@ -1,0 +1,125 @@
+| Duomenų   | Yra skaitymas iš DB |
+| bazės     | su bent 4           |
+| proj      | lentelėmis (po min  |
+| ektavimas | 20 įrašų po min 3   |
+| (1.1)     | laukus). Panaudoti  |
+|           | kelių tipų ryšiai.  |
+|           |                     |
+|           | Sutvarkytos         |
+|           | lietuvių kalbos     |
+|           | rašmenų koduotės.   |
++-----------+----+--------------+--
+| Duomenų   |Dirbama su keliais  |
+| objektai  |duomenų objektais   |
+| (1.2.1)   |ir bent vienas yra  |
+|           |sudėtinis duomenų   |
+|           |objektas            |
++-----------+----+--------------+--
+| Duomenų   | Panaudotos kelios   |
+| s         | duomenų struktūros, |
+| truktūros | apibrėžta sava jų   |
+| (1.2.2)   | kombinacija. Ir yra |
+|           | galimybė papildyti  |
+|           | naujais obejktais.  |
++-----------+----+--------------+--
+| Pr        | Aprašytas           |
+| ograminis | programinis         |
+| projektas | projektas ir        |
+| (1.3)     | naudojamos          |
+|           | technologijos,      |
+|           | nurodytas pilnas    |
+|           | projekto            |
+|           | architektūrinis     |
+|           | modelis. Aprašyti   |
+|           | veikimo algoritmų   |
+|           | modeliai.           |
++-----------+----+--------------+--
+| Pro       |Programos kode      |
+| jektavimo |pritaikyti 7 (po    |
+| šablonai  | minimum 2 kūrimo,   |
+| (1.4)     |struktūrinį bei     |
+|           | elgesio)            |
+|           | projektavimo        |
+|           | šablonai            |
++-----------+----+--------------+--
+| JPA       | Sukonfiguruota JPA, |
+| rea       | naudojant Hibernate |
+| lizavimas | arba alternatyvų    |
+| (2.1)S    | karkasą. Sukurtos   |
+|           | kelios              |
+|           | sudėtingesnės       |
+|           | esybių struktūros   |
+|           | (viena esybė        |
+|           | sudaryta iš kelių   |
+|           | kitų, viena esybė   |
+|           | privalomai turi     |
+|           | turėti kitą esybę   |
+|           | ir pan.)            |
++-----------+----+--------------+--
+| DB        |Atliekamos          |
+| užklausos | sudėtinės užklausos |
+| (2.1)     | apimančios kelis    |
+|           |  parametrus ir       |
+|           |  kelias DB lenteles  |
++-----------+----+--------------+----
+| A         | Atliekamos trys     |
+| lgoritmai | operacijos:         |
+|           | Elementų paieška    |
+|           | kolekcijoje,        |
+|           | Elementų atranka    |
+|           | (filtravimas)       |
+|           | kolekcijoje,        |
+|           | Elementų rūšiavimas |
+|           | kolekcijoje         |
++-----------+----+--------------+--
+| Grafinė   | Yra kelios          |
+| naudotojo | skirtingos          |
+| sąsaja\   | sudėtinės grafinės  |
+| (2.3)     | naudotojo sąsajos   |
+|           | (mobile app, web,   |
+|           | kt.),               |
+|           | atvaizduojančios    |
+|           | duomenis ir         |
+|           | leidžiančios        |
+|           | manipuliuoti jais.  |
++-----------+----+--------------+--
+| T         | Sukurtas kodas      |
+| estavimas | testuojamas         |
+| (3.1)     | automatiniais       |
+|           | testais (padengimas |
+|           | 70 proc.)           |
++-----------+----+--------------+--
+|           | Yra panaudoti bent  |
+|           | 5 rūšių assert      |
+|           | metodai.            |
++-----------+----+--------------+--
+|           | Yra panaudotos bent |
+|           | 5 rūšių anotacijos. |
++-----------+----+--------------+--
+|           | Realizuotos trys iš |
+|           | iš testavimo        |
+|           | kategorijų:\        |
+|           | Išimčių             |
+|           | testavimas,\        |
+|           | Performance         |
+|           | testavimas,         |
+|           | parametrizuoti      |
+|           | testai.             |
++-----------+----+--------------+--
+| Kodo      | Minimum 75%         |
+| versijų   | kassavaitinių       |
+| kontrolė  | tarpinių kodo       |
+| (3.2)     | pateikimų           |
++-----------+----+--------------+--
+| Sprendimų | Projektuojant ir    |
+| pa        | realizuojant        |
+| grindimas | pacituoti bent 10   |
+| (Inf      | mokslinių šaltinių  |
+| ormacinių |    
+| šaltinių  |    
+| sąrašas)  |    
+|           |    
++-----------+----+--------------+-
+
+
++ reikia dar kazkokio api ar microservice naudojimo projekte nebuvo nieko specifisko, gali buti ir kazkas mazo.

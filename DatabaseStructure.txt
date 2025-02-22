@@ -1,0 +1,82 @@
+users collection{
+id (text),
+password (password),
+tokenKey (text),
+email (email),
+emailVisibility (bool),
+verified (bool),
+name (text),
+avatar (file image),
+created (date),
+updated (date)
+}
+
+categories{
+id (text),
+name_lt (text),
+slug (text),
+description_lt (text),
+name_en (text),
+description_en (text),
+created (date),
+updated (date)
+}
+
+orders{
+id (text),
+user_id (relation to users collection),
+items (json),
+total (number),
+status (select: pending,processing,shipped),
+created (date),
+updated (date)
+}
+
+products{
+id (text),
+name (text),
+slug (text),
+description (text),
+price (number),
+stock (number),
+category (relation to categories collection),
+image (file image for thumbnail),
+images (files for multiple images),
+specifications (json),
+url (text),
+image_url (text),
+source (text),
+created (date),
+updated (date
+}
+
+reviews{
+id (text),
+rating (number from 1-5),
+product_id (relation to products collection),
+user_id (relation to users collection),
+comment (text),
+created (date),
+updated (date)
+}
+
+
+favorites {
+  id (text),
+  user (relation to users collection),
+  products (json),
+  created (date),
+  updated (date)
+}
+
+carts{
+id (text),
+user (relation to users collection),
+products (json),
+created (date),
+updated (date)
+}
+
+
+
+
