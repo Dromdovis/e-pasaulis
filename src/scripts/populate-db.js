@@ -2,16 +2,11 @@
 import dotenv from 'dotenv';
 import PocketBase from 'pocketbase';
 import { faker } from '@faker-js/faker';
-
+import bcrypt from 'bcryptjs';
 
 dotenv.config();
 
 const pb = new PocketBase(process.env.NEXT_PUBLIC_POCKETBASE_URL || 'http://127.0.0.1:8090');
-
-
-
-
-  
 
 // Complete list of electronics store categories
 const categories = [
@@ -343,6 +338,52 @@ const productTemplates = {
   ]
 };
 
+// Define main categories and their subcategories
+const mainCategories = {
+  "Kompiuterių komponentai": [
+    "Procesoriai",
+    "Vaizdo plokštės",
+    "Pagrindinės plokštės",
+    "Operatyvioji atmintis",
+    "Kietieji diskai",
+    "Maitinimo blokai",
+    "Korpusai",
+    "Aušintuvai"
+  ],
+  "Nešiojami kompiuteriai": [
+    "Žaidimų nešiojami kompiuteriai",
+    "Biuro nešiojami kompiuteriai",
+    "Ultrabook'ai",
+    "2-in-1 nešiojami kompiuteriai"
+  ],
+  "Išmanieji įrenginiai": [
+    "Išmanieji telefonai",
+    "Planšetiniai kompiuteriai",
+    "Išmanieji laikrodžiai",
+    "Belaidės ausinės"
+  ]
+};
+
+// Create test users with proper roles
+const testUsers = [
+  {
+    email: "user1@example.com",
+    password: "password123",
+    passwordConfirm: "password123",
+    name: "Regular User",
+    role: "user",
+    verified: true
+  },
+  {
+    email: "user2@example.com",
+    password: "password123",
+    passwordConfirm: "password123",
+    name: "Test User",
+    role: "user",
+    verified: true
+  }
+];
+
 async function initializeAdmin() {
     try {
       await pb.admins.authWithPassword(
@@ -414,8 +455,9 @@ async function createOrders(users, createdProducts) {
             })
         );
 
+        let orderData;
         try {
-            const order = {
+            orderData = {
                 user_id: user.id,
                 items: orderItems,
                 total: orderItems.reduce((sum, item) => {
@@ -425,16 +467,16 @@ async function createOrders(users, createdProducts) {
                 status: faker.helpers.arrayElement(['pending', 'processing', 'shipped'])
             };
             
-            console.log('Creating order:', order);
+            console.log('Creating order:', orderData);
             
-            await pb.collection('orders').create(order);
+            await pb.collection('orders').create(orderData);
             console.log('Order created successfully');
         } catch (error) {
             console.error('Order creation error:', {
                 message: error.message,
                 data: error.response?.data,
                 originalError: error.originalError,
-                attemptedData: order
+                attemptedData: orderData
             });
         }
     }
@@ -448,7 +490,8 @@ async function createUsers() {
             email: faker.internet.email(),
             password: password,
             passwordConfirm: password, // Use the same password
-            name: faker.person.fullName()
+            name: faker.person.fullName(),
+            role: 'user' // Add the required role field
         };
         try {
             const user = await pb.collection('users').create(userData);
@@ -505,12 +548,14 @@ async function createCategories() {
         try {
             console.log('Creating category:', category);
             
+            // If category has language-specific fields, use them
+            // Otherwise, use the default name as Lithuanian and provide English translation
             const categoryData = {
-                name_en: category.name_en,
-                name_lt: category.name_lt,
+                name_lt: category.name_lt || category.name,
+                name_en: category.name_en || translateToEnglish(category.name),
                 slug: category.slug,
-                description_en: category.description_en,
-                description_lt: category.description_lt
+                description_lt: category.description_lt || category.description,
+                description_en: category.description_en || translateToEnglish(category.description)
             };
 
             const record = await pb.collection('categories').create(categoryData);
@@ -521,6 +566,52 @@ async function createCategories() {
         }
     }
     return createdCategories;
+}
+
+// Helper function to translate Lithuanian category names and descriptions to English
+function translateToEnglish(text) {
+    const translations = {
+        // Categories
+        'Mobilieji telefonai': 'Mobile Phones',
+        'Planšetiniai kompiuteriai': 'Tablets',
+        'Monitoriai': 'Monitors',
+        'Klaviatūros': 'Keyboards',
+        'Pelės': 'Mice',
+        'Ausinės': 'Headphones',
+        'Vaizdo plokštės': 'Graphics Cards',
+        'Procesoriai': 'Processors',
+        'Atmintis': 'Memory',
+        'Kietieji diskai': 'Hard Drives',
+        'Maitinimo blokai': 'Power Supplies',
+        'Aušintuvai': 'Cooling Systems',
+        'Korpusai': 'Cases',
+        'Pagrindinės plokštės': 'Motherboards',
+        'Tinklo įranga': 'Network Equipment',
+        'Programinė įranga': 'Software',
+        'Žaidimų įranga': 'Gaming Equipment',
+        'Spausdintuvai': 'Printers',
+        // Descriptions
+        'Išmanieji telefonai ir aksesuarai': 'Smartphones and accessories',
+        'Planšetės visiems poreikiams': 'Tablets for all needs',
+        'Aukštos kokybės monitoriai': 'High-quality monitors',
+        'Mechaninės ir membraninės klaviatūros': 'Mechanical and membrane keyboards',
+        'Laidinės ir bevielės pelės': 'Wired and wireless mice',
+        'Laidinės ir bevielės ausinės': 'Wired and wireless headphones',
+        'Galingos vaizdo plokštės': 'Powerful graphics cards',
+        'Intel ir AMD procesoriai': 'Intel and AMD processors',
+        'RAM ir ROM sprendimai': 'RAM and ROM solutions',
+        'HDD ir SSD diskai': 'HDD and SSD drives',
+        'Patikimi maitinimo šaltiniai': 'Reliable power supplies',
+        'CPU ir sistemos aušintuvai': 'CPU and system coolers',
+        'Kompiuterių korpusai': 'Computer cases',
+        'Intel ir AMD pagrindinės plokštės': 'Intel and AMD motherboards',
+        'Maršrutizatoriai ir tinklo plokštės': 'Routers and network cards',
+        'Operacinės sistemos ir programos': 'Operating systems and software',
+        'Žaidimų konsolės ir aksesuarai': 'Gaming consoles and accessories',
+        'Spausdintuvai ir skeneriai': 'Printers and scanners'
+    };
+    
+    return translations[text] || text;
 }
 
 async function populateDatabase() {
@@ -538,18 +629,6 @@ async function populateDatabase() {
         
         const createdCategories = await createCategories();
         console.log(`Created ${createdCategories.length} categories`);
-        
-        if (createdCategories.length === 0) {
-            throw new Error('No categories were created. Stopping population.');
-        }
-        
-        const createdProducts = await createProducts(createdCategories);
-        console.log(`Created ${createdProducts.length} products`);
-        
-        if (createdProducts.length > 0) {
-            await createReviews(createdProducts, users);
-            await createOrders(users, createdProducts);
-        }
 
         console.log('Database population completed successfully!');
     } catch (error) {

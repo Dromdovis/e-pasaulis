@@ -7,6 +7,7 @@ emailVisibility (bool),
 verified (bool),
 name (text),
 avatar (file image),
+role (select: user,admin,super_admin),
 created (date),
 updated (date)
 }

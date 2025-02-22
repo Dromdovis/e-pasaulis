@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { pb } from './db';
+import { User, UserRole } from '../types/auth';
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -51,4 +52,37 @@ export const useAuth = create<AuthState>((set) => ({
 // Initialize loading state
 if (typeof window !== 'undefined') {
   useAuth.setState({ isLoading: false });
+}
+
+export class AuthService {
+  static async getCurrentUser(): Promise<User | null> {
+    if (!pb.authStore.isValid) return null;
+    
+    try {
+      const user = await pb.collection('users').getOne(pb.authStore.model?.id);
+      return user as User;
+    } catch {
+      return null;
+    }
+  }
+
+  static async hasRole(requiredRole: UserRole): Promise<boolean> {
+    const user = await this.getCurrentUser();
+    if (!user) return false;
+
+    switch (requiredRole) {
+      case UserRole.SUPER_ADMIN:
+        return user.role === UserRole.SUPER_ADMIN;
+      case UserRole.ADMIN:
+        return user.role === UserRole.ADMIN || user.role === UserRole.SUPER_ADMIN;
+      case UserRole.USER:
+        return true; // All authenticated users have at least USER role
+      default:
+        return false;
+    }
+  }
+
+  static async isAdmin(): Promise<boolean> {
+    return this.hasRole(UserRole.ADMIN);
+  }
 } 
