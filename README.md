@@ -1,60 +1,52 @@
 # E-Pasaulis - Electronics E-commerce Platform
 
+## Prerequisites
+
+- Python 3.9 or later
+- Node.js 18 or later
+- Bun (will be installed automatically if missing)
+
 ## Quick Start
 
-1. **Clone and Install**
+1. **Clone the Repository**
 ```bash
 git clone https://github.com/your-username/e-pasaulis.git
 cd e-pasaulis
-bun install
 ```
 
-2. **Set up Environment**
+2. **Install Dependencies**
+
+Windows:
+```bash
+.\scripts\install_dependencies.bat
+```
+
+Linux/macOS:
+```bash
+chmod +x ./scripts/install_dependencies.sh
+./scripts/install_dependencies.sh
+```
+
+3. **Set up Environment**
 ```bash
 cp .env.example .env
 # Update .env with your values
 ```
 
-3. **Set up Database**
+4. **Set up Database**
 - Download [PocketBase](https://pocketbase.io/docs/) for your platform
 - Place executable in project root
 - Download initial database backup from [Releases](link-to-your-release)
 - Extract backup to `pb_data` folder
 
-4. **Start Development**
+5. **Start Development**
 ```bash
 # Terminal 1: Start PocketBase
-.\pocketbase.exe serve  # or ./pocketbase serve
+.\pocketbase.exe serve  # Windows
+./pocketbase serve     # Linux/macOS
 
 # Terminal 2: Start Next.js
 bun dev
-```
-
-## Database Management
-
-### Backup
-```bash
-.\backup-db.bat
-```
-Backups are stored in `pb_data_backup/`
-
-### Restore
-1. Stop PocketBase
-2. Replace `pb_data` folder with backup contents
-3. Restart PocketBase
-
-## Available Scripts
-- `bun dev` - Development server
-- `bun build` - Production build
-- `bun start` - Production server
-- `bun populate` - Initialize database
-- `bun update-translations` - Update translations
-
-## Environment Variables
-```env
-NEXT_PUBLIC_POCKETBASE_URL=http://127.0.0.1:8090
-POCKETBASE_ADMIN_EMAIL=admin@e-pasaulis.lt
-POCKETBASE_ADMIN_PASSWORD=your_password
 ```
 
 ## Project Structure
@@ -66,13 +58,80 @@ e-pasaulis/
 │   ├── lib/         # Utilities
 │   ├── scripts/     # DB scripts
 │   └── types/       # TypeScript types
+├── scraper/         # Web scraping scripts
+├── scripts/         # Setup and utility scripts
 ├── public/          # Static files
 ├── pb_migrations/   # DB migrations
 └── pb_data/        # Database (gitignored)
 ```
 
+## Available Scripts
+
+### Development
+- `bun dev` - Start Next.js development server
+- `bun build` - Create production build
+- `bun start` - Start production server
+
+### Database
+- `.\pocketbase.exe serve` - Start PocketBase server (Windows)
+- `./pocketbase serve` - Start PocketBase server (Linux/macOS)
+- `.\backup-db.bat` - Backup database (Windows)
+- `./backup-db.sh` - Backup database (Linux/macOS)
+
+### Scraping
+- `.\run_scraper.bat` - Run web scraper (Windows)
+- `./run_scraper.sh` - Run web scraper (Linux/macOS)
+
+### Other
+- `bun update-translations` - Update translations
+- `bun test` - Run tests
+- `bun lint` - Run linter
+
+## Dependencies
+
+### Frontend (Node.js)
+- Next.js 14
+- React 18
+- TailwindCSS
+- React Query
+- Zustand
+- PocketBase Client
+
+### Backend (PocketBase)
+- PocketBase (latest)
+
+### Scraper (Python)
+- BeautifulSoup4
+- Requests
+- Playwright
+- Pandas
+- aiohttp
+- And more (see `setup.py`)
+
+## Environment Variables
+```env
+NEXT_PUBLIC_POCKETBASE_URL=http://127.0.0.1:8090
+POCKETBASE_ADMIN_EMAIL=admin@e-pasaulis.lt
+POCKETBASE_ADMIN_PASSWORD=your_password
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+NEXT_PUBLIC_DEFAULT_LOCALE=en
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
 ## License
+
 MIT
+
+## Support
+
+For support, email support@e-pasaulis.lt or join our Discord channel.
 
 ## Getting Started
 

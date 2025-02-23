@@ -6,19 +6,19 @@ import PriceDisplay from "@/components/PriceDisplay";
 import Link from "next/link";
 import Image from "next/image";
 import { pb } from '@/lib/db';
-import type { Product } from '@/types';  // Use the shared Product type
+import type { Product } from '@/types';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
-import { useState, useEffect } from 'react';
+import { memo, useCallback } from 'react';
 
-export default function ProductCard({ product }: { product: Product }) {
-  const { addToCart, toggleFavorite, favorites, cart } = useStore();
+const ProductCard = memo(({ product }: { product: Product }) => {
   const { t } = useLanguage();
-  const [isClient, setIsClient] = useState(false);
   
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
+  // Split store selectors to minimize re-renders
+  const favorites = useStore(state => state.favorites);
+  const cart = useStore(state => state.cart);
+  const addToCart = useStore(state => state.addToCart);
+  const toggleFavorite = useStore(state => state.toggleFavorite);
+  
   const isFavorite = favorites.includes(product.id);
   const cartQuantity = cart.find(item => item.productId === product.id)?.quantity || 0;
 
@@ -26,49 +26,22 @@ export default function ProductCard({ product }: { product: Product }) {
     ? `${pb.baseUrl}/api/files/${product.collectionId}/${product.id}/${product.image}`
     : '/no-image.jpg';
 
-  const handleAction = (e: React.MouseEvent, action: () => void) => {
+  const handleAction = useCallback((e: React.MouseEvent, action: () => void) => {
     e.preventDefault();
     action();
-  };
+  }, []);
+
+  const handleAddToCart = useCallback((e: React.MouseEvent) => {
+    handleAction(e, () => addToCart(product.id));
+  }, [addToCart, handleAction, product.id]);
+
+  const handleToggleFavorite = useCallback((e: React.MouseEvent) => {
+    handleAction(e, () => toggleFavorite(product.id));
+  }, [toggleFavorite, handleAction, product.id]);
 
   return (
-    <Link href={`/product/${product.id}`} className="block w-full">
-      <div className="bg-[rgb(var(--card-bg))] backdrop-blur-sm shadow-lg shadow-black/5 hover:shadow-xl hover:shadow-black/10 transition-all duration-300 rounded-lg overflow-hidden h-full flex flex-col">
-        {/* Action Buttons */}
-        <div className="absolute top-4 right-4 flex gap-2 z-10">
-          <button
-            onClick={(e) => handleAction(e, () => toggleFavorite(product.id))}
-            className="p-2 rounded-full bg-white dark:bg-secondary-700 shadow-md hover:bg-secondary-100 dark:hover:bg-secondary-600 transition-colors"
-            aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
-          >
-            <Heart
-              className={`h-5 w-5 ${
-                isFavorite
-                  ? "fill-accent-500 text-accent-500"
-                  : "text-secondary-600 dark:text-secondary-300"
-              }`}
-            />
-          </button>
-          <button
-            onClick={(e) => handleAction(e, () => product.stock > 0 && addToCart(product.id))}
-            className={`p-2 rounded-full bg-white dark:bg-secondary-700 shadow-md transition-colors relative ${
-              product.stock > 0
-                ? "hover:bg-secondary-100 dark:hover:bg-secondary-600"
-                : "opacity-50 cursor-not-allowed"
-            }`}
-            disabled={product.stock === 0}
-            aria-label={cartQuantity > 0 ? `In cart (${cartQuantity})` : "Add to cart"}
-          >
-            <ShoppingCart className="h-5 w-5 text-secondary-600 dark:text-secondary-300" />
-            {cartQuantity > 0 && (
-              <span className="absolute -top-1 -right-1 bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
-                {cartQuantity}
-              </span>
-            )}
-          </button>
-        </div>
-
-        {/* Image Container */}
+    <Link href={`/product/${product.id}`} className="group">
+      <div className="h-full flex flex-col bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-transform duration-200 hover:scale-[1.02]">
         <div className="relative w-full pt-[100%]">
           <Image
             src={imageUrl}
@@ -76,10 +49,36 @@ export default function ProductCard({ product }: { product: Product }) {
             fill
             className="object-cover absolute top-0 left-0"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            priority={false}
+            loading="lazy"
+            quality={75}
           />
+          <div className="absolute top-2 right-2 flex gap-2">
+            <button
+              onClick={handleToggleFavorite}
+              className={`p-2 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm transition-colors ${
+                isFavorite ? 'text-red-500' : 'text-gray-500 hover:text-red-500'
+              }`}
+              aria-label={isFavorite ? t('remove_from_favorites') : t('add_to_favorites')}
+            >
+              <Heart className="w-5 h-5" fill={isFavorite ? "currentColor" : "none"} />
+            </button>
+            <button
+              onClick={handleAddToCart}
+              className="p-2 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-500 hover:text-primary-500 transition-colors"
+              aria-label={t('add_to_cart')}
+              disabled={product.stock <= 0}
+            >
+              <ShoppingCart className="w-5 h-5" />
+              {cartQuantity > 0 && (
+                <span className="absolute -top-1 -right-1 bg-primary-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {cartQuantity}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
 
-        {/* Content Container */}
         <div className="p-4 flex flex-col flex-grow">
           <h2 className="text-lg font-semibold line-clamp-1 text-gray-900 dark:text-gray-100">
             {product.name}
@@ -93,15 +92,15 @@ export default function ProductCard({ product }: { product: Product }) {
               className="text-xl text-primary-600 dark:text-primary-400"
             />
             <div className="text-sm text-gray-500 mt-1">
-              {isClient ? (
-                product.stock > 0 ? `${product.stock} ${t('in_stock')}` : t('out_of_stock')
-              ) : (
-                <span className="opacity-0">Loading...</span>
-              )}
+              {product.stock > 0 ? `${product.stock} ${t('in_stock')}` : t('out_of_stock')}
             </div>
           </div>
         </div>
       </div>
     </Link>
   );
-}
+});
+
+ProductCard.displayName = 'ProductCard';
+
+export default ProductCard;

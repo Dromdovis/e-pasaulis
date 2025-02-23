@@ -29,7 +29,7 @@ export class ProductService {
     }
 
     // Save to PocketBase
-    const savedProduct = await pb.collection('products').create({
+    const savedProduct = await pb.collection('products').create<Product>({
       name: product.name,
       price: product.price,
       specifications: product.specifications,

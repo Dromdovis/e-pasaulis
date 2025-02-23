@@ -2,7 +2,7 @@
 // src/components/Navbar.tsx
 "use client";
 import { useEffect, useState } from "react";
-import { Globe, UserCircle, LogOut, ShoppingCart, Heart, User, ChevronDown } from "lucide-react";
+import { Globe, UserCircle, LogOut, ShoppingCart, Heart, User, ChevronDown, Settings } from "lucide-react";
 import Link from "next/link";
 import { pb } from "@/lib/db";
 import { useRouter } from "next/navigation";
@@ -10,20 +10,29 @@ import { useStore, StoreState } from '@/lib/store';
 import { useAuth } from '@/lib/auth';
 import Image from 'next/image';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { UserRole } from '@/types/auth';
 
 const Navbar = () => {
   const router = useRouter();
   const { cart } = useStore();
-  const { isAuthenticated, userName, userAvatar, isLoading, logout } = useAuth();
+  const { isAuthenticated, user, isLoading, logout, initialize, isInitialized, isAdmin } = useAuth();
   const favorites = useStore((state: StoreState) => state.favorites);
   const { language, setLanguage, t } = useLanguage();
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    if (!isInitialized) {
+      initialize();
+    }
+  }, [initialize, isInitialized]);
 
   const cartItemsCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleLogout = async () => {
     await logout();
-    router.push('/');
+    window.location.href = '/';
   };
 
   const languageSelector = (
@@ -64,6 +73,24 @@ const Navbar = () => {
     </div>
   );
 
+  // Don't render user-specific content until mounted and initialized
+  if (!mounted || !isInitialized) {
+    return (
+      <nav className="bg-[rgb(var(--navbar-bg))] backdrop-blur-sm border-b border-black/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <Link
+              href="/"
+              className="text-xl font-bold text-primary-600 dark:text-primary-400"
+            >
+              e-pasaulis
+            </Link>
+          </div>
+        </div>
+      </nav>
+    );
+  }
+
   return (
     <nav className="bg-[rgb(var(--navbar-bg))] backdrop-blur-sm border-b border-black/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -75,32 +102,24 @@ const Navbar = () => {
             >
               e-pasaulis
             </Link>
-            {isLoading ? (
-              <div className="h-6 w-24 bg-gray-200 animate-pulse rounded"></div>
-            ) : (
-              isAuthenticated && (
-                <span className="text-gray-600 dark:text-gray-300">
-                  {userName}
-                </span>
-              )
+            {isAuthenticated && user && (
+              <span className="text-gray-600 dark:text-gray-300">
+                {user.name}
+              </span>
             )}
           </div>
 
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4">
             {languageSelector}
             <Link
               href="/favorites"
               className="p-2 rounded-md hover:bg-secondary-100 dark:hover:bg-secondary-800 relative"
             >
               <Heart className="h-5 w-5 text-secondary-600 dark:text-secondary-300" />
-              {isLoading ? (
-                <span className="absolute -top-1 -right-1 h-4 w-4 bg-gray-200 animate-pulse rounded-full"></span>
-              ) : (
-                favorites.length > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-accent-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                    {favorites.length}
-                  </span>
-                )
+              {favorites.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-accent-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                  {favorites.length}
+                </span>
               )}
             </Link>
             <Link href="/cart" className="relative">
@@ -112,45 +131,51 @@ const Navbar = () => {
               )}
             </Link>
 
-            {isLoading ? (
-              <div className="h-8 w-8 bg-gray-200 animate-pulse rounded-full"></div>
-            ) : (
-              isAuthenticated ? (
-                <div className="flex items-center gap-4">
-                  <Link href="/profile" className="relative w-8 h-8">
-                    {userAvatar ? (
-                      <Image
-                        src={userAvatar}
-                        alt="Profile"
-                        fill
-                        className="rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                        <User className="h-5 w-5 text-gray-500" />
-                      </div>
-                    )}
-                  </Link>
-                  <button 
-                    onClick={handleLogout} 
-                    className="text-gray-600 hover:text-gray-800"
-                  >
-                    <LogOut className="h-5 w-5" />
-                  </button>
-                </div>
-              ) : (
-                <div className="flex items-center gap-4">
-                  <Link href="/login" className="text-gray-600 hover:text-gray-800">
-                    {t('login')}
-                  </Link>
+            {isAuthenticated && user ? (
+              <div className="flex items-center gap-4">
+                {isAdmin && (
                   <Link 
-                    href="/register" 
-                    className="bg-primary-600 text-white px-4 py-2 rounded-md hover:bg-primary-700"
+                    href="/admin"
+                    className="flex items-center gap-2 p-2 rounded-md hover:bg-secondary-100 dark:hover:bg-secondary-800"
+                    title={t('admin_panel')}
                   >
-                    {t('register')}
+                    <Settings className="h-5 w-5 text-secondary-600 dark:text-secondary-300" />
+                    <span className="hidden md:inline">{t('admin_panel')}</span>
                   </Link>
-                </div>
-              )
+                )}
+                <Link href="/profile" className="relative w-8 h-8">
+                  {user.avatar ? (
+                    <Image
+                      src={user.avatar}
+                      alt="Profile"
+                      fill
+                      className="rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                      <User className="h-5 w-5 text-gray-500" />
+                    </div>
+                  )}
+                </Link>
+                <button 
+                  onClick={handleLogout} 
+                  className="text-gray-600 hover:text-gray-800"
+                >
+                  <LogOut className="h-5 w-5" />
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-4">
+                <Link href="/login" className="text-gray-600 hover:text-gray-800">
+                  {t('login')}
+                </Link>
+                <Link 
+                  href="/register" 
+                  className="bg-primary-600 text-white px-4 py-2 rounded-md hover:bg-primary-700"
+                >
+                  {t('register')}
+                </Link>
+              </div>
             )}
           </div>
         </div>

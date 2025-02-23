@@ -30,7 +30,7 @@ class NesiojamiScraper:
         
         # Initialize PocketBase
         load_dotenv()
-        self.pb_client = PocketBase(os.getenv('POCKETBASE_URL', 'http://127.0.0.1:8090'))
+        self.pb_client = PocketBase(os.getenv('NEXT_PUBLIC_POCKETBASE_URL', 'http://127.0.0.1:8090'))
         self.authenticate_pocketbase()
         
         # Cache for category ID
@@ -39,9 +39,14 @@ class NesiojamiScraper:
     def authenticate_pocketbase(self) -> None:
         """Authenticate with PocketBase."""
         try:
+            # Debug logging
+            logger.info(f"PocketBase URL: {os.getenv('NEXT_PUBLIC_POCKETBASE_URL')}")
+            logger.info(f"PocketBase Email: {os.getenv('POCKETBASE_ADMIN_EMAIL')}")
+            logger.info(f"PocketBase Password length: {len(os.getenv('POCKETBASE_ADMIN_PASSWORD', ''))}")
+            
             self.pb_client.admins.auth_with_password(
-                os.getenv('POCKETBASE_EMAIL', ''),
-                os.getenv('POCKETBASE_PASSWORD', '')
+                os.getenv('POCKETBASE_ADMIN_EMAIL', ''),
+                os.getenv('POCKETBASE_ADMIN_PASSWORD', '')
             )
             logger.info("Successfully authenticated with PocketBase")
         except Exception as e:
@@ -55,10 +60,17 @@ class NesiojamiScraper:
             headless=True,
             args=['--disable-dev-shm-usage']  # Helps with memory issues
         )
+        
+        if not self.browser:
+            raise RuntimeError("Failed to initialize browser")
+            
         self.context = await self.browser.new_context(
             user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
             viewport={'width': 1920, 'height': 1080}
         )
+        
+        if not self.context:
+            raise RuntimeError("Failed to create browser context")
         
         # Add more realistic browser behavior
         await self.context.add_init_script("""
@@ -69,9 +81,11 @@ class NesiojamiScraper:
         
         self.page = await self.context.new_page()
         
+        if not self.page:
+            raise RuntimeError("Failed to create new page")
+        
         # Set default timeout to 60 seconds
-        if self.page:  # Type check
-            self.page.set_default_timeout(60000)
+        self.page.set_default_timeout(60000)
 
     async def close_browser(self) -> None:
         """Close browser and all pages."""
@@ -326,25 +340,15 @@ class NesiojamiScraper:
                 }
             )
 
-            # Create descriptions from specifications
+            # Create description from specifications
             specs = product_data['specifications']
-            description_lt = []
-            description_en = []
+            description_parts = []
             
             # Add key specs to description if available
             key_specs = ['Procesorius', 'Operatyvioji atmintis', 'Kietasis diskas', 'Ekranas', 'Operacinė sistema']
             for spec in key_specs:
                 if spec in specs:
-                    description_lt.append(f"{spec}: {specs[spec]}")
-                    # Translate key names for English description
-                    en_key = {
-                        'Procesorius': 'Processor',
-                        'Operatyvioji atmintis': 'RAM',
-                        'Kietasis diskas': 'Storage',
-                        'Ekranas': 'Display',
-                        'Operacinė sistema': 'Operating System'
-                    }.get(spec, spec)
-                    description_en.append(f"{en_key}: {specs[spec]}")
+                    description_parts.append(f"{spec}: {specs[spec]}")
 
             # Prepare the base form data
             form_data = {
@@ -356,8 +360,8 @@ class NesiojamiScraper:
                 'specifications': json.dumps(product_data['specifications']),  # Convert dict to JSON string
                 'source': product_data['source'],
                 'category': product_data['category'],
-                'description_lt': '\n'.join(description_lt) if description_lt else "No description available",
-                'description_en': '\n'.join(description_en) if description_en else "No description available",
+                'description': '\n'.join(description_parts) if description_parts else "No description available",
+                'stock': 0,  # Default to 0 since we can't determine actual stock
                 'updated': datetime.now().isoformat()
             }
 
@@ -367,7 +371,7 @@ class NesiojamiScraper:
 
             logger.info(f"Preparing to save product: {form_data['name']}")
 
-            # Download and process image if URL is available
+            # Handle image upload
             if product_data.get('image_url'):
                 try:
                     # Download image
@@ -390,14 +394,20 @@ class NesiojamiScraper:
                                         self.pb_client.collection('products').update(
                                             product_id,
                                             form_data,
-                                            {"image": (os.path.basename(product_data['image_url']), image_file)}
+                                            {
+                                                "image": (os.path.basename(product_data['image_url']), image_file),
+                                                "images": [(os.path.basename(product_data['image_url']), image_file)]
+                                            }
                                         )
                                     else:
                                         # Create new product
                                         logger.info("Creating new product")
                                         self.pb_client.collection('products').create(
                                             form_data,
-                                            {"image": (os.path.basename(product_data['image_url']), image_file)}
+                                            {
+                                                "image": (os.path.basename(product_data['image_url']), image_file),
+                                                "images": [(os.path.basename(product_data['image_url']), image_file)]
+                                            }
                                         )
 
                                 # Clean up temporary file

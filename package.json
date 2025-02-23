@@ -8,10 +8,13 @@
     "build": "bun --bun next build",
     "start": "bun --bun next start",
     "lint": "bun --bun next lint",
-    "populate": "bun src/scripts/populate-db.js"
+    "populate": "bun src/scripts/populate-db.js",
+    "backup-db": "backup-db.bat"
   },
   "dependencies": {
     "@faker-js/faker": "^9.5.0",
+    "@tanstack/react-query": "^5.66.9",
+    "@tanstack/react-query-devtools": "^5.66.9",
     "autoprefixer": "^10.4.17",
     "bcryptjs": "^3.0.2",
     "dotenv": "^16.4.7",
@@ -21,6 +24,7 @@
     "pocketbase": "^0.25.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-intersection-observer": "^9.15.1",
     "zustand": "^5.0.3"
   },
   "devDependencies": {

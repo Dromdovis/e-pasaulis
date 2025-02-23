@@ -1,47 +1,60 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { translations, Language } from './translations';
+import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
+import { en } from './en';
+import { lt } from './lt';
+import type { TranslationKey, Translations } from './types';
 
-type LanguageContextType = {
-  language: Language;
-  setLanguage: (lang: Language) => void;
-  t: (key: keyof typeof translations.en) => string;
+interface LanguageContextType {
+  language: string;
+  setLanguage: (lang: string) => void;
+  t: (key: TranslationKey) => string;
+  isInitialized: boolean;
+}
+
+const translations: Record<string, Translations> = {
+  en,
+  lt
 };
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+const LanguageContext = createContext<LanguageContextType | null>(null);
 
-export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const defaultLocale = process.env.NEXT_PUBLIC_DEFAULT_LOCALE as Language || 'en';
-  const [language, setLanguage] = useState<Language>(defaultLocale);
-  const [mounted, setMounted] = useState(false);
+export function LanguageProvider({ children }: { children: ReactNode }) {
+  const [language, setLanguage] = useState('lt'); // Default to Lithuanian
+  const [isInitialized, setIsInitialized] = useState(false);
 
+  // Initialize language from localStorage after mount
   useEffect(() => {
-    const savedLang = localStorage.getItem('language') as Language;
-    if (savedLang && (savedLang === 'en' || savedLang === 'lt')) {
-      setLanguage(savedLang);
-    } else {
-      // If no language preference exists, set the default language
-      localStorage.setItem('language', defaultLocale);
+    const storedLanguage = localStorage.getItem('language') || 'lt';
+    setLanguage(storedLanguage);
+    setIsInitialized(true);
+  }, []);
+
+  // Update localStorage and document lang when language changes
+  useEffect(() => {
+    if (isInitialized) {
+      localStorage.setItem('language', language);
+      document.documentElement.lang = language;
     }
-    setMounted(true);
-  }, [defaultLocale]);
+  }, [language, isInitialized]);
 
-  const handleSetLanguage = (lang: Language) => {
-    setLanguage(lang);
-    localStorage.setItem('language', lang);
-  };
+  const t = useCallback((key: TranslationKey): string => {
+    const translation = translations[language]?.[key];
+    if (!translation) {
+      console.warn(`Translation missing for key: ${key} in language: ${language}`);
+      // Fallback to English if translation is missing
+      return translations.en[key] || key;
+    }
+    return translation;
+  }, [language]);
 
-  const t = (key: keyof typeof translations.en): string => {
-    return translations[language][key] || key;
-  };
-
-  if (!mounted) {
+  // Show minimal content while initializing
+  if (!isInitialized) {
     return null;
   }
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage: handleSetLanguage, t }}>
+    <LanguageContext.Provider value={{ language, setLanguage, t, isInitialized }}>
       {children}
     </LanguageContext.Provider>
   );
@@ -49,7 +62,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
 export function useLanguage() {
   const context = useContext(LanguageContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useLanguage must be used within a LanguageProvider');
   }
   return context;

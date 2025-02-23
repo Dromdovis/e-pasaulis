@@ -1,3 +1,5 @@
+'use client';
+
 import { createContext, useContext, useEffect, useState } from 'react';
 import { CartManager } from '../lib/patterns/singleton';
 import { CartItem, AddToCartCommand } from '../lib/patterns/command';

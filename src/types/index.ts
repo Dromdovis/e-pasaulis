@@ -10,6 +10,8 @@ export interface Category {
   updated: string;
 }
 
+export type ProductType = 'physical' | 'digital';
+
 export interface Product {
   id: string;
   name: string;
@@ -25,6 +27,9 @@ export interface Product {
   categoryId: string;
   category: string;
   specifications?: Record<string, string | number | boolean>;
+  productType: ProductType;
+  url?: string;
+  image_url?: string;
 }
 
 export interface Favorite {
@@ -68,3 +73,9 @@ export interface Review {
 }
 
 export type ProductRecord = Product;
+
+// Add PocketBase types
+export interface PocketBaseOptions {
+  $cancelKey?: string;
+  requestKey?: string | null;
+}

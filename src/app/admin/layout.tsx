@@ -1,132 +1,103 @@
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/auth';
+import { UserRole } from '@/types/auth';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { ShoppingBag, Package, Categories, Settings, Users } from 'lucide-react';
-import { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
-
-const navItems = [
-  {
-    href: '/admin',
-    label: 'Dashboard',
-    icon: Home
-  },
-  {
-    href: '/admin/products',
-    label: 'Products',
-    icon: Package,
-    subItems: [
-      { href: '/admin/products/create', label: 'Create Product' },
-      { href: '/admin/products/list', label: 'Product List' }
-    ]
-  },
-  {
-    href: '/admin/orders',
-    label: 'Orders',
-    icon: ShoppingBag
-  },
-  {
-    href: '/admin/categories',
-    label: 'Categories',
-    icon: Categories
-  },
-  {
-    href: '/admin/users',
-    label: 'Users',
-    icon: Users
-  },
-  {
-    href: '/admin/settings',
-    label: 'Settings',
-    icon: Settings
-  }
-];
-
-function NavItem({ 
-  href, 
-  label, 
-  icon: Icon, 
-  subItems,
-  isActive 
-}: { 
-  href: string; 
-  label: string; 
-  icon: any;
-  subItems?: { href: string; label: string; }[];
-  isActive: boolean;
-}) {
-  const [isOpen, setIsOpen] = useState(false);
-  
-  return (
-    <li>
-      <Link 
-        href={href}
-        className={`flex items-center p-2 rounded ${
-          isActive ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-200'
-        }`}
-      >
-        <Icon className="w-5 h-5 mr-2" />
-        <span>{label}</span>
-        {subItems && (
-          <button 
-            onClick={() => setIsOpen(!isOpen)}
-            className="ml-auto"
-          >
-            <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-          </button>
-        )}
-      </Link>
-      {subItems && isOpen && (
-        <ul className="ml-6 mt-1 space-y-1">
-          {subItems.map(item => (
-            <li key={item.href}>
-              <Link 
-                href={item.href}
-                className="block p-2 text-sm hover:bg-gray-200 rounded"
-              >
-                {item.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-    </li>
-  );
-}
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export default function AdminLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-  const pathname = usePathname();
+  const router = useRouter();
+  const { t } = useLanguage();
+  const { user, isAuthenticated, isLoading, initialize, isInitialized } = useAuth();
+
+  // Initialize auth if needed
+  useEffect(() => {
+    if (!isInitialized) {
+      initialize();
+    }
+  }, [initialize, isInitialized]);
+
+  // Debug log auth state
+  useEffect(() => {
+    console.log('Admin Layout - Auth State:', {
+      isInitialized,
+      isLoading,
+      isAuthenticated,
+      userRole: user?.role,
+      userName: user?.name,
+      isAdmin: user?.role === UserRole.ADMIN || user?.role === UserRole.SUPER_ADMIN
+    });
+  }, [isInitialized, isLoading, isAuthenticated, user]);
+
+  // Show loading state while initializing
+  if (!isInitialized || isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+
+  // Handle not authenticated state
+  if (!isAuthenticated) {
+    console.log('Not authenticated, redirecting to login');
+    router.push('/login');
+    return null;
+  }
+
+  // Handle not admin state
+  const isAdmin = user?.role === UserRole.ADMIN || user?.role === UserRole.SUPER_ADMIN;
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
+          <h2 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h2>
+          <p className="text-gray-600 mb-4">
+            You do not have permission to access the admin panel.
+          </p>
+          <Link 
+            href="/"
+            className="block w-full bg-primary-600 text-white text-center py-2 px-4 rounded hover:bg-primary-700 transition-colors"
+          >
+            Return to Home
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex min-h-screen">
-      <nav className="w-64 bg-white shadow-lg">
-        <div className="p-4">
-          <h2 className="text-xl font-bold text-gray-800">Admin Panel</h2>
-        </div>
-        <ul className="space-y-1 p-4">
-          {navItems.map(item => (
-            <NavItem 
-              key={item.href}
-              {...item}
-              isActive={pathname === item.href || 
-                (item.subItems?.some(sub => pathname === sub.href) ?? false)}
-            />
-          ))}
-        </ul>
-      </nav>
-      <div className="flex-1 bg-gray-50">
-        <header className="bg-white shadow">
-          <div className="px-6 py-4">
-            <h1 className="text-xl font-semibold text-gray-800">
-              {navItems.find(item => pathname === item.href)?.label || 'Admin'}
-            </h1>
+    <div className="min-h-screen bg-gray-100">
+      <nav className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16">
+            <div className="flex items-center">
+              <Link href="/" className="text-xl font-bold text-gray-900">
+                e-pasaulis
+              </Link>
+              <span className="mx-2 text-gray-300">|</span>
+              <span className="text-xl font-bold text-gray-900">{t('admin_panel')}</span>
+            </div>
+            <div className="flex items-center">
+              <span className="text-sm text-gray-500">
+                {t('logged_in_as')}: {user?.name} ({user?.role})
+              </span>
+            </div>
           </div>
-        </header>
-        <main className="p-6">
-          {children}
+        </div>
+      </nav>
+
+      <div className="py-10">
+        <main>
+          <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            {children}
+          </div>
         </main>
       </div>
     </div>

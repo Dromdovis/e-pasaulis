@@ -4,9 +4,11 @@ import { useEffect, useState } from 'react';
 import { ProductService } from '@/services/ProductService';
 import Link from 'next/link';
 import { ProductAlgorithms } from '@/lib/algorithms';
+import { pb } from '@/lib/db';
+import type { Product } from '@/types';
 
 export default function ProductListPage() {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<'name' | 'price' | 'date'>('name');
@@ -18,7 +20,9 @@ export default function ProductListPage() {
 
   const loadProducts = async () => {
     try {
-      const response = await pb.collection('products').getList(1, 50);
+      const response = await pb.collection('products').getList<Product>(1, 50, {
+        sort: '-created'
+      });
       setProducts(response.items);
     } catch (error) {
       console.error('Failed to load products:', error);
@@ -30,6 +34,15 @@ export default function ProductListPage() {
   const displayedProducts = ProductAlgorithms
     .searchProducts(products, searchTerm)
     .sort((a, b) => sortAscending ? 1 : -1);
+
+  const handleDelete = async (id: string) => {
+    try {
+      await pb.collection('products').delete(id);
+      loadProducts();
+    } catch (error) {
+      console.error('Failed to delete product:', error);
+    }
+  };
 
   return (
     <div>
@@ -99,7 +112,7 @@ export default function ProductListPage() {
                     {product.name}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {product.type}
+                    {product.category}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     ${product.price}

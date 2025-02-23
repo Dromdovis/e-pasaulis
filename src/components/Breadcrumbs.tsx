@@ -6,12 +6,18 @@ import { useEffect, useState } from 'react';
 import { pb } from '@/lib/db';
 import type { Product } from '@/types';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import type { TranslationKey } from '@/lib/i18n/types';
 
 export default function Breadcrumbs() {
-  const { t } = useLanguage();
+  const { t, isInitialized } = useLanguage();
   const pathname = usePathname();
   const paths = pathname.split('/').filter(Boolean);
   const [productName, setProductName] = useState<string>('');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const fetchProductName = async () => {
@@ -33,15 +39,23 @@ export default function Breadcrumbs() {
 
   const getPageName = (path: string) => {
     // Add translations for different pages
-    const pageNames: { [key: string]: string } = {
+    const pageNames: Record<string, TranslationKey> = {
       'login': 'login',
       'register': 'register',
       'cart': 'cart',
       'profile': 'profile',
+      'admin': 'admin_panel',
+      'users': 'users',
+      'products': 'products',
       // Add more pages as needed
     };
     return pageNames[path] ? t(pageNames[path]) : path;
   };
+
+  // Don't render until mounted and language is initialized
+  if (!mounted || !isInitialized) {
+    return null;
+  }
 
   return (
     <nav className="breadcrumbs">
@@ -54,11 +68,30 @@ export default function Breadcrumbs() {
         {paths.length > 0 && (
           <>
             <ChevronRight className="h-4 w-4 mx-2 text-gray-400" />
-            <span className="text-sm text-gray-900 font-medium">
-              {paths[0] === 'product' && productName 
-                ? productName 
-                : getPageName(paths[0])}
-            </span>
+            {paths[0] === 'admin' ? (
+              <>
+                <Link 
+                  href="/admin" 
+                  className="text-sm text-gray-900 font-medium hover:text-primary-600"
+                >
+                  {t('admin_panel')}
+                </Link>
+                {paths[1] && (
+                  <>
+                    <ChevronRight className="h-4 w-4 mx-2 text-gray-400" />
+                    <span className="text-sm text-gray-900 font-medium">
+                      {getPageName(paths[1])}
+                    </span>
+                  </>
+                )}
+              </>
+            ) : (
+              <span className="text-sm text-gray-900 font-medium">
+                {paths[0] === 'product' && productName 
+                  ? productName 
+                  : getPageName(paths[0])}
+              </span>
+            )}
           </>
         )}
       </div>

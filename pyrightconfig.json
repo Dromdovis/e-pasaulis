@@ -1,7 +1,11 @@
 {
-    "venvPath": ".",
-    "venv": ".venv",
-    "reportMissingImports": true,
+    "include": [
+        "scraper"
+    ],
+    "venv": "Python313",
+    "venvPath": "C:/Users/dromd/AppData/Local/Programs/Python",
+    "reportMissingImports": "warning",
+    "reportOptionalMemberAccess": "warning",
     "pythonVersion": "3.13",
     "typeCheckingMode": "basic"
 } 

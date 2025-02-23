@@ -1,3 +1,5 @@
+import { Cart } from './command';
+
 // Singleton Pattern for Shopping Cart
 export class CartManager {
   private static instance: CartManager;

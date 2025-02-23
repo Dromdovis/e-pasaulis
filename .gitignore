@@ -31,6 +31,16 @@ pb_data_backup/
 *.db
 *.db-journal
 
+# Include database backups but exclude sensitive data
+/backups/**/pb_data/data.db
+/backups/**/pb_data/logs.db
+/backups/**/pb_data/data.db-shm
+/backups/**/pb_data/data.db-wal
+# Keep backup directory structure and README files
+!/backups/
+!/backups/**/
+!/backups/**/README.md
+
 # Debug logs
 npm-debug.log*
 yarn-debug.log*

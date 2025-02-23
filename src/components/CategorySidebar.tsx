@@ -13,25 +13,12 @@ interface CategorySidebarProps {
 
 export default function CategorySidebar({ categories }: CategorySidebarProps) {
   const { language } = useLanguage();
-  const [isClient, setIsClient] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const currentLang = language as 'en' | 'lt';
-
-  useEffect(() => {
-    setIsClient(true);
-    // Simulate loading delay (remove this in production if you don't need it)
-    const timer = setTimeout(() => setIsLoading(false), 500);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (isLoading) {
-    return <CategorySidebarSkeleton />;
-  }
 
   return (
     <div className="w-64 bg-[rgb(var(--card-bg))] backdrop-blur-sm shadow-lg shadow-black/5 p-4 rounded-lg sticky top-[4.5rem] h-[800px] overflow-hidden">
       <h2 className="text-xl font-semibold mb-4">
-        {isClient ? (currentLang === 'en' ? 'Categories' : 'Kategorijos') : 'Categories'}
+        {currentLang === 'en' ? 'Categories' : 'Kategorijos'}
       </h2>
       <nav className="overflow-y-auto h-[calc(100%-3rem)]">
         <ul className="space-y-1.5">
