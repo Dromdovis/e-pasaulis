@@ -1,10 +1,7 @@
 // src/app/layout.tsx
 import type { Metadata } from "next";
 import './globals.css';
-import { Providers } from '@/lib/providers';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import Breadcrumbs from '@/components/Breadcrumbs';
+import RootLayoutClient from './RootLayoutClient';
 
 export const metadata: Metadata = {
   title: "E-Pasaulis",
@@ -19,16 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Providers>
-          <div className="flex flex-col min-h-screen">
-            <Navbar />
-            <Breadcrumbs />
-            <main className="flex-grow bg-gray-100 pt-4">
-              {children}
-            </main>
-            <Footer />
-          </div>
-        </Providers>
+        <RootLayoutClient>
+          {children}
+        </RootLayoutClient>
       </body>
     </html>
   );

@@ -11,13 +11,16 @@ import type { Category } from '@/types';
 import { pb } from '@/lib/db';
 import { useQuery } from '@tanstack/react-query';
 import { ProductSort } from '@/components/ProductSort';
+import { useScrollRestoration } from '@/lib/hooks/useScrollRestoration';
 
 export default function HomePage() {
+  // 1. All useState hooks first
   const [selectedCategory, setSelectedCategory] = useState<Category | undefined>();
   const [selectedPriceRange, setSelectedPriceRange] = useState<{ min: number; max: number } | undefined>();
   const [inStockOnly, setInStockOnly] = useState(false);
   const [sortBy, setSortBy] = useState<'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'newest'>('newest');
 
+  // 2. Other hooks after useState
   const { data: categories = [] } = useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
@@ -26,6 +29,10 @@ export default function HomePage() {
     }
   });
 
+  // 3. useScrollRestoration after other hooks
+  const { isRestoring } = useScrollRestoration('home_page');
+
+  // Event handlers
   const handleCategorySelect = async (categoryId: string) => {
     const category = categories.find(c => c.id === categoryId);
     setSelectedCategory(category);
@@ -42,6 +49,11 @@ export default function HomePage() {
   const handleSort = (sortOption: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'newest') => {
     setSortBy(sortOption);
   };
+
+  // Render
+  if (isRestoring) {
+    return <div className="p-8">Restoring view...</div>;
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">

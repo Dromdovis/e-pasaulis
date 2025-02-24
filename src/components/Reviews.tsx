@@ -4,9 +4,10 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth';
 import { pb } from '@/lib/db';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
-import { Star, ChevronDown } from 'lucide-react';
+import { Star, ChevronDown, Edit2, Trash2 } from 'lucide-react';
 import { useToast } from '@/lib/providers/ToastProvider';
 import type { Review } from '@/types/review';
+import { ConfirmDialog } from './ConfirmDialog';
 
 type ReviewSortOption = 'newest' | 'oldest' | 'highest' | 'lowest';
 
@@ -27,6 +28,9 @@ export function Reviews({ productId }: ReviewsProps) {
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [editingReview, setEditingReview] = useState<string | null>(null);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [reviewToDelete, setReviewToDelete] = useState<string | null>(null);
 
   const sortOptions: { value: ReviewSortOption; label: string }[] = [
     { value: 'newest', label: t('reviewSortNewest') },
@@ -102,32 +106,45 @@ export function Reviews({ productId }: ReviewsProps) {
     }
 
     try {
-      const data = {
-        rating,
-        comment,
-        user_id: user.id,
-        product_id: productId
-      };
-
-      if (userReview) {
+      if (editingReview) {
         // Update existing review
-        await pb.collection('reviews').update(userReview.id, data);
+        await pb.collection('reviews').update(editingReview, {
+          rating,
+          comment,
+          user_id: user.id,
+          product_id: productId
+        });
         showToast(t('reviewUpdated'), 'success');
       } else {
         // Create new review
-        await pb.collection('reviews').create(data);
+        await pb.collection('reviews').create({
+          rating,
+          comment,
+          user_id: user.id,
+          product_id: productId
+        });
         showToast(t('reviewSubmitted'), 'success');
       }
       
-      // Wait a bit before reloading reviews to ensure the server has processed the change
-      setTimeout(() => {
-        loadReviews();
-      }, 500);
-      
-      setIsEditing(false);
+      // Reset form and refresh reviews
+      setRating(5);
+      setComment('');
+      setEditingReview(null);
+      loadReviews();
     } catch (error: any) {
       console.error('Error submitting review:', error);
       showToast(t('errorSubmittingReview'), 'error');
+    }
+  };
+
+  const handleDelete = async (reviewId: string) => {
+    try {
+      await pb.collection('reviews').delete(reviewId);
+      showToast(t('review_deleted'), 'success');
+      loadReviews();
+    } catch (error) {
+      console.error('Error deleting review:', error);
+      showToast(t('error_deleting_review'), 'error');
     }
   };
 
@@ -193,7 +210,7 @@ export function Reviews({ productId }: ReviewsProps) {
             type="submit"
             className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700"
           >
-            {userReview ? t('updateReview') : t('submitReview')}
+            {editingReview ? t('updateReview') : t('submitReview')}
           </button>
         </form>
       )}
@@ -218,18 +235,49 @@ export function Reviews({ productId }: ReviewsProps) {
                   <p className="text-gray-700">{review.comment}</p>
                 </div>
                 {review.user_id === user?.id && (
-                  <button
-                    onClick={() => setIsEditing(!isEditing)}
-                    className="text-primary-600 hover:text-primary-700"
-                  >
-                    {t('updateReview')}
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => {
+                        setEditingReview(review.id);
+                        setRating(review.rating);
+                        setComment(review.comment);
+                      }}
+                      className="p-1 text-gray-500 hover:text-blue-500"
+                      title={t('edit')}
+                    >
+                      <Edit2 className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => {
+                        setReviewToDelete(review.id);
+                        setIsConfirmOpen(true);
+                      }}
+                      className="p-1 text-gray-500 hover:text-red-500"
+                      title={t('delete')}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
           ))
         )}
       </div>
+
+      <ConfirmDialog
+        isOpen={isConfirmOpen}
+        onClose={() => {
+          setIsConfirmOpen(false);
+          setReviewToDelete(null);
+        }}
+        onConfirm={() => {
+          if (reviewToDelete) {
+            handleDelete(reviewToDelete);
+          }
+        }}
+        message={t('delete_confirm')}
+      />
     </div>
   );
 } 

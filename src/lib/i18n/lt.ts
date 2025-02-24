@@ -151,5 +151,18 @@ export const lt: TranslationKeys = {
 
   // Favorites
   add_to_favorites: 'Pridėti į mėgstamus',
-  remove_from_favorites: 'Pašalinti iš mėgstamų'
+  remove_from_favorites: 'Pašalinti iš mėgstamų',
+
+  // Review actions
+  edit: 'Redaguoti',
+  delete: 'Pašalinti',
+  review_updated: 'Atsiliepimas sėkmingai atnaujintas',
+  review_deleted: 'Atsiliepimas sėkmingai pašalintas',
+  review_error: 'Klaida pateikiant atsiliepimą. Bandykite dar kartą.',
+  delete_confirm: 'Ar tikrai norite pašalinti šį atsiliepimą?',
+  error_deleting_review: 'Klaida pašalinant atsiliepimą',
+
+  // Dialog actions
+  cancel: 'Atšaukti',
+  confirm: 'Patvirtinti'
 } as const; 

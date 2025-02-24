@@ -153,6 +153,17 @@ export type TranslationKeys = {
   sort_price_high_low: string;
   sort_name_a_z: string;
   sort_name_z_a: string;
+
+  // New translations
+  edit: string;
+  delete: string;
+  review_updated: string;
+  review_deleted: string;
+  review_error: string;
+  delete_confirm: string;
+  error_deleting_review: string;
+  cancel: string;
+  confirm: string;
 };
 
 // Define the translations object with language-specific values
@@ -308,7 +319,18 @@ export const translations: Record<Language, TranslationKeys> = {
     sort_price_low_high: 'Price: Low to High',
     sort_price_high_low: 'Price: High to Low',
     sort_name_a_z: 'Name: A-Z',
-    sort_name_z_a: 'Name: Z-A'
+    sort_name_z_a: 'Name: Z-A',
+
+    // New translations
+    edit: 'Edit',
+    delete: 'Delete',
+    review_updated: 'Review updated successfully',
+    review_deleted: 'Review deleted successfully',
+    review_error: 'Failed to submit review. Please try again.',
+    delete_confirm: 'Are you sure you want to delete this review?',
+    error_deleting_review: 'Error deleting review',
+    cancel: 'Cancel',
+    confirm: 'Confirm'
   },
   lt: {
     // Navigation
@@ -461,7 +483,18 @@ export const translations: Record<Language, TranslationKeys> = {
     sort_price_low_high: 'Kaina: nuo mažiausios',
     sort_price_high_low: 'Kaina: nuo didžiausios',
     sort_name_a_z: 'Pavadinimas: A-Z',
-    sort_name_z_a: 'Pavadinimas: Z-A'
+    sort_name_z_a: 'Pavadinimas: Z-A',
+
+    // New translations
+    edit: 'Redaguoti',
+    delete: 'Pašalinti',
+    review_updated: 'Atsiliepimas sėkmingai atnaujintas',
+    review_deleted: 'Atsiliepimas sėkmingai pašalintas',
+    review_error: 'Klaida pateikiant atsiliepimą. Bandykite dar kartą.',
+    delete_confirm: 'Ar tikrai norite pašalinti šį atsiliepimą?',
+    error_deleting_review: 'Klaida pašalinant atsiliepimą',
+    cancel: 'Atšaukti',
+    confirm: 'Patvirtinti'
   }
 } as const;
 

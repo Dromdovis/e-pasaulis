@@ -60,15 +60,15 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">{t('contact_us')}</h3>
             <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-              <li>{t('phone')}: +370 XXX XXXXX</li>
-              <li>{t('email')}: info@example.com</li>
-              <li>{t('address')}: Kaunas, Lithuania</li>
+              <li>{t('phone')}: +370 63605050</li>
+              <li>{t('email')}: e-pasaulis@gmail.com</li>
+              <li>{t('address')}: Klaipėda, Lithuania</li>
             </ul>
           </div>
         </div>
 
         <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-800 text-center text-gray-600 dark:text-gray-400">
-          <p>&copy; {new Date().getFullYear()} Your Company. {t('all_rights_reserved')}</p>
+          <p>&copy; {new Date().getFullYear()} E-Pasaulis. {t('all_rights_reserved')}</p>
         </div>
       </div>
     </footer>

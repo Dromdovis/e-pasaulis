@@ -9,6 +9,7 @@ import type { Product } from '@/types';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { SimilarProducts } from '@/components/SimilarProducts';
 import { Reviews } from '@/components/Reviews';
+import { useScrollRestoration } from '@/lib/hooks/useScrollRestoration';
 
 export default function ProductDetails({ productId }: { productId: string }) {
   const [product, setProduct] = useState<Product | null>(null);
@@ -21,45 +22,33 @@ export default function ProductDetails({ productId }: { productId: string }) {
   const isFavorite = favorites.includes(productId);
   const cartQuantity = cart.find(item => item.productId === productId)?.quantity || 0;
 
-  useEffect(() => {
-    let isMounted = true;
-    let controller = new AbortController();
+  const { isRestoring } = useScrollRestoration(`product_details_${productId}`);
 
-    const fetchProduct = async () => {
+  useEffect(() => {
+    let mounted = true;
+
+    const loadProduct = async () => {
       try {
-        setLoading(true);
-        setError(null);
-        
-        const result = await pb.collection('products').getOne<Product>(productId, {
-          requestKey: `product_${productId}`,
-          signal: controller.signal,
-        });
-        
-        if (isMounted) {
-          setProduct(result);
-          setSelectedImage(result.image || '');
+        const product = await pb.collection('products').getOne(productId);
+        if (mounted) {
+          setProduct(product);
+          setSelectedImage(product.image || '');
+          setLoading(false);
         }
-      } catch (err: any) {
-        if (isMounted && !err?.isAbort) {
-          console.error('Error fetching product:', err);
-          setError(t('error_loading'));
-        }
-      } finally {
-        if (isMounted) {
+      } catch (error) {
+        if (mounted) {
+          setError(error.message);
           setLoading(false);
         }
       }
     };
 
-    if (productId) {
-      fetchProduct();
-    }
+    loadProduct();
 
     return () => {
-      isMounted = false;
-      controller.abort();
+      mounted = false;
     };
-  }, [productId, t]);
+  }, [productId]);
 
   const getImageUrl = (filename?: string) => {
     if (!product || !filename) return '/no-image.jpg';
@@ -98,7 +87,7 @@ export default function ProductDetails({ productId }: { productId: string }) {
     }
   };
 
-  if (loading) {
+  if (loading || isRestoring) {
     return (
       <div className="max-w-7xl mx-auto p-8">
         <div className="animate-pulse">

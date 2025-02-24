@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { withErrorBoundary } from './ErrorBoundary';
 import type { TranslationKey } from '@/lib/i18n/types';
 import { ChevronDown } from 'lucide-react';
+import { useScrollRestoration } from '@/lib/hooks/useScrollRestoration';
 
 interface ProductGridProps {
   selectedCategory?: string;
@@ -49,6 +50,10 @@ export default function ProductGrid({
     inStockOnly
   });
 
+  const { isRestoring } = useScrollRestoration(
+    `product_grid_${selectedCategory ?? 'all'}_${sortBy}`
+  );
+
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
@@ -61,6 +66,16 @@ export default function ProductGrid({
     refetch();
   };
 
+  if (isLoading || isRestoring) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {[...Array(8)].map((_, i) => (
+          <ProductCardSkeleton key={i} />
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div>
       {isError ? (
@@ -72,12 +87,6 @@ export default function ProductGrid({
           >
             {t('try_again')}
           </button>
-        </div>
-      ) : isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {[...Array(8)].map((_, i) => (
-            <ProductCardSkeleton key={i} />
-          ))}
         </div>
       ) : products.length === 0 ? (
         <div className="text-center text-gray-500 p-4">

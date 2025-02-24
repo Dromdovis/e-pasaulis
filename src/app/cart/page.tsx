@@ -9,6 +9,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { Product } from '@/types';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { useScrollRestoration } from '@/lib/hooks/useScrollRestoration';
 
 interface CartProduct extends Product {
   quantity: number;
@@ -19,6 +20,9 @@ export default function CartPage() {
   const [products, setProducts] = useState<CartProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const { cart, removeFromCart, updateQuantity, toggleFavorite } = useStore();
+
+  // Add scroll restoration
+  const { isRestoring } = useScrollRestoration('cart_page');
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -85,7 +89,7 @@ export default function CartPage() {
   const total = products.reduce((sum, product) => 
     sum + (product.price * product.quantity), 0);
 
-  if (loading) {
+  if (isRestoring || loading) {
     return <div className="p-8">Loading cart...</div>;
   }
 

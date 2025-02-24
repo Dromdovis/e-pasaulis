@@ -5,11 +5,15 @@ import { useStore } from '@/lib/store';
 import { pb } from '@/lib/db';
 import ProductCard from '@/components/ProductCard';
 import type { Product } from '@/types';
+import { useScrollRestoration } from '@/lib/hooks/useScrollRestoration';
 
 export default function FavoritesPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const { favorites } = useStore();
+  
+  // Add scroll restoration
+  const { isRestoring } = useScrollRestoration('favorites_page');
 
   useEffect(() => {
     let isSubscribed = true;
@@ -47,7 +51,7 @@ export default function FavoritesPage() {
     };
   }, [favorites]);
 
-  if (loading) {
+  if (isRestoring || loading) {
     return <div className="p-8">Loading favorites...</div>;
   }
 

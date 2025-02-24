@@ -28,11 +28,11 @@ description_en (text),
 created (date),
 updated (date)
 }apiRules(
-  list/search:@request.auth.id != null || @request.auth.id = null
-  view:@request.auth.id != null || @request.auth.id = null
-  create:superuser only
-  update:superuser only
-  delete:superuser only
+  list/search:true
+  view:true
+  create:@request.auth.role = "super_admin" || @request.auth.role = "admin"
+  update:@request.auth.role = "super_admin" || @request.auth.role = "admin"
+  delete:@request.auth.role = "super_admin" || @request.auth.role = "admin"
 )
 
 orders{
@@ -47,8 +47,8 @@ updated (date)
   list/search:@request.auth.id = user_id.id
   view:@request.auth.id = user_id.id
   create:@request.auth.id != null
-  update:superuser only
-  delete:superuser only
+  update:@request.auth.role = "super_admin" || @request.auth.role = "admin"
+  delete:@request.auth.role = "super_admin" || @request.auth.role = "admin"
 )
 
 products{
@@ -69,8 +69,8 @@ productType (select: physical,digital),
 created (date),
 updated (date)
 }apiRules(
-  list/search:(@request.auth.id != "" && (@request.auth.role = "admin" || @request.auth.role = "super_admin")) || @request.auth.id = ""
-  view:@request.auth.id != "" && (@request.auth.role = "admin" || @request.auth.role = "super_admin")
+  list/search:true
+  view:true
   create:@request.auth.id != "" && (@request.auth.role = "admin" || @request.auth.role = "super_admin")
   update:@request.auth.id != "" && (@request.auth.role = "admin" || @request.auth.role = "super_admin")
   delete:@request.auth.id != "" && (@request.auth.role = "super_admin" || @request.auth.role = "admin")
@@ -85,11 +85,11 @@ comment (text),
 created (date),
 updated (date)
 }apiRules(
-  list/search:@request.auth.id != null || @request.auth.id = null
-  view:@request.auth.id != null || @request.auth.id = null
+  list/search:(@request.auth.id != null || @request.auth.id = null)
+  view:(@request.auth.id != null || @request.auth.id = null)
   create:@request.auth.id != null
-  update:superuser only
-  delete:superuser only
+  update:@request.auth.id = user_id || @request.auth.role = 'admin' || @request.auth.role = 'super_admin'
+  delete:@request.auth.id = user_id || @request.auth.role = 'admin' || @request.auth.role = 'super_admin'
 )
 
 
@@ -114,11 +114,11 @@ products (json),
 created (date),
 updated (date)
 }apiRules(
-  list/search:''
-  view:''
-  create:''
-  update:''
-  delete:''
+  list/search:@request.auth.id = user.id
+  view:@request.auth.id = user.id
+  create:@request.auth.id != null
+  update:@request.auth.id = user.id
+  delete:@request.auth.id = user.id
 )
 
 

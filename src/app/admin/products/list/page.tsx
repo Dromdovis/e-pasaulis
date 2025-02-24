@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ProductAlgorithms } from '@/lib/algorithms';
 import { pb } from '@/lib/db';
 import type { Product } from '@/types';
+import { useScrollRestoration } from '@/lib/hooks/useScrollRestoration';
 
 export default function ProductListPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -12,6 +13,9 @@ export default function ProductListPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<'name' | 'price' | 'date'>('name');
   const [sortAscending, setSortAscending] = useState(true);
+
+  // Add scroll restoration
+  const { isRestoring } = useScrollRestoration('admin_products_list');
 
   useEffect(() => {
     loadProducts();
@@ -42,6 +46,10 @@ export default function ProductListPage() {
       console.error('Failed to delete product:', error);
     }
   };
+
+  if (isRestoring || loading) {
+    return <div className="p-8">Loading products...</div>;
+  }
 
   return (
     <div>
@@ -80,65 +88,61 @@ export default function ProductListPage() {
         </button>
       </div>
 
-      {loading ? (
-        <div>Loading...</div>
-      ) : (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Type
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Price
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Stock
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Name
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Type
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Price
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Stock
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {displayedProducts.map((product) => (
+              <tr key={product.id}>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {product.name}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {product.category}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  ${product.price}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {product.stock}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <Link
+                    href={`/admin/products/edit/${product.id}`}
+                    className="text-blue-600 hover:text-blue-900 mr-4"
+                  >
+                    Edit
+                  </Link>
+                  <button
+                    onClick={() => handleDelete(product.id)}
+                    className="text-red-600 hover:text-red-900"
+                  >
+                    Delete
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {displayedProducts.map((product) => (
-                <tr key={product.id}>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {product.name}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {product.category}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    ${product.price}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {product.stock}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <Link
-                      href={`/admin/products/edit/${product.id}`}
-                      className="text-blue-600 hover:text-blue-900 mr-4"
-                    >
-                      Edit
-                    </Link>
-                    <button
-                      onClick={() => handleDelete(product.id)}
-                      className="text-red-600 hover:text-red-900"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 } 

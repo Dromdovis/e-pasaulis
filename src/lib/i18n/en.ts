@@ -151,5 +151,18 @@ export const en: TranslationKeys = {
   sort_price_low_high: 'Price: Low to High',
   sort_price_high_low: 'Price: High to Low',
   sort_name_a_z: 'Name: A-Z',
-  sort_name_z_a: 'Name: Z-A'
+  sort_name_z_a: 'Name: Z-A',
+
+  // Review actions
+  edit: 'Edit',
+  delete: 'Delete',
+  review_updated: 'Review updated successfully',
+  review_deleted: 'Review deleted successfully',
+  review_error: 'Failed to submit review. Please try again.',
+  delete_confirm: 'Are you sure you want to delete this review?',
+  error_deleting_review: 'Error deleting review',
+
+  // Dialog actions
+  cancel: 'Cancel',
+  confirm: 'Confirm'
 } as const; 
