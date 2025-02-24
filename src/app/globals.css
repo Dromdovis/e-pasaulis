@@ -86,7 +86,8 @@
   }
 
   .navbar {
-    @apply fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700;
+    @apply fixed top-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700;
+    z-index: 40;
   }
 
   .nav-link {
@@ -98,7 +99,11 @@
   }
 
   .breadcrumbs {
-    @apply bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 py-3 px-4 fixed top-16 left-0 right-0 z-40;
+    @apply bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 py-3 px-4;
+    margin-top: 5px;
+    position: sticky;
+    top: 0;
+    z-index: 30;
   }
 
   .breadcrumb-item {

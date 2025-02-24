@@ -140,5 +140,16 @@ export const en: TranslationKeys = {
   
   // Error messages
   something_went_wrong: 'Something went wrong',
-  product_not_found: 'Product not found'
+  product_not_found: 'Product not found',
+
+  // Favorites
+  add_to_favorites: 'Add to favorites',
+  remove_from_favorites: 'Remove from favorites',
+
+  // Sort options
+  sort_newest: 'Newest',
+  sort_price_low_high: 'Price: Low to High',
+  sort_price_high_low: 'Price: High to Low',
+  sort_name_a_z: 'Name: A-Z',
+  sort_name_z_a: 'Name: Z-A'
 } as const; 

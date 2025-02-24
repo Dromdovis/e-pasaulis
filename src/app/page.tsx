@@ -54,30 +54,29 @@ export default function HomePage() {
           />
           
           <div className="flex-1">
-            <FilterTags 
-              selectedCategory={selectedCategory}
-              selectedPriceRange={selectedPriceRange}
-              onRemoveCategory={handleRemoveCategory}
-              onRemovePriceRange={handleRemovePriceRange}
-            />
-            
-            <div className="flex justify-end mb-4">
-              <ProductSort onSort={handleSort} />
-            </div>
-
             <div className="flex gap-6">
               <div className="flex-1">
-                <Suspense fallback={<div>Loading products...</div>}>
-                  <ProductGrid 
-                    selectedCategory={selectedCategory?.id}
-                    priceRange={selectedPriceRange}
-                    inStockOnly={inStockOnly}
-                    sortBy={sortBy}
-                  />
-                </Suspense>
+                <FilterTags 
+                  selectedCategory={selectedCategory}
+                  selectedPriceRange={selectedPriceRange}
+                  onRemoveCategory={handleRemoveCategory}
+                  onRemovePriceRange={handleRemovePriceRange}
+                />
+                
+                <div className="-mt-4">
+                  <Suspense fallback={<div>Loading products...</div>}>
+                    <ProductGrid 
+                      selectedCategory={selectedCategory?.id}
+                      priceRange={selectedPriceRange}
+                      inStockOnly={inStockOnly}
+                      sortBy={sortBy}
+                    />
+                  </Suspense>
+                </div>
               </div>
               
-              <div className="w-64">
+              <div className="w-64 flex flex-col gap-4">
+                <ProductSort onSort={handleSort} />
                 <ProductFilters
                   maxPrice={1000}
                   onPriceChange={setSelectedPriceRange}

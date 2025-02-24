@@ -8,7 +8,7 @@ import type { Product } from '@/types';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import type { TranslationKey } from '@/lib/i18n/translations';
 
-export default function Breadcrumbs() {
+export default function Breadcrumbs({ className = '' }: { className?: string }) {
   const { t, isInitialized } = useLanguage();
   const pathname = usePathname();
   const paths = pathname.split('/').filter(Boolean);
@@ -56,7 +56,7 @@ export default function Breadcrumbs() {
   }
 
   return (
-    <nav className="breadcrumbs">
+    <nav className={`breadcrumbs ${className}`}>
       <div className="container mx-auto flex items-center h-8">
         <Link href="/" className="breadcrumb-item flex items-center">
           <Home className="h-4 w-4" />

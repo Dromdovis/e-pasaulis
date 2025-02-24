@@ -142,6 +142,17 @@ export type TranslationKeys = {
   // Error messages
   something_went_wrong: string;
   product_not_found: string;
+
+  // Favorites
+  add_to_favorites: string;
+  remove_from_favorites: string;
+
+  // Sort options
+  sort_newest: string;
+  sort_price_low_high: string;
+  sort_price_high_low: string;
+  sort_name_a_z: string;
+  sort_name_z_a: string;
 };
 
 // Define the translations object with language-specific values
@@ -287,6 +298,17 @@ export const translations: Record<Language, TranslationKeys> = {
     // Error messages
     something_went_wrong: 'Something went wrong',
     product_not_found: 'Product not found',
+
+    // Favorites
+    add_to_favorites: 'Add to favorites',
+    remove_from_favorites: 'Remove from favorites',
+
+    // Sort options
+    sort_newest: 'Newest',
+    sort_price_low_high: 'Price: Low to High',
+    sort_price_high_low: 'Price: High to Low',
+    sort_name_a_z: 'Name: A-Z',
+    sort_name_z_a: 'Name: Z-A'
   },
   lt: {
     // Navigation
@@ -429,6 +451,17 @@ export const translations: Record<Language, TranslationKeys> = {
     // Error messages
     something_went_wrong: 'Įvyko klaida',
     product_not_found: 'Produktas nerastas',
+
+    // Favorites
+    add_to_favorites: 'Pridėti į mėgstamus',
+    remove_from_favorites: 'Pašalinti iš mėgstamų',
+
+    // Sort options
+    sort_newest: 'Naujausi',
+    sort_price_low_high: 'Kaina: nuo mažiausios',
+    sort_price_high_low: 'Kaina: nuo didžiausios',
+    sort_name_a_z: 'Pavadinimas: A-Z',
+    sort_name_z_a: 'Pavadinimas: Z-A'
   }
 } as const;
 

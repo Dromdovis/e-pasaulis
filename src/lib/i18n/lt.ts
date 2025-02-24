@@ -141,4 +141,15 @@ export const lt: TranslationKeys = {
   // Error messages
   something_went_wrong: 'Įvyko klaida',
   product_not_found: 'Produktas nerastas',
+
+  // Sort options
+  sort_newest: 'Naujausi',
+  sort_price_low_high: 'Kaina: nuo mažiausios',
+  sort_price_high_low: 'Kaina: nuo didžiausios',
+  sort_name_a_z: 'Pavadinimas: A-Z',
+  sort_name_z_a: 'Pavadinimas: Z-A',
+
+  // Favorites
+  add_to_favorites: 'Pridėti į mėgstamus',
+  remove_from_favorites: 'Pašalinti iš mėgstamų'
 } as const; 

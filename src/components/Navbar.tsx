@@ -2,7 +2,7 @@
 // src/components/Navbar.tsx
 "use client";
 import { useEffect, useState } from "react";
-import { Globe, UserCircle, LogOut, ShoppingCart, Heart, User, ChevronDown, Settings } from "lucide-react";
+import { Globe, UserCircle, LogOut, ShoppingCart, Heart, User, ChevronDown, Settings, Search } from "lucide-react";
 import Link from "next/link";
 import { pb } from "@/lib/db";
 import { useRouter } from "next/navigation";
@@ -12,8 +12,13 @@ import Image from 'next/image';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { UserRole } from '@/types/auth';
 import { SearchBar } from '@/components/SearchBar';
+import { LanguageDropdown } from '@/components/LanguageDropdown';
 
-export default function Navbar() {
+interface NavbarProps {
+  className?: string;
+}
+
+export default function Navbar({ className = '' }: NavbarProps) {
   const router = useRouter();
   const { cart } = useStore();
   const { isAuthenticated, user, isLoading, logout, initialize, isInitialized, isAdmin } = useAuth();
@@ -21,6 +26,7 @@ export default function Navbar() {
   const { language, setLanguage, t } = useLanguage();
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [buttonRect, setButtonRect] = useState<DOMRect | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -39,7 +45,10 @@ export default function Navbar() {
   const languageSelector = (
     <div className="relative">
       <button
-        onClick={() => setShowLanguageMenu(!showLanguageMenu)}
+        onClick={(e) => {
+          setButtonRect(e.currentTarget.getBoundingClientRect());
+          setShowLanguageMenu(!showLanguageMenu);
+        }}
         className="flex items-center gap-2 p-2 rounded-md hover:bg-secondary-100 dark:hover:bg-secondary-800"
       >
         <Globe className="h-5 w-5 text-secondary-600 dark:text-secondary-300" />
@@ -50,26 +59,11 @@ export default function Navbar() {
       </button>
 
       {showLanguageMenu && (
-        <div className="absolute top-full right-0 mt-1 bg-white dark:bg-secondary-800 rounded-md shadow-lg py-1 min-w-[120px]">
-          <button
-            onClick={() => {
-              setLanguage('en');
-              setShowLanguageMenu(false);
-            }}
-            className="w-full px-4 py-2 text-left hover:bg-secondary-100 dark:hover:bg-secondary-700"
-          >
-            English
-          </button>
-          <button
-            onClick={() => {
-              setLanguage('lt');
-              setShowLanguageMenu(false);
-            }}
-            className="w-full px-4 py-2 text-left hover:bg-secondary-100 dark:hover:bg-secondary-700"
-          >
-            Lietuvių
-          </button>
-        </div>
+        <LanguageDropdown
+          onSelect={setLanguage}
+          onClose={() => setShowLanguageMenu(false)}
+          buttonRect={buttonRect}
+        />
       )}
     </div>
   );
@@ -77,7 +71,7 @@ export default function Navbar() {
   // Don't render user-specific content until mounted and initialized
   if (!mounted || !isInitialized) {
     return (
-      <nav className="bg-[rgb(var(--navbar-bg))] backdrop-blur-sm border-b border-black/5">
+      <nav className={`bg-[rgb(var(--navbar-bg))] backdrop-blur-sm border-b border-black/5 ${className}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link
@@ -93,7 +87,7 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="bg-[rgb(var(--navbar-bg))] backdrop-blur-sm border-b border-black/5">
+    <nav className={`bg-[rgb(var(--navbar-bg))] backdrop-blur-sm border-b border-black/5 ${className}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center gap-4">
@@ -111,7 +105,14 @@ export default function Navbar() {
           </div>
 
           <div className="flex-1 max-w-2xl mx-8">
-            <SearchBar />
+            <div className="relative w-full">
+              <input
+                type="text"
+                placeholder={language === 'en' ? 'Search...' : 'Ieškoti...'}
+                className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              />
+              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            </div>
           </div>
 
           <div className="flex items-center gap-4">
