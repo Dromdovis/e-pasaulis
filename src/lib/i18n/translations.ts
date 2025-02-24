@@ -1,7 +1,151 @@
 export type Language = 'en' | 'lt';
 
-// We don't need to import TranslationKey here since it's only used in the LanguageContext
-export const translations = {
+// Define the base translation keys and their English values
+export type TranslationKeys = {
+  // Navigation
+  home: string;
+  login: string;
+  register: string;
+  logout: string;
+  profile: string;
+  cart: string;
+  favorites: string;
+  filter: string;
+  search: string;
+  admin_panel: string;
+  users: string;
+  products: string;
+
+  // Categories
+  categories: string;
+  laptops: string;
+  desktops: string;
+  phones: string;
+  tablets: string;
+  monitors: string;
+  keyboards: string;
+  mice: string;
+  headphones: string;
+  graphics_cards: string;
+  processors: string;
+  memory: string;
+  storage: string;
+  power_supplies: string;
+  cooling: string;
+  cases: string;
+  motherboards: string;
+  networking: string;
+  software: string;
+  gaming: string;
+  printers: string;
+
+  // Product related
+  in_stock: string;
+  out_of_stock: string;
+  add_to_cart: string;
+  continue_shopping: string;
+  productSpecifications: string;
+  writeReview: string;
+  submitReview: string;
+  updateReview: string;
+  reviews: string;
+  similarProducts: string;
+  sortReviews: string;
+  reviewSortNewest: string;
+  reviewSortOldest: string;
+  reviewSortHighest: string;
+  reviewSortLowest: string;
+  noReviews: string;
+  loginToReview: string;
+  reviewUpdated: string;
+  reviewSubmitted: string;
+  errorSubmittingReview: string;
+  errorLoadingReviews: string;
+  product_details: string;
+  product_description: string;
+  product_price: string;
+  product_stock: string;
+
+  // Auth related
+  email: string;
+  password: string;
+  confirm_password: string;
+  name: string;
+  logging_in: string;
+  registering: string;
+  dont_have_account: string;
+  already_have_account: string;
+
+  // Profile
+  profile_settings: string;
+  profile_picture: string;
+  change_picture: string;
+  current_password: string;
+  new_password: string;
+  update_password: string;
+  updating: string;
+
+  // Footer
+  about_us: string;
+  about_description: string;
+  quick_links: string;
+  about: string;
+  contact: string;
+  shipping_info: string;
+  customer_service: string;
+  faq: string;
+  returns: string;
+  support: string;
+  contact_us: string;
+  phone: string;
+  address: string;
+  all_rights_reserved: string;
+
+  // Additional translations
+  sort_by: string;
+  price_low_high: string;
+  price_high_low: string;
+  newest: string;
+  loading: string;
+  load_more: string;
+
+  // Form
+  select_category: string;
+
+  // Admin
+  admin: {
+    products: {
+      edit: string;
+      productImage: string;
+      uploadImage: string;
+    }
+  };
+
+  // Error messages
+  invalid_credentials: string;
+  registration_failed: string;
+  passwords_dont_match: string;
+  email_already_exists: string;
+  invalid_email: string;
+  password_too_short: string;
+
+  // Error handling
+  try_again: string;
+  error_loading: string;
+
+  // Search
+  search_products: string;
+  search_results_for: string;
+  no_results_found: string;
+  no_products_found: string;
+  
+  // Error messages
+  something_went_wrong: string;
+  product_not_found: string;
+};
+
+// Define the translations object with language-specific values
+export const translations: Record<Language, TranslationKeys> = {
   en: {
     // Navigation
     home: 'Home',
@@ -11,6 +155,11 @@ export const translations = {
     profile: 'Profile',
     cart: 'Cart',
     favorites: 'Favorites',
+    filter: 'Filter',
+    search: 'Search',
+    admin_panel: 'Admin Panel',
+    users: 'Users',
+    products: 'Products',
 
     // Categories
     categories: 'Categories',
@@ -88,7 +237,6 @@ export const translations = {
     about: 'About',
     contact: 'Contact',
     shipping_info: 'Shipping Info',
-    all_rights_reserved: 'All rights reserved.',
     customer_service: 'Customer Service',
     faq: 'FAQ',
     returns: 'Returns',
@@ -96,10 +244,9 @@ export const translations = {
     contact_us: 'Contact Us',
     phone: 'Phone',
     address: 'Address',
-    
+    all_rights_reserved: 'All rights reserved.',
+
     // Additional translations
-    search: 'Search',
-    filter: 'Filter',
     sort_by: 'Sort by',
     price_low_high: 'Price: Low to High',
     price_high_low: 'Price: High to Low',
@@ -135,6 +282,7 @@ export const translations = {
     search_products: 'Search products',
     search_results_for: 'Search results for',
     no_results_found: 'No results found',
+    no_products_found: 'No products found',
     
     // Error messages
     something_went_wrong: 'Something went wrong',
@@ -149,6 +297,11 @@ export const translations = {
     profile: 'Profilis',
     cart: 'Krepšelis',
     favorites: 'Mėgstami',
+    filter: 'Filtruoti',
+    search: 'Ieškoti',
+    admin_panel: 'Administratoriaus skydelis',
+    users: 'Vartotojai',
+    products: 'Produktai',
 
     // Categories
     categories: 'Kategorijos',
@@ -226,18 +379,16 @@ export const translations = {
     about: 'Apie',
     contact: 'Kontaktai',
     shipping_info: 'Pristatymo informacija',
-    all_rights_reserved: 'Visos teisės saugomos.',
-    customer_service: 'Klientų Aptarnavimas',
-    faq: 'DUK',
+    customer_service: 'Klientų aptarnavimas',
+    faq: 'D.U.K.',
     returns: 'Grąžinimai',
     support: 'Pagalba',
     contact_us: 'Susisiekite',
     phone: 'Telefonas',
     address: 'Adresas',
-    
+    all_rights_reserved: 'Visos teisės saugomos.',
+
     // Additional translations
-    search: 'Paieška',
-    filter: 'Filtruoti',
     sort_by: 'Rūšiuoti pagal',
     price_low_high: 'Kaina: nuo mažiausios',
     price_high_low: 'Kaina: nuo didžiausios',
@@ -273,12 +424,13 @@ export const translations = {
     search_products: 'Ieškoti produktų',
     search_results_for: 'Paieškos rezultatai',
     no_results_found: 'Rezultatų nerasta',
+    no_products_found: 'Tokių prekių nerasta',
     
     // Error messages
     something_went_wrong: 'Įvyko klaida',
     product_not_found: 'Produktas nerastas',
   }
-} as const; 
+} as const;
 
-// Update the TranslationKey type
-export type TranslationKey = keyof typeof translations.en; 
+// Export the type of translations
+export type TranslationKey = keyof TranslationKeys; 

@@ -1,89 +1,92 @@
-import type { Translations } from './types';
+import type { TranslationKeys } from './translations';
 
-export const en: Translations = {
-  // Navigation and general UI
-  filter: 'Filter',
-  search: 'Search',
-  cart: 'Cart',
-  favorites: 'Favorites',
-  loading: 'Loading',
-  email: 'Email',
-  password: 'Password',
-  name: 'Name',
+export const en: TranslationKeys = {
+  // Navigation
   home: 'Home',
   login: 'Login',
   register: 'Register',
   logout: 'Logout',
   profile: 'Profile',
-  categories: 'Categories',
-  laptops: 'Laptops',
-  desktops: 'Desktops',
-  continue_shopping: 'Continue Shopping',
-  save_to_list: 'Save to List',
+  cart: 'Cart',
+  favorites: 'Favorites',
+  filter: 'Filter',
+  search: 'Search',
   admin_panel: 'Admin Panel',
-  manage_products: 'Manage Products',
-  manage_users: 'Manage Users',
-  manage_orders: 'Manage Orders',
-  dashboard: 'Dashboard',
   users: 'Users',
   products: 'Products',
+
+  // Categories
+  categories: 'Categories',
+  laptops: 'Laptops',
+  desktops: 'Desktop Computers',
+  phones: 'Mobile Phones',
+  tablets: 'Tablets',
+  monitors: 'Monitors',
+  keyboards: 'Keyboards',
+  mice: 'Mice',
+  headphones: 'Headphones',
+  graphics_cards: 'Graphics Cards',
+  processors: 'Processors',
+  memory: 'Memory',
+  storage: 'Storage',
+  power_supplies: 'Power Supplies',
+  cooling: 'Cooling',
+  cases: 'Cases',
+  motherboards: 'Motherboards',
+  networking: 'Networking',
+  software: 'Software',
+  gaming: 'Gaming Equipment',
+  printers: 'Printers',
+
+  // Product related
+  in_stock: 'in stock',
+  out_of_stock: 'Out of stock',
+  add_to_cart: 'Add to cart',
+  continue_shopping: 'Continue Shopping',
+  productSpecifications: 'Specifications',
+  writeReview: 'Write a review',
+  submitReview: 'Submit review',
+  updateReview: 'Update review',
   reviews: 'Reviews',
-  settings: 'Settings',
-  orders: 'Orders',
-  logged_in_as: 'Logged in as',
-  bulk_operations: 'Bulk Operations',
-  cancel: 'Cancel',
-  save: 'Save Changes',
-  specifications: 'Specifications',
+  similarProducts: 'Similar Products',
+  sortReviews: 'Sort Reviews',
+  reviewSortNewest: 'Newest First',
+  reviewSortOldest: 'Oldest First',
+  reviewSortHighest: 'Highest Rating',
+  reviewSortLowest: 'Lowest Rating',
+  noReviews: 'No reviews yet',
+  loginToReview: 'Login to write a review',
+  reviewUpdated: 'Review updated successfully',
+  reviewSubmitted: 'Review submitted successfully',
+  errorSubmittingReview: 'Error submitting review',
+  errorLoadingReviews: 'Error loading reviews',
+  product_details: 'Product details',
+  product_description: 'Description',
+  product_price: 'Price',
+  product_stock: 'Stock',
 
-  // Admin product management
-  'admin.products.edit': 'Edit Product',
-  'admin.products.productImage': 'Product Image',
-  'admin.products.uploadImage': 'Upload Image',
-
-  // Form
-  select_category: 'Select Category',
-
-  // Admin descriptions
-  'admin.users_description': 'Manage user accounts and permissions',
-  'admin.products_description': 'Add, edit, and manage product listings',
-  'admin.categories_description': 'Manage product categories',
-  'admin.favorites_description': 'View user favorite items',
-  'admin.orders_description': 'Track and manage customer orders',
-  'admin.reviews_description': 'Monitor product reviews and ratings',
-  'admin.settings_description': 'Configure system settings',
-  'admin.bulk_operations_description': 'Perform operations on multiple items at once',
-
-  // Additional keys
-  invalid_credentials: 'Invalid email or password',
+  // Auth related
+  email: 'Email',
+  password: 'Password',
+  confirm_password: 'Confirm Password',
+  name: 'Name',
   logging_in: 'Logging in...',
-  dont_have_account: "Don't have an account?",
-  in_stock: 'In Stock',
-  out_of_stock: 'Out of Stock',
-  load_more: 'Load More',
-  add_to_cart: 'Add to Cart',
-  remove_from_favorites: 'Remove from Favorites',
-  add_to_favorites: 'Add to Favorites',
-
-  // Form validation messages
-  name_required: 'Name is required',
-  email_required: 'Email is required',
-  password_required: 'Password is required',
-  invalid_email_format: 'Please enter a valid email address',
-  passwords_dont_match: 'Passwords do not match',
-  password_too_short: 'Password must be at least 8 characters long',
-  email_already_exists: 'An account with this email already exists',
-  username_already_exists: 'This username is already taken',
-  registration_failed: 'Registration failed',
-  registration_success_login_failed: 'Registration successful but login failed',
-  server_unavailable: 'Server is unavailable',
-  confirm_password: 'Confirm password',
   registering: 'Registering...',
+  dont_have_account: "Don't have an account?",
   already_have_account: 'Already have an account?',
 
-  // Footer translations
+  // Profile
+  profile_settings: 'Profile Settings',
+  profile_picture: 'Profile Picture',
+  change_picture: 'Change Picture',
+  current_password: 'Current Password',
+  new_password: 'New Password',
+  update_password: 'Update Password',
+  updating: 'Updating...',
+
+  // Footer
   about_us: 'About Us',
-  about_description: 'Your trusted source for electronics',
+  about_description: 'Your trusted source for quality electronics and computer parts.',
   quick_links: 'Quick Links',
   about: 'About',
   contact: 'Contact',
@@ -95,15 +98,47 @@ export const en: Translations = {
   contact_us: 'Contact Us',
   phone: 'Phone',
   address: 'Address',
-  all_rights_reserved: 'All rights reserved',
-  newest: 'Newest',
+  all_rights_reserved: 'All rights reserved.',
+
+  // Additional translations
+  sort_by: 'Sort by',
   price_low_high: 'Price: Low to High',
   price_high_low: 'Price: High to Low',
-  try_again: 'Try Again',
+  newest: 'Newest',
+  loading: 'Loading...',
+  load_more: 'Load More',
+
+  // Form
+  select_category: 'Select category',
+
+  // Admin
+  admin: {
+    products: {
+      edit: 'Edit Product',
+      productImage: 'Product Image',
+      uploadImage: 'Upload Image'
+    }
+  },
+
+  // Error messages
+  invalid_credentials: 'Invalid credentials',
+  registration_failed: 'Registration failed. Please check your details.',
+  passwords_dont_match: 'Passwords do not match',
+  email_already_exists: 'Email already exists',
+  invalid_email: 'Invalid email address',
+  password_too_short: 'Password must be at least 8 characters long',
+
+  // Error handling
+  try_again: 'Try again',
+  error_loading: 'Error loading content',
+
+  // Search
+  search_products: 'Search products',
+  search_results_for: 'Search results for',
+  no_results_found: 'No results found',
   no_products_found: 'No products found',
-  sort_newest: 'Newest',
-  sort_price_low_high: 'Price: Low to High',
-  sort_price_high_low: 'Price: High to Low',
-  sort_name_a_z: 'Name: A to Z',
-  sort_name_z_a: 'Name: Z to A',
-}; 
+  
+  // Error messages
+  something_went_wrong: 'Something went wrong',
+  product_not_found: 'Product not found'
+} as const; 

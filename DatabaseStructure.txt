@@ -10,7 +10,13 @@ avatar (file image),
 role (select: user,admin,super_admin),
 created (date),
 updated (date)
-}
+}apiRules(
+  list/search:@request.auth.role = 'admin' || @request.auth.role = 'super_admin'
+  view:@request.auth.role = 'admin' || @request.auth.role = 'super_admin'
+  create:''
+  update:@request.auth.id = id || @request.auth.role = 'admin' || @request.auth.role = 'super_admin'
+  delete:@request.auth.role = 'super_admin' || (@request.auth.role = 'admin' && @collection.users.role != 'admin' && @collection.users.role != 'super_admin')
+)
 
 categories{
 id (text),
@@ -21,7 +27,13 @@ name_en (text),
 description_en (text),
 created (date),
 updated (date)
-}
+}apiRules(
+  list/search:@request.auth.id != null || @request.auth.id = null
+  view:@request.auth.id != null || @request.auth.id = null
+  create:superuser only
+  update:superuser only
+  delete:superuser only
+)
 
 orders{
 id (text),
@@ -31,7 +43,13 @@ total (number),
 status (select: pending,processing,shipped),
 created (date),
 updated (date)
-}
+}apiRules(
+  list/search:@request.auth.id = user_id.id
+  view:@request.auth.id = user_id.id
+  create:@request.auth.id != null
+  update:superuser only
+  delete:superuser only
+)
 
 products{
 id (text),
@@ -47,9 +65,16 @@ specifications (json),
 url (text),
 image_url (text),
 source (text),
+productType (select: physical,digital),
 created (date),
-updated (date
-}
+updated (date)
+}apiRules(
+  list/search:(@request.auth.id != "" && (@request.auth.role = "admin" || @request.auth.role = "super_admin")) || @request.auth.id = ""
+  view:@request.auth.id != "" && (@request.auth.role = "admin" || @request.auth.role = "super_admin")
+  create:@request.auth.id != "" && (@request.auth.role = "admin" || @request.auth.role = "super_admin")
+  update:@request.auth.id != "" && (@request.auth.role = "admin" || @request.auth.role = "super_admin")
+  delete:@request.auth.id != "" && (@request.auth.role = "super_admin" || @request.auth.role = "admin")
+)
 
 reviews{
 id (text),
@@ -59,7 +84,13 @@ user_id (relation to users collection),
 comment (text),
 created (date),
 updated (date)
-}
+}apiRules(
+  list/search:@request.auth.id != null || @request.auth.id = null
+  view:@request.auth.id != null || @request.auth.id = null
+  create:@request.auth.id != null
+  update:superuser only
+  delete:superuser only
+)
 
 
 favorites {
@@ -68,7 +99,13 @@ favorites {
   products (json),
   created (date),
   updated (date)
-}
+}apiRules(
+  list/search:@request.auth.id = user.id
+  view:@request.auth.id = user.id
+  create:@request.auth.id != null
+  update:@request.auth.id = user.id
+  delete:@request.auth.id = user.id
+)
 
 carts{
 id (text),
@@ -76,7 +113,13 @@ user (relation to users collection),
 products (json),
 created (date),
 updated (date)
-}
+}apiRules(
+  list/search:''
+  view:''
+  create:''
+  update:''
+  delete:''
+)
 
 
 

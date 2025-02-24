@@ -41,7 +41,8 @@ export async function generateMetadata(
 
 // Main page component
 export default async function ProductPage({ params }: Props) {
-  if (!params.id) {
+  const id = await params.id;
+  if (!id) {
     notFound();
   }
 
@@ -62,7 +63,7 @@ export default async function ProductPage({ params }: Props) {
       </div>
     }>
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <ProductDetails productId={params.id} />
+        <ProductDetails productId={id} />
       </div>
     </Suspense>
   );

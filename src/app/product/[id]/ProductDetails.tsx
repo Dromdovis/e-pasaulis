@@ -23,6 +23,7 @@ export default function ProductDetails({ productId }: { productId: string }) {
 
   useEffect(() => {
     let isMounted = true;
+    let controller = new AbortController();
 
     const fetchProduct = async () => {
       try {
@@ -30,17 +31,18 @@ export default function ProductDetails({ productId }: { productId: string }) {
         setError(null);
         
         const result = await pb.collection('products').getOne<Product>(productId, {
-          requestKey: null
+          requestKey: `product_${productId}`,
+          signal: controller.signal,
         });
         
         if (isMounted) {
           setProduct(result);
           setSelectedImage(result.image || '');
         }
-      } catch (err) {
-        if (isMounted) {
+      } catch (err: any) {
+        if (isMounted && !err?.isAbort) {
           console.error('Error fetching product:', err);
-          setError(t('error_loading_product'));
+          setError(t('error_loading'));
         }
       } finally {
         if (isMounted) {
@@ -55,6 +57,7 @@ export default function ProductDetails({ productId }: { productId: string }) {
 
     return () => {
       isMounted = false;
+      controller.abort();
     };
   }, [productId, t]);
 

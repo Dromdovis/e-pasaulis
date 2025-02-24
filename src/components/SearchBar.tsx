@@ -1,37 +1,35 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { Search } from 'lucide-react';
-import { useDebounce } from '@/lib/hooks/useDebounce';
-import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export function SearchBar() {
-  const [query, setQuery] = useState('');
-  const debouncedQuery = useDebounce(query, 300);
-  const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   const { t } = useLanguage();
 
-  const handleSearch = useCallback((searchQuery: string) => {
-    if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
-    }
-  }, [router]);
-
   return (
-    <div className="relative w-full max-w-md">
-      <input
-        type="text"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        onKeyDown={(e) => e.key === 'Enter' && handleSearch(query)}
-        placeholder={t('search_products')}
-        className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 bg-white"
-      />
-      <Search 
-        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5"
-        onClick={() => handleSearch(query)}
-      />
+    <div className="relative">
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="p-2 hover:bg-gray-100 rounded-full"
+      >
+        <Search className="w-5 h-5" />
+      </button>
+
+      {isOpen && (
+        <div className="absolute top-full right-0 mt-2 w-96 bg-white rounded-lg shadow-lg p-4">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder={t('search_products')}
+            className="w-full p-2 border rounded-lg"
+          />
+          {/* Add search results here */}
+        </div>
+      )}
     </div>
   );
 } 

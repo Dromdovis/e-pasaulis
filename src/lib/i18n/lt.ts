@@ -1,89 +1,92 @@
-import type { Translations } from './types';
+import type { TranslationKeys } from './translations';
 
-export const lt: Translations = {
-  // Navigation and general UI
-  filter: 'Filtruoti',
-  search: 'Ieškoti',
-  cart: 'Krepšelis',
-  favorites: 'Mėgstami',
-  loading: 'Kraunama',
-  email: 'El. paštas',
-  password: 'Slaptažodis',
-  name: 'Vardas',
+export const lt: TranslationKeys = {
+  // Navigation
   home: 'Pradžia',
   login: 'Prisijungti',
   register: 'Registruotis',
   logout: 'Atsijungti',
   profile: 'Profilis',
+  cart: 'Krepšelis',
+  favorites: 'Mėgstami',
+  filter: 'Filtruoti',
+  search: 'Ieškoti',
+  admin_panel: 'Administratoriaus skydelis',
+  users: 'Vartotojai',
+  products: 'Produktai',
+
+  // Categories
   categories: 'Kategorijos',
   laptops: 'Nešiojami kompiuteriai',
   desktops: 'Stacionarūs kompiuteriai',
-  continue_shopping: 'Tęsti apsipirkimą',
-  save_to_list: 'Išsaugoti į sąrašą',
-  admin_panel: 'Administratoriaus skydelis',
-  manage_products: 'Valdyti produktus',
-  manage_users: 'Valdyti vartotojus',
-  manage_orders: 'Valdyti užsakymus',
-  dashboard: 'Valdymo skydelis',
-  users: 'Vartotojai',
-  products: 'Produktai',
-  reviews: 'Atsiliepimai',
-  settings: 'Nustatymai',
-  orders: 'Užsakymai',
-  logged_in_as: 'Prisijungęs kaip',
-  bulk_operations: 'Masinės operacijos',
-  cancel: 'Atšaukti',
-  save: 'Išsaugoti pakeitimus',
-  specifications: 'Specifikacijos',
+  phones: 'Mobilieji telefonai',
+  tablets: 'Planšetiniai kompiuteriai',
+  monitors: 'Monitoriai',
+  keyboards: 'Klaviatūros',
+  mice: 'Pelės',
+  headphones: 'Ausinės',
+  graphics_cards: 'Vaizdo plokštės',
+  processors: 'Procesoriai',
+  memory: 'Atmintis',
+  storage: 'Kietieji diskai',
+  power_supplies: 'Maitinimo blokai',
+  cooling: 'Aušintuvai',
+  cases: 'Korpusai',
+  motherboards: 'Pagrindinės plokštės',
+  networking: 'Tinklo įranga',
+  software: 'Programinė įranga',
+  gaming: 'Žaidimų įranga',
+  printers: 'Spausdintuvai',
 
-  // Admin product management
-  'admin.products.edit': 'Redaguoti produktą',
-  'admin.products.productImage': 'Produkto nuotrauka',
-  'admin.products.uploadImage': 'Įkelti nuotrauką',
-
-  // Form
-  select_category: 'Pasirinkite kategoriją',
-
-  // Admin descriptions
-  'admin.users_description': 'Valdyti vartotojų paskyras ir teises',
-  'admin.products_description': 'Pridėti, redaguoti ir valdyti produktus',
-  'admin.categories_description': 'Tvarkyti produktų kategorijas',
-  'admin.favorites_description': 'Peržiūrėti vartotojų mėgstamus produktus',
-  'admin.orders_description': 'Sekti ir valdyti užsakymus',
-  'admin.reviews_description': 'Stebėti produktų atsiliepimus ir įvertinimus',
-  'admin.settings_description': 'Konfigūruoti sistemos nustatymus',
-  'admin.bulk_operations_description': 'Atlikti operacijas su keliais elementais vienu metu',
-
-  // Additional keys
-  invalid_credentials: 'Neteisingas el. paštas arba slaptažodis',
-  logging_in: 'Jungiamasi...',
-  dont_have_account: 'Neturite paskyros?',
-  in_stock: 'Yra sandėlyje',
+  // Product related
+  in_stock: 'yra sandėlyje',
   out_of_stock: 'Išparduota',
-  load_more: 'Rodyti daugiau',
   add_to_cart: 'Į krepšelį',
-  remove_from_favorites: 'Pašalinti iš mėgstamų',
-  add_to_favorites: 'Pridėti į mėgstamus',
+  continue_shopping: 'Tęsti apsipirkimą',
+  productSpecifications: 'Specifikacijos',
+  writeReview: 'Parašyti atsiliepimą',
+  submitReview: 'Pateikti atsiliepimą',
+  updateReview: 'Atnaujinti atsiliepimą',
+  reviews: 'Atsiliepimai',
+  similarProducts: 'Panašūs produktai',
+  sortReviews: 'Rūšiuoti atsiliepimus',
+  reviewSortNewest: 'Naujausi',
+  reviewSortOldest: 'Seniausi',
+  reviewSortHighest: 'Geriausiai įvertinti',
+  reviewSortLowest: 'Prasčiausiai įvertinti',
+  noReviews: 'Atsiliepimų dar nėra',
+  loginToReview: 'Prisijunkite, kad galėtumėte parašyti atsiliepimą',
+  reviewUpdated: 'Atsiliepimas sėkmingai atnaujintas',
+  reviewSubmitted: 'Atsiliepimas sėkmingai pateiktas',
+  errorSubmittingReview: 'Klaida pateikiant atsiliepimą',
+  errorLoadingReviews: 'Klaida įkeliant atsiliepimus',
+  product_details: 'Produkto informacija',
+  product_description: 'Aprašymas',
+  product_price: 'Kaina',
+  product_stock: 'Kiekis',
 
-  // Form validation messages
-  name_required: 'Būtina įvesti vardą',
-  email_required: 'Būtina įvesti el. paštą',
-  password_required: 'Būtina įvesti slaptažodį',
-  invalid_email_format: 'Neteisingas el. pašto formatas',
-  passwords_dont_match: 'Slaptažodžiai nesutampa',
-  password_too_short: 'Slaptažodis turi būti bent 8 simbolių ilgio',
-  email_already_exists: 'Toks el. paštas jau egzistuoja',
-  username_already_exists: 'Toks vartotojo vardas jau egzistuoja',
-  registration_failed: 'Registracija nepavyko',
-  registration_success_login_failed: 'Registracija sėkminga, bet prisijungti nepavyko',
-  server_unavailable: 'Serveris nepasiekiamas',
+  // Auth related
+  email: 'El. paštas',
+  password: 'Slaptažodis',
   confirm_password: 'Pakartokite slaptažodį',
+  name: 'Vardas',
+  logging_in: 'Jungiamasi...',
   registering: 'Registruojama...',
+  dont_have_account: 'Neturite paskyros?',
   already_have_account: 'Jau turite paskyrą?',
 
-  // Footer translations
+  // Profile
+  profile_settings: 'Profilio nustatymai',
+  profile_picture: 'Profilio nuotrauka',
+  change_picture: 'Keisti nuotrauką',
+  current_password: 'Dabartinis slaptažodis',
+  new_password: 'Naujas slaptažodis',
+  update_password: 'Atnaujinti slaptažodį',
+  updating: 'Atnaujinama...',
+
+  // Footer
   about_us: 'Apie mus',
-  about_description: 'Jūsų patikimas elektronikos šaltinis',
+  about_description: 'Jūsų patikimas elektronikos ir kompiuterių dalių šaltinis.',
   quick_links: 'Greitos nuorodos',
   about: 'Apie',
   contact: 'Kontaktai',
@@ -95,17 +98,47 @@ export const lt: Translations = {
   contact_us: 'Susisiekite',
   phone: 'Telefonas',
   address: 'Adresas',
-  all_rights_reserved: 'Visos teisės saugomos',
+  all_rights_reserved: 'Visos teisės saugomos.',
 
-  // New translations
-  newest: 'Naujausi',
+  // Additional translations
+  sort_by: 'Rūšiuoti pagal',
   price_low_high: 'Kaina: nuo mažiausios',
   price_high_low: 'Kaina: nuo didžiausios',
+  newest: 'Naujausi',
+  loading: 'Kraunama...',
+  load_more: 'Rodyti daugiau',
+
+  // Form
+  select_category: 'Pasirinkite kategoriją',
+
+  // Admin
+  admin: {
+    products: {
+      edit: 'Redaguoti produktą',
+      productImage: 'Produkto nuotrauka',
+      uploadImage: 'Įkelti nuotrauką'
+    }
+  },
+
+  // Error messages
+  invalid_credentials: 'Neteisingi prisijungimo duomenys',
+  registration_failed: 'Registracija nepavyko. Patikrinkite savo duomenis.',
+  passwords_dont_match: 'Slaptažodžiai nesutampa',
+  email_already_exists: 'Toks el. paštas jau egzistuoja',
+  invalid_email: 'Neteisingas el. pašto adresas',
+  password_too_short: 'Slaptažodis turi būti bent 8 simbolių ilgio',
+
+  // Error handling
   try_again: 'Bandyti dar kartą',
-  no_products_found: 'Produktų nerasta',
-  sort_newest: 'Naujausi',
-  sort_price_low_high: 'Kaina: Nuo mažiausios',
-  sort_price_high_low: 'Kaina: Nuo didžiausios',
-  sort_name_a_z: 'Pavadinimas: A-Ž',
-  sort_name_z_a: 'Pavadinimas: Ž-A',
-}; 
+  error_loading: 'Klaida įkeliant turinį',
+
+  // Search
+  search_products: 'Ieškoti produktų',
+  search_results_for: 'Paieškos rezultatai',
+  no_results_found: 'Rezultatų nerasta',
+  no_products_found: 'Tokių prekių nerasta',
+  
+  // Error messages
+  something_went_wrong: 'Įvyko klaida',
+  product_not_found: 'Produktas nerastas',
+} as const; 

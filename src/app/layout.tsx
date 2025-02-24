@@ -4,6 +4,7 @@ import './globals.css';
 import { Providers } from '@/lib/providers';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 export const metadata: Metadata = {
   title: "E-Pasaulis",
@@ -21,7 +22,8 @@ export default function RootLayout({
         <Providers>
           <div className="flex flex-col min-h-screen">
             <Navbar />
-            <main className="flex-grow bg-gray-50">
+            <Breadcrumbs />
+            <main className="flex-grow bg-gray-100 pt-32">
               {children}
             </main>
             <Footer />

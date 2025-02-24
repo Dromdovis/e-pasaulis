@@ -58,31 +58,37 @@ export function Reviews({ productId }: ReviewsProps) {
     
     try {
       const response = await pb.collection('reviews').getList<Review>(1, 50, {
-        filter: `product = "${productId}"`,
+        filter: `product_id = "${productId}"`,
         sort: getSortQuery(sortOption),
-        expand: 'user',
-        $autoCancel: false,
-        requestKey: `reviews-${productId}-${sortOption}`
+        expand: 'user_id',
+        requestKey: `reviews_${productId}_${sortOption}`,
+        $autoCancel: false
       });
       
-      setReviews(response.items);
+      if (response?.items) {
+        setReviews(response.items);
 
-      if (user?.id) {
-        const userReview = response.items.find(review => review.user === user.id);
-        if (userReview) {
-          setUserReview(userReview);
-          setComment(userReview.comment);
-          setRating(userReview.rating);
-        } else {
-          setUserReview(null);
-          setComment('');
-          setRating(5);
+        if (user?.id) {
+          const userReview = response.items.find(review => review.user_id === user.id);
+          if (userReview) {
+            setUserReview(userReview);
+            setComment(userReview.comment);
+            setRating(userReview.rating);
+          } else {
+            setUserReview(null);
+            setComment('');
+            setRating(5);
+          }
         }
+      } else {
+        setReviews([]);
       }
-    } catch (error) {
-      console.error('Error loading reviews:', error);
-      setError(t('errorLoadingReviews'));
-      setReviews([]);
+    } catch (err: any) {
+      if (!err?.isAbort) {
+        console.error('Error loading reviews:', err);
+        setError(t('errorLoadingReviews'));
+        setReviews([]);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -90,34 +96,38 @@ export function Reviews({ productId }: ReviewsProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isAuthenticated) {
-      showToast(t('login_required'), 'warning');
+    if (!isAuthenticated || !user?.id) {
+      showToast(t('loginToReview'), 'warning');
       return;
     }
 
     try {
+      const data = {
+        rating,
+        comment,
+        user_id: user.id,
+        product_id: productId
+      };
+
       if (userReview) {
         // Update existing review
-        await pb.collection('reviews').update(userReview.id, {
-          rating,
-          comment,
-        });
-        showToast(t('review_updated'), 'success');
+        await pb.collection('reviews').update(userReview.id, data);
+        showToast(t('reviewUpdated'), 'success');
       } else {
         // Create new review
-        await pb.collection('reviews').create({
-          user: user?.id,
-          product: productId,
-          rating,
-          comment,
-        });
-        showToast(t('review_submitted'), 'success');
+        await pb.collection('reviews').create(data);
+        showToast(t('reviewSubmitted'), 'success');
       }
-      loadReviews();
+      
+      // Wait a bit before reloading reviews to ensure the server has processed the change
+      setTimeout(() => {
+        loadReviews();
+      }, 500);
+      
       setIsEditing(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error submitting review:', error);
-      showToast(t('error_submitting_review'), 'error');
+      showToast(t('errorSubmittingReview'), 'error');
     }
   };
 
@@ -176,14 +186,14 @@ export function Reviews({ productId }: ReviewsProps) {
             onChange={(e) => setComment(e.target.value)}
             className="w-full p-2 border rounded-lg mb-4"
             rows={4}
-            placeholder={t('write_review')}
+            placeholder={t('writeReview')}
             required
           />
           <button
             type="submit"
             className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700"
           >
-            {userReview ? t('update_review') : t('submit_review')}
+            {userReview ? t('updateReview') : t('submitReview')}
           </button>
         </form>
       )}
@@ -207,12 +217,12 @@ export function Reviews({ productId }: ReviewsProps) {
                   </div>
                   <p className="text-gray-700">{review.comment}</p>
                 </div>
-                {review.user === user?.id && (
+                {review.user_id === user?.id && (
                   <button
                     onClick={() => setIsEditing(!isEditing)}
                     className="text-primary-600 hover:text-primary-700"
                   >
-                    {t('edit')}
+                    {t('updateReview')}
                   </button>
                 )}
               </div>

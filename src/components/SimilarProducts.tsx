@@ -13,34 +13,42 @@ interface SimilarProductsProps {
 
 export function SimilarProducts({ currentProductId, categoryId }: SimilarProductsProps) {
   const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const { t } = useLanguage();
 
   useEffect(() => {
     const fetchSimilarProducts = async () => {
+      if (!categoryId || !currentProductId) return;
+      
       try {
+        setIsLoading(true);
         const response = await pb.collection('products').getList<Product>(1, 4, {
           filter: `category = "${categoryId}" && id != "${currentProductId}"`,
           sort: '-created',
-          $autoCancel: false // Disable auto-cancellation for this request
+          requestKey: `similar_${currentProductId}`,
+          $autoCancel: false
         });
-        setProducts(response.items);
-      } catch (error) {
-        if (error.isAbort) {
-          // Request was cancelled, we can ignore this error
-          return;
+        
+        if (response?.items) {
+          setProducts(response.items);
         }
-        console.error('Error fetching similar products:', error);
+      } catch (error: any) {
+        if (!error?.isAbort) {
+          console.error('Error fetching similar products:', error);
+        }
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchSimilarProducts();
   }, [categoryId, currentProductId]);
 
-  if (products.length === 0) return null;
+  if (isLoading || products.length === 0) return null;
 
   return (
     <div className="mt-12">
-      <h2 className="text-2xl font-bold mb-6">{t('similar_products')}</h2>
+      <h2 className="text-2xl font-bold mb-6">{t('similarProducts')}</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {products.map((product) => (
           <ProductCard key={product.id} product={product} />
