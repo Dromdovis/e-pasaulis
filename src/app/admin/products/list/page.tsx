@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ProductService } from '@/services/ProductService';
 import Link from 'next/link';
 import { ProductAlgorithms } from '@/lib/algorithms';
 import { pb } from '@/lib/db';
@@ -33,7 +32,7 @@ export default function ProductListPage() {
 
   const displayedProducts = ProductAlgorithms
     .searchProducts(products, searchTerm)
-    .sort((a, b) => sortAscending ? 1 : -1);
+    .sort(() => sortAscending ? 1 : -1);
 
   const handleDelete = async (id: string) => {
     try {
@@ -66,7 +65,7 @@ export default function ProductListPage() {
         />
         <select
           value={sortBy}
-          onChange={(e) => setSortBy(e.target.value as any)}
+          onChange={(e) => setSortBy(e.target.value as 'name' | 'price' | 'date')}
           className="p-2 border rounded"
         >
           <option value="name">Sort by Name</option>

@@ -2,11 +2,11 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { AuthService } from '../lib/auth';
-import { User } from '../types/auth';
+import { AuthModel } from '../types/auth';
 
 interface AdminContextType {
   isAdmin: boolean;
-  adminUser: User | null;
+  adminUser: AuthModel | null;
   loading: boolean;
 }
 
@@ -18,7 +18,7 @@ const AdminContext = createContext<AdminContextType>({
 
 export function AdminProvider({ children }: { children: React.ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
-  const [adminUser, setAdminUser] = useState<User | null>(null);
+  const [adminUser, setAdminUser] = useState<AuthModel | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

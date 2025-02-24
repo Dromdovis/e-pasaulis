@@ -208,12 +208,11 @@ export const useAuth = create<AuthState>()(
             passwordConfirm: password,
             name,
             role: UserRole.USER,
-            emailVisibility: true  // Set email visibility to true by default
+            emailVisibility: true
           };
           const record = await pb.collection('users').create<PBUser>(data);
           await pb.collection('users').authWithPassword(email, password);
           
-          // Fetch fresh user data to ensure role is up to date
           const user = await pb.collection('users').getOne<PBUser>(record.id);
           const authUser = convertToAuthModel(user);
           
@@ -227,6 +226,36 @@ export const useAuth = create<AuthState>()(
         } catch (error) {
           set({ isLoading: false });
           console.error('Registration failed:', error);
+          throw error;
+        }
+      },
+
+      refreshUser: async () => {
+        console.log('🔄 refreshUser - Starting refresh');
+        const currentUser = get().user;
+        if (!currentUser?.id) {
+          console.log('🔄 refreshUser - No current user, skipping');
+          return;
+        }
+
+        try {
+          set({ isLoading: true });
+          const options: PocketBaseOptions = { requestKey: null };
+          console.log('🔄 refreshUser - Fetching fresh user data for ID:', currentUser.id);
+          
+          const user = await pb.collection('users').getOne<PBUser>(currentUser.id, options);
+          const authUser = convertToAuthModel(user);
+          const isAdmin = authUser.role === UserRole.ADMIN || authUser.role === UserRole.SUPER_ADMIN;
+
+          console.log('🔄 refreshUser - Setting updated user state');
+          set({
+            user: authUser,
+            isAdmin,
+            isLoading: false
+          });
+        } catch (error) {
+          console.error('❌ refreshUser - Failed to refresh user:', error);
+          set({ isLoading: false });
           throw error;
         }
       }

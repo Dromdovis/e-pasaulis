@@ -13,7 +13,7 @@ import Image from 'next/image';
 
 export default function AdminProductsPage() {
   const router = useRouter();
-  const { t } = useLanguage();
+  const { } = useLanguage();
   const { user, isAuthenticated, isLoading, isInitialized } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -364,7 +364,7 @@ export default function AdminProductsPage() {
                     const specs = JSON.parse(e.target.value);
                     setNewProduct({ ...newProduct, specifications: specs });
                   } catch (err) {
-                    // Invalid JSON, ignore
+                    console.error('Invalid JSON:', err);
                   }
                 }}
                 rows={3}

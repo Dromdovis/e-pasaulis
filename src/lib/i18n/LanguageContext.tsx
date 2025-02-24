@@ -3,11 +3,13 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
 import { en } from './en';
 import { lt } from './lt';
-import type { TranslationKey, Translations } from './types';
+import { translations } from './translations';
+import type { Language } from './translations';
+import type { TranslationKey } from './types';
 
 interface LanguageContextType {
-  language: string;
-  setLanguage: (lang: string) => void;
+  language: Language;
+  setLanguage: (lang: Language) => void;
   t: (key: TranslationKey) => string;
   isInitialized: boolean;
 }

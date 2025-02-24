@@ -13,7 +13,7 @@ declare module 'pocketbase' {
     collection(name: string): {
       getOne<T>(id: string, options?: { $cancelKey?: string }): Promise<T>;
       getFirstListItem<T>(filter: string): Promise<T>;
-      getList<T>(page?: number, perPage?: number, options?: any): Promise<{
+      getList<T>(page?: number, perPage?: number, options?: Record<string, unknown>): Promise<{
         items: T[];
         totalItems: number;
       }>;
@@ -22,10 +22,10 @@ declare module 'pocketbase' {
         filter?: string;
         sort?: string;
       }): Promise<T[]>;
-      create<T>(data: any): Promise<T>;
-      update<T>(id: string, data: any): Promise<T>;
+      create<T>(data: Record<string, unknown>): Promise<T>;
+      update<T>(id: string, data: Record<string, unknown>): Promise<T>;
       delete(id: string): Promise<boolean>;
-      authWithPassword(email: string, password: string): Promise<any>;
+      authWithPassword(email: string, password: string): Promise<Record<string, unknown>>;
     };
     baseUrl: string;
     cancelRequest(key: string): void;

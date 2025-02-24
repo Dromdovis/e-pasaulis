@@ -1,7 +1,9 @@
 // src/app/layout.tsx
 import type { Metadata } from "next";
 import './globals.css';
-import ClientLayout from './ClientLayout';
+import { Providers } from '@/lib/providers';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 
 export const metadata: Metadata = {
   title: "E-Pasaulis",
@@ -14,9 +16,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang={process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'en'}>
+    <html lang="en">
       <body>
-        <ClientLayout>{children}</ClientLayout>
+        <Providers>
+          <div className="flex flex-col min-h-screen">
+            <Navbar />
+            <main className="flex-grow bg-gray-50">
+              {children}
+            </main>
+            <Footer />
+          </div>
+        </Providers>
       </body>
     </html>
   );

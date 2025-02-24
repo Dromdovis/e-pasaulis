@@ -11,8 +11,9 @@ import { useAuth } from '@/lib/auth';
 import Image from 'next/image';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { UserRole } from '@/types/auth';
+import { SearchBar } from '@/components/SearchBar';
 
-const Navbar = () => {
+export default function Navbar() {
   const router = useRouter();
   const { cart } = useStore();
   const { isAuthenticated, user, isLoading, logout, initialize, isInitialized, isAdmin } = useAuth();
@@ -109,15 +110,21 @@ const Navbar = () => {
             )}
           </div>
 
+          <div className="flex-1 max-w-2xl mx-8">
+            <SearchBar />
+          </div>
+
           <div className="flex items-center gap-4">
             {languageSelector}
-            <Link
-              href="/favorites"
-              className="p-2 rounded-md hover:bg-secondary-100 dark:hover:bg-secondary-800 relative"
+            <Link 
+              href="/favorites" 
+              className={`relative text-gray-600 hover:text-gray-800 ${
+                favorites.length > 0 ? 'text-primary-600' : ''
+              }`}
             >
-              <Heart className="h-5 w-5 text-secondary-600 dark:text-secondary-300" />
+              <Heart className="h-5 w-5" fill={favorites.length > 0 ? 'currentColor' : 'none'} />
               {favorites.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-accent-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                <span className="absolute -top-2 -right-2 bg-primary-600 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
                   {favorites.length}
                 </span>
               )}
@@ -182,6 +189,4 @@ const Navbar = () => {
       </div>
     </nav>
   );
-};
-
-export default Navbar;
+}

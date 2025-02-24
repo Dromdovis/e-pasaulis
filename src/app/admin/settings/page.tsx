@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { useAuth } from '@/lib/auth';
 import { UserRole } from '@/types/auth';
-import { pb } from '@/lib/db';
 
 interface Settings {
   allowRegistration: boolean;
@@ -15,7 +14,7 @@ interface Settings {
 }
 
 export default function SettingsPage() {
-  const { t } = useLanguage();
+  const { } = useLanguage();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

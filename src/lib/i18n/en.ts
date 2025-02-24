@@ -34,6 +34,25 @@ export const en: Translations = {
   bulk_operations: 'Bulk Operations',
   cancel: 'Cancel',
   save: 'Save Changes',
+  specifications: 'Specifications',
+
+  // Admin product management
+  'admin.products.edit': 'Edit Product',
+  'admin.products.productImage': 'Product Image',
+  'admin.products.uploadImage': 'Upload Image',
+
+  // Form
+  select_category: 'Select Category',
+
+  // Admin descriptions
+  'admin.users_description': 'Manage user accounts and permissions',
+  'admin.products_description': 'Add, edit, and manage product listings',
+  'admin.categories_description': 'Manage product categories',
+  'admin.favorites_description': 'View user favorite items',
+  'admin.orders_description': 'Track and manage customer orders',
+  'admin.reviews_description': 'Monitor product reviews and ratings',
+  'admin.settings_description': 'Configure system settings',
+  'admin.bulk_operations_description': 'Perform operations on multiple items at once',
 
   // Additional keys
   invalid_credentials: 'Invalid email or password',
@@ -45,16 +64,6 @@ export const en: Translations = {
   add_to_cart: 'Add to Cart',
   remove_from_favorites: 'Remove from Favorites',
   add_to_favorites: 'Add to Favorites',
-
-  // Admin descriptions
-  'admin.users_description': 'Manage user accounts and permissions',
-  'admin.products_description': 'Add, edit, and manage product listings',
-  'admin.categories_description': 'Manage product categories',
-  'admin.favorites_description': 'View user favorite items',
-  'admin.orders_description': 'Track and manage customer orders',
-  'admin.reviews_description': 'Monitor product reviews and ratings',
-  'admin.settings_description': 'Configure system settings',
-  'admin.bulk_operations_description': 'Perform operations on multiple items at once',
 
   // Form validation messages
   name_required: 'Name is required',
@@ -86,5 +95,15 @@ export const en: Translations = {
   contact_us: 'Contact Us',
   phone: 'Phone',
   address: 'Address',
-  all_rights_reserved: 'All rights reserved'
+  all_rights_reserved: 'All rights reserved',
+  newest: 'Newest',
+  price_low_high: 'Price: Low to High',
+  price_high_low: 'Price: High to Low',
+  try_again: 'Try Again',
+  no_products_found: 'No products found',
+  sort_newest: 'Newest',
+  sort_price_low_high: 'Price: Low to High',
+  sort_price_high_low: 'Price: High to Low',
+  sort_name_a_z: 'Name: A to Z',
+  sort_name_z_a: 'Name: Z to A',
 }; 

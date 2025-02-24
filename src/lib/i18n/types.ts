@@ -1,86 +1,26 @@
-export type TranslationKey =
-  // Navigation and general UI
-  | 'filter'
-  | 'search'
-  | 'cart'
-  | 'favorites'
-  | 'loading'
-  | 'email'
-  | 'password'
-  | 'name'
-  | 'home'
-  | 'login'
-  | 'register'
-  | 'logout'
-  | 'profile'
-  | 'categories'
-  | 'laptops'
-  | 'desktops'
-  | 'continue_shopping'
-  | 'save_to_list'
-  | 'admin_panel'
-  | 'manage_products'
-  | 'manage_users'
-  | 'manage_orders'
-  | 'dashboard'
-  | 'users'
-  | 'products'
-  | 'reviews'
-  | 'settings'
-  | 'orders'
-  | 'logged_in_as'
-  | 'bulk_operations'
-  | 'cancel'
-  | 'save'
-  // Admin descriptions
-  | 'admin.users_description'
-  | 'admin.products_description'
-  | 'admin.categories_description'
-  | 'admin.favorites_description'
-  | 'admin.orders_description'
-  | 'admin.reviews_description'
-  | 'admin.settings_description'
-  | 'admin.bulk_operations_description'
-  // Additional keys
-  | 'invalid_credentials'
-  | 'logging_in'
-  | 'dont_have_account'
-  | 'in_stock'
-  | 'out_of_stock'
-  | 'load_more'
-  | 'add_to_cart'
-  | 'remove_from_favorites'
-  | 'add_to_favorites'
-  // Form validation messages
-  | 'name_required'
-  | 'email_required'
-  | 'password_required'
-  | 'invalid_email_format'
-  | 'passwords_dont_match'
-  | 'password_too_short'
-  | 'email_already_exists'
-  | 'username_already_exists'
-  | 'registration_failed'
-  | 'registration_success_login_failed'
-  | 'server_unavailable'
-  | 'confirm_password'
-  | 'registering'
-  | 'already_have_account'
-  // Footer translations
-  | 'about_us'
-  | 'about_description'
-  | 'quick_links'
-  | 'about'
-  | 'contact'
-  | 'shipping_info'
-  | 'customer_service'
-  | 'faq'
-  | 'returns'
-  | 'support'
-  | 'contact_us'
-  | 'phone'
-  | 'address'
-  | 'all_rights_reserved';
+import { translations } from './translations';
+
+// Helper type to get all nested keys
+type PathsToStringProps<T> = T extends string 
+  ? [] 
+  : {
+      [K in Extract<keyof T, string>]: [K, ...PathsToStringProps<T[K]>]
+    }[Extract<keyof T, string>];
+
+// Get all possible paths
+type Join<T extends string[], D extends string> = T extends [] 
+  ? never 
+  : T extends [infer F] 
+  ? F 
+  : T extends [infer F, ...infer R] 
+  ? F extends string 
+    ? `${F}${D}${Join<Extract<R, string[]>, D>}` 
+    : never 
+  : string;
+
+// Final type that includes both direct keys and nested keys
+export type TranslationKey = keyof typeof translations.en | 
+  Join<PathsToStringProps<typeof translations.en>, '.'>;
 
 // Define the translations type as a Record instead of a mapped type
 export type Translations = Record<TranslationKey, string>; 

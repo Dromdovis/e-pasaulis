@@ -8,6 +8,43 @@ import type { Product } from '@/types';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import type { TranslationKey } from '@/lib/i18n/types';
 
+interface BreadcrumbItem {
+  label: string;
+  href?: string;
+}
+
+interface BreadcrumbsProps {
+  items: BreadcrumbItem[];
+}
+
+export function Breadcrumbs({ items }: BreadcrumbsProps) {
+  const { t } = useLanguage();
+
+  return (
+    <nav className="flex" aria-label="Breadcrumb">
+      <ol className="inline-flex items-center space-x-1 md:space-x-3">
+        <li className="inline-flex items-center">
+          <Link href="/" className="text-gray-700 hover:text-primary-600">
+            {t('home')}
+          </Link>
+        </li>
+        {items.map((item, index) => (
+          <li key={index} className="inline-flex items-center">
+            <ChevronRight className="w-4 h-4 text-gray-400" />
+            {item.href ? (
+              <Link href={item.href} className="ml-1 text-gray-700 hover:text-primary-600">
+                {item.label}
+              </Link>
+            ) : (
+              <span className="ml-1 text-gray-500">{item.label}</span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+  );
+}
+
 export default function Breadcrumbs() {
   const { t, isInitialized } = useLanguage();
   const pathname = usePathname();

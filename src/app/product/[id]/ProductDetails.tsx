@@ -7,10 +7,13 @@ import Image from 'next/image';
 import PriceDisplay from '@/components/PriceDisplay';
 import type { Product } from '@/types';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { SimilarProducts } from '@/components/SimilarProducts';
+import { Reviews } from '@/components/Reviews';
 
 export default function ProductDetails({ productId }: { productId: string }) {
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedImage, setSelectedImage] = useState('');
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const { addToCart, toggleFavorite, favorites, cart } = useStore();
   const { t } = useLanguage();
@@ -19,30 +22,41 @@ export default function ProductDetails({ productId }: { productId: string }) {
   const cartQuantity = cart.find(item => item.productId === productId)?.quantity || 0;
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
+    let isMounted = true;
+
+    const fetchProduct = async () => {
       try {
-        const fetchedProduct = await pb.collection('products').getOne<Product>(productId, {
-          requestKey: null,
-          expand: 'category' // Add this if you need category information
+        setLoading(true);
+        setError(null);
+        
+        const result = await pb.collection('products').getOne<Product>(productId, {
+          requestKey: null
         });
-        setProduct(fetchedProduct);
-        setSelectedImage(fetchedProduct.image || '');
-      } catch (error) {
-        console.error('Failed to fetch product data:', error);
+        
+        if (isMounted) {
+          setProduct(result);
+          setSelectedImage(result.image || '');
+        }
+      } catch (err) {
+        if (isMounted) {
+          console.error('Error fetching product:', err);
+          setError(t('error_loading_product'));
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     if (productId) {
-      fetchData();
+      fetchProduct();
     }
 
     return () => {
-      // Cleanup if needed
+      isMounted = false;
     };
-  }, [productId]);
+  }, [productId, t]);
 
   const getImageUrl = (filename?: string) => {
     if (!product || !filename) return '/no-image.jpg';
@@ -99,15 +113,16 @@ export default function ProductDetails({ productId }: { productId: string }) {
     );
   }
 
-  if (!product) {
+  if (error) {
     return (
-      <div className="max-w-7xl mx-auto p-8">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold text-gray-900">Product not found</h2>
-          <p className="mt-2 text-gray-600">The product you're looking for doesn't exist or has been removed.</p>
-        </div>
+      <div className="max-w-7xl mx-auto p-8 text-center">
+        <p className="text-red-500">{error}</p>
       </div>
     );
+  }
+
+  if (!product) {
+    return null;
   }
 
   return (
@@ -136,8 +151,9 @@ export default function ProductDetails({ productId }: { productId: string }) {
             <Image
               src={getImageUrl(selectedImage || product.image || '')}
               alt={product.name}
-              fill
-              className="object-contain"
+              width={500}
+              height={500}
+              className="w-full h-auto rounded-lg"
               priority
             />
           </div>
@@ -217,26 +233,30 @@ export default function ProductDetails({ productId }: { productId: string }) {
       </div>
 
       {/* Specifications Section */}
-      {product && product.specifications && Object.keys(product.specifications).length > 0 && (
-        <div id="specifications" className="mt-12 pt-8 border-t">
-          <h2 className="text-xl font-semibold mb-6">{t('specifications')}:</h2>
-          <div className="bg-white rounded-lg border border-gray-200">
-            <div className="divide-y">
-              {Object.entries(product.specifications || {}).map(([key, value], index) => (
-                <div 
-                  key={key}
-                  className={`grid grid-cols-2 p-4 ${
-                    index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
-                  }`}
-                >
-                  <dt className="text-gray-600 font-medium">{key}</dt>
-                  <dd className="text-gray-900">{String(value)}</dd>
-                </div>
+      <div className="mt-12">
+        <h2 className="text-2xl font-bold mb-6">{t('productSpecifications')}</h2>
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <table className="w-full">
+            <tbody>
+              {Object.entries(product.specifications || {}).map(([key, value]) => (
+                <tr key={key} className="border-b last:border-0">
+                  <td className="py-3 text-gray-600 w-1/3">{key}</td>
+                  <td className="py-3 text-gray-900">{value}</td>
+                </tr>
               ))}
-            </div>
-          </div>
+            </tbody>
+          </table>
         </div>
-      )}
+      </div>
+
+      {/* Similar Products section */}
+      <SimilarProducts 
+        currentProductId={product?.id || ''} 
+        categoryId={product?.category || ''} 
+      />
+
+      {/* Reviews section */}
+      <Reviews productId={productId} />
     </div>
   );
 } 

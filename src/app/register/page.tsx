@@ -7,7 +7,6 @@ import Link from 'next/link';
 import { Eye, EyeOff } from 'lucide-react';
 import { useStore } from '@/lib/store';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
-import { validateAuthState } from '@/lib/auth';
 import { useAuth } from '@/lib/auth';
 
 // Add interface for form data
@@ -18,55 +17,13 @@ interface FormData {
   name: string;
 }
 
-// Update the PocketBaseError interface to better match the actual error structure
-interface PocketBaseError {
-  status?: number;
-  response?: {
-    code: number;
-    message: string;
-    data: {
-      [key: string]: {
-        code: string;
-        message: string;
-      };
-    };
-  };
-  data?: {
-    code: number;
-    message: string;
-    data: {
-      [key: string]: {
-        code: string;
-        message: string;
-      };
-    };
-  };
-  originalError?: any;
-}
-
-// Update PocketBase response interface to match schema
-interface PocketBaseResponse {
-  id: string;
-  email: string;
-  emailVisibility: boolean;
-  verified: boolean;
-  name: string;
-  role: 'user' | 'admin' | 'super_admin';
-  created: string;
-  updated: string;
-}
-
-// Update the validation error interfaces
-interface PocketBaseValidationError {
+interface ValidationError {
   code: string;
   message: string;
 }
 
-interface PocketBaseErrorResponse {
-  data: {
-    [key: string]: PocketBaseValidationError;
-  };
-  message: string;
+interface ValidationErrors {
+  [key: string]: ValidationError;
 }
 
 async function isPocketBaseAvailable() {
@@ -218,7 +175,7 @@ export default function Register() {
         console.log('User created successfully:', newUser);
 
         // Authenticate immediately after registration
-        const authData = await pb.collection('users').authWithPassword(
+        await pb.collection('users').authWithPassword(
           data.email,
           data.password
         );
@@ -234,23 +191,29 @@ export default function Register() {
         
         // Redirect to home page with products
         window.location.href = '/';
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Registration error full details:', error);
         
-        if (error?.data?.data) {
-          const validationErrors = error.data.data as Record<string, PocketBaseValidationError>;
+        if (error && typeof error === 'object' && 'data' in error) {
+          const errorData = error.data as { data?: ValidationErrors };
           
-          if (validationErrors.email?.code === 'validation_not_unique') {
-            setError(t('email_already_exists'));
-          } else if (validationErrors.username?.code === 'validation_not_unique') {
-            setError(t('username_already_exists'));
+          if (errorData.data) {
+            const validationErrors = errorData.data;
+            
+            if (validationErrors.email?.code === 'validation_not_unique') {
+              setError(t('email_already_exists'));
+            } else if (validationErrors.username?.code === 'validation_not_unique') {
+              setError(t('username_already_exists'));
+            } else {
+              // Get the first error message
+              const firstError = Object.values(validationErrors)[0];
+              setError(firstError?.message || t('registration_failed'));
+            }
           } else {
-            // Get the first error message
-            const firstError = Object.values(validationErrors)[0] as PocketBaseValidationError | undefined;
-            setError(firstError?.message || error.message || t('registration_failed'));
+            setError(t('registration_failed'));
           }
         } else {
-          setError(error.message || t('registration_failed'));
+          setError(t('registration_failed'));
         }
       }
     } catch (error) {

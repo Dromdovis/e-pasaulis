@@ -16,7 +16,12 @@ import {
   SearchFilterDecorator,
   SortDecorator
 } from '@/lib/patterns/decorator';
-import { ProductAdapter, CategoryAdapter } from '@/lib/patterns/adapter';
+import { 
+  ProductAdapter, 
+  CategoryAdapter,
+  type ExternalProduct,
+  type ExternalCategory
+} from '@/lib/patterns/adapter';
 
 export interface ProductFilter {
   minPrice?: number;
@@ -94,11 +99,11 @@ export class ProductService {
   }
 
   // Example of using the adapter pattern for external data
-  static adaptExternalProduct(externalProduct: any): Product {
+  static adaptExternalProduct(externalProduct: ExternalProduct): Product {
     return this.productAdapter.adaptToInternalProduct(externalProduct);
   }
 
-  static adaptExternalCategory(externalCategory: any): Category {
+  static adaptExternalCategory(externalCategory: ExternalCategory): Category {
     return this.categoryAdapter.adaptToInternalCategory(externalCategory);
   }
 } 

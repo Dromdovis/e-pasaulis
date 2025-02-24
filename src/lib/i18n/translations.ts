@@ -1,5 +1,6 @@
 export type Language = 'en' | 'lt';
 
+// We don't need to import TranslationKey here since it's only used in the LanguageContext
 export const translations = {
   en: {
     // Navigation
@@ -39,7 +40,27 @@ export const translations = {
     out_of_stock: 'Out of stock',
     add_to_cart: 'Add to cart',
     continue_shopping: 'Continue Shopping',
-    specifications: 'Specifications',
+    productSpecifications: 'Specifications',
+    writeReview: 'Write a review',
+    submitReview: 'Submit review',
+    updateReview: 'Update review',
+    reviews: 'Reviews',
+    similarProducts: 'Similar Products',
+    sortReviews: 'Sort Reviews',
+    reviewSortNewest: 'Newest First',
+    reviewSortOldest: 'Oldest First',
+    reviewSortHighest: 'Highest Rating',
+    reviewSortLowest: 'Lowest Rating',
+    noReviews: 'No reviews yet',
+    loginToReview: 'Login to write a review',
+    reviewUpdated: 'Review updated successfully',
+    reviewSubmitted: 'Review submitted successfully',
+    errorSubmittingReview: 'Error submitting review',
+    errorLoadingReviews: 'Error loading reviews',
+    product_details: 'Product details',
+    product_description: 'Description',
+    product_price: 'Price',
+    product_stock: 'Stock',
 
     // Auth related
     email: 'Email',
@@ -86,6 +107,18 @@ export const translations = {
     loading: 'Loading...',
     load_more: 'Load More',
 
+    // Form
+    select_category: 'Select category',
+
+    // Admin
+    admin: {
+      products: {
+        edit: 'Edit Product',
+        productImage: 'Product Image',
+        uploadImage: 'Upload Image'
+      }
+    },
+
     // Error messages
     invalid_credentials: 'Invalid credentials',
     registration_failed: 'Registration failed. Please check your details.',
@@ -93,6 +126,19 @@ export const translations = {
     email_already_exists: 'Email already exists',
     invalid_email: 'Invalid email address',
     password_too_short: 'Password must be at least 8 characters long',
+
+    // Error handling
+    try_again: 'Try again',
+    error_loading: 'Error loading content',
+
+    // Search
+    search_products: 'Search products',
+    search_results_for: 'Search results for',
+    no_results_found: 'No results found',
+    
+    // Error messages
+    something_went_wrong: 'Something went wrong',
+    product_not_found: 'Product not found',
   },
   lt: {
     // Navigation
@@ -132,7 +178,27 @@ export const translations = {
     out_of_stock: 'Išparduota',
     add_to_cart: 'Į krepšelį',
     continue_shopping: 'Tęsti apsipirkimą',
-    specifications: 'Specifikacijos',
+    productSpecifications: 'Specifikacijos',
+    writeReview: 'Parašyti atsiliepimą',
+    submitReview: 'Pateikti atsiliepimą',
+    updateReview: 'Atnaujinti atsiliepimą',
+    reviews: 'Atsiliepimai',
+    similarProducts: 'Panašūs produktai',
+    sortReviews: 'Rūšiuoti atsiliepimus',
+    reviewSortNewest: 'Naujausi',
+    reviewSortOldest: 'Seniausi',
+    reviewSortHighest: 'Geriausiai įvertinti',
+    reviewSortLowest: 'Prasčiausiai įvertinti',
+    noReviews: 'Atsiliepimų dar nėra',
+    loginToReview: 'Prisijunkite, kad galėtumėte parašyti atsiliepimą',
+    reviewUpdated: 'Atsiliepimas sėkmingai atnaujintas',
+    reviewSubmitted: 'Atsiliepimas sėkmingai pateiktas',
+    errorSubmittingReview: 'Klaida pateikiant atsiliepimą',
+    errorLoadingReviews: 'Klaida įkeliant atsiliepimus',
+    product_details: 'Produkto informacija',
+    product_description: 'Aprašymas',
+    product_price: 'Kaina',
+    product_stock: 'Kiekis',
 
     // Auth related
     email: 'El. paštas',
@@ -179,6 +245,18 @@ export const translations = {
     loading: 'Kraunama...',
     load_more: 'Rodyti daugiau',
 
+    // Form
+    select_category: 'Pasirinkite kategoriją',
+
+    // Admin
+    admin: {
+      products: {
+        edit: 'Redaguoti produktą',
+        productImage: 'Produkto nuotrauka',
+        uploadImage: 'Įkelti nuotrauką'
+      }
+    },
+
     // Error messages
     invalid_credentials: 'Neteisingi prisijungimo duomenys',
     registration_failed: 'Registracija nepavyko. Patikrinkite savo duomenis.',
@@ -186,5 +264,21 @@ export const translations = {
     email_already_exists: 'Toks el. paštas jau egzistuoja',
     invalid_email: 'Neteisingas el. pašto adresas',
     password_too_short: 'Slaptažodis turi būti bent 8 simbolių ilgio',
+
+    // Error handling
+    try_again: 'Bandyti dar kartą',
+    error_loading: 'Klaida įkeliant turinį',
+
+    // Search
+    search_products: 'Ieškoti produktų',
+    search_results_for: 'Paieškos rezultatai',
+    no_results_found: 'Rezultatų nerasta',
+    
+    // Error messages
+    something_went_wrong: 'Įvyko klaida',
+    product_not_found: 'Produktas nerastas',
   }
 } as const; 
+
+// Update the TranslationKey type
+export type TranslationKey = keyof typeof translations.en; 

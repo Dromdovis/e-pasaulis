@@ -14,7 +14,7 @@ type PageParams = {
 
 export default function EditCategoryPage({ params }: PageParams) {
   const router = useRouter();
-  const { t } = useLanguage();
+  const { } = useLanguage();
   const { user, isAuthenticated, isLoading, isInitialized } = useAuth();
   const [category, setCategory] = useState<Category | null>(null);
   const [loading, setLoading] = useState(true);

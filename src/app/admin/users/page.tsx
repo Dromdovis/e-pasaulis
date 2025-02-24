@@ -31,7 +31,10 @@ export default function AdminUsersPage() {
     return true;
   });
 
-  const handleFilterChange = (key: keyof typeof activeFilters, value: any) => {
+  const handleFilterChange = (
+    key: keyof typeof activeFilters,
+    value: typeof activeFilters[keyof typeof activeFilters]
+  ) => {
     setActiveFilters(prev => ({
       ...prev,
       [key]: value
@@ -116,18 +119,6 @@ export default function AdminUsersPage() {
     }
   };
 
-  const handleUpdateEmailVisibility = async () => {
-    try {
-      setError(null);
-      await AuthService.updateAllUsersEmailVisibility();
-      // Refresh the users list
-      fetchUsers();
-    } catch (err) {
-      console.error('Error updating email visibility:', err);
-      setError('Failed to update email visibility');
-    }
-  };
-
   const columns = [
     { key: 'name' as keyof AuthModel, label: 'Name', sortable: true },
     { key: 'email' as keyof AuthModel, label: 'Email', sortable: true },
@@ -196,7 +187,7 @@ export default function AdminUsersPage() {
             <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
             <select
               value={activeFilters.role || ''}
-              onChange={(e) => handleFilterChange('role', e.target.value || undefined)}
+              onChange={(e) => handleFilterChange('role', e.target.value ? e.target.value as UserRole : undefined)}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
             >
               <option value="">All Roles</option>

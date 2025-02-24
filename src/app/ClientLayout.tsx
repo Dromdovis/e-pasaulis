@@ -13,40 +13,47 @@ import { useAuth } from '@/lib/auth';
 import { useRouter } from 'next/navigation';
 import { QueryProvider } from '@/lib/providers/QueryProvider';
 
-export default function ClientLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+// Create a separate component for auth validation
+function AuthValidator({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, logout } = useAuth();
   const router = useRouter();
-  const { isAuthenticated, user } = useAuth();
 
   useEffect(() => {
     // Validate auth state on mount
     if (typeof window !== 'undefined') {
       const isValid = pb.authStore.isValid;
       if (!isValid && isAuthenticated) {
-        useAuth.getState().logout();
+        logout();
         router.refresh();
       }
     }
-  }, []);
+  }, [isAuthenticated, router, logout]);
 
+  return <>{children}</>;
+}
+
+export default function ClientLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <QueryProvider>
       <LanguageProvider>
         <CartProvider>
           <AdminProvider>
-            <div className="min-h-screen flex flex-col">
-              <Navbar />
-              <Breadcrumbs />
-              <main className="flex-grow container mx-auto px-4 py-8">
-                <Suspense fallback={<Loading />}>
-                  {children}
-                </Suspense>
-              </main>
-              <Footer />
-            </div>
+            <AuthValidator>
+              <div className="min-h-screen flex flex-col">
+                <Navbar />
+                <Breadcrumbs />
+                <main className="flex-grow container mx-auto px-4 py-8">
+                  <Suspense fallback={<Loading />}>
+                    {children}
+                  </Suspense>
+                </main>
+                <Footer />
+              </div>
+            </AuthValidator>
           </AdminProvider>
         </CartProvider>
       </LanguageProvider>

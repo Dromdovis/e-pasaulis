@@ -9,7 +9,7 @@
 import { Product, Category } from '@/types';
 
 // External API interfaces (example of what we might receive from external sources)
-interface ExternalProduct {
+export interface ExternalProduct {
   id: string;
   title: string;
   description: string;
@@ -24,7 +24,7 @@ interface ExternalProduct {
   product_type: 'physical' | 'digital';
 }
 
-interface ExternalCategory {
+export interface ExternalCategory {
   id: string;
   title_lt: string;
   title_en: string;
@@ -36,12 +36,12 @@ interface ExternalCategory {
 }
 
 // Target interfaces (our internal models)
-interface IProductAdapter {
+export interface IProductAdapter {
   adaptToInternalProduct(externalProduct: ExternalProduct): Product;
   adaptToExternalProduct(internalProduct: Product): ExternalProduct;
 }
 
-interface ICategoryAdapter {
+export interface ICategoryAdapter {
   adaptToInternalCategory(externalCategory: ExternalCategory): Category;
   adaptToExternalCategory(internalCategory: Category): ExternalCategory;
 }

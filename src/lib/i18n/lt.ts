@@ -34,6 +34,25 @@ export const lt: Translations = {
   bulk_operations: 'Masinės operacijos',
   cancel: 'Atšaukti',
   save: 'Išsaugoti pakeitimus',
+  specifications: 'Specifikacijos',
+
+  // Admin product management
+  'admin.products.edit': 'Redaguoti produktą',
+  'admin.products.productImage': 'Produkto nuotrauka',
+  'admin.products.uploadImage': 'Įkelti nuotrauką',
+
+  // Form
+  select_category: 'Pasirinkite kategoriją',
+
+  // Admin descriptions
+  'admin.users_description': 'Valdyti vartotojų paskyras ir teises',
+  'admin.products_description': 'Pridėti, redaguoti ir valdyti produktus',
+  'admin.categories_description': 'Tvarkyti produktų kategorijas',
+  'admin.favorites_description': 'Peržiūrėti vartotojų mėgstamus produktus',
+  'admin.orders_description': 'Sekti ir valdyti užsakymus',
+  'admin.reviews_description': 'Stebėti produktų atsiliepimus ir įvertinimus',
+  'admin.settings_description': 'Konfigūruoti sistemos nustatymus',
+  'admin.bulk_operations_description': 'Atlikti operacijas su keliais elementais vienu metu',
 
   // Additional keys
   invalid_credentials: 'Neteisingas el. paštas arba slaptažodis',
@@ -78,13 +97,15 @@ export const lt: Translations = {
   address: 'Adresas',
   all_rights_reserved: 'Visos teisės saugomos',
 
-  // Admin descriptions
-  'admin.users_description': 'Valdyti vartotojų paskyras ir teises',
-  'admin.products_description': 'Pridėti, redaguoti ir valdyti produktus',
-  'admin.categories_description': 'Tvarkyti produktų kategorijas',
-  'admin.favorites_description': 'Peržiūrėti vartotojų mėgstamus produktus',
-  'admin.orders_description': 'Sekti ir valdyti užsakymus',
-  'admin.reviews_description': 'Stebėti produktų atsiliepimus ir įvertinimus',
-  'admin.settings_description': 'Konfigūruoti sistemos nustatymus',
-  'admin.bulk_operations_description': 'Atlikti operacijas su keliais elementais vienu metu'
+  // New translations
+  newest: 'Naujausi',
+  price_low_high: 'Kaina: nuo mažiausios',
+  price_high_low: 'Kaina: nuo didžiausios',
+  try_again: 'Bandyti dar kartą',
+  no_products_found: 'Produktų nerasta',
+  sort_newest: 'Naujausi',
+  sort_price_low_high: 'Kaina: Nuo mažiausios',
+  sort_price_high_low: 'Kaina: Nuo didžiausios',
+  sort_name_a_z: 'Pavadinimas: A-Ž',
+  sort_name_z_a: 'Pavadinimas: Ž-A',
 }; 

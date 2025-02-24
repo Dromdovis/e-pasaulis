@@ -85,10 +85,6 @@ export default function CartPage() {
   const total = products.reduce((sum, product) => 
     sum + (product.price * product.quantity), 0);
 
-  const fetchProductDetails = async (productId: string): Promise<Product> => {
-    return await pb.collection('products').getOne(productId);
-  };
-
   if (loading) {
     return <div className="p-8">Loading cart...</div>;
   }

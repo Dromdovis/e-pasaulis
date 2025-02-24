@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { AuthService } from '@/lib/auth';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { pb } from '@/lib/db';
-import { Product, ProductType } from '@/types';
+import { Product } from '@/types';
 import BulkProductEdit from '@/components/admin/BulkProductEdit';
 
 export default function BulkOperationsPage() {
@@ -94,7 +94,7 @@ export default function BulkOperationsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Bulk Operations</h1>
+      <h1 className="text-2xl font-bold">{t('bulk_operations')}</h1>
 
       {error && (
         <div className="bg-red-50 p-4 rounded-md">
@@ -121,10 +121,10 @@ export default function BulkOperationsPage() {
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           <div className="p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Update Email Visibility
+              {t('email')}
             </h3>
             <p className="text-gray-600 mb-4">
-              Make all user emails visible in the admin panel.
+              {t('admin.users_description')}
             </p>
             <button
               onClick={handleUpdateEmailVisibility}
@@ -133,7 +133,7 @@ export default function BulkOperationsPage() {
                 loading ? 'opacity-50 cursor-not-allowed' : ''
               }`}
             >
-              {loading ? 'Processing...' : 'Update All Users'}
+              {loading ? t('loading') : t('save')}
             </button>
           </div>
         </div>
@@ -142,10 +142,10 @@ export default function BulkOperationsPage() {
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           <div className="p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Bulk Price Update
+              {t('products')}
             </h3>
             <p className="text-gray-600 mb-4">
-              Update prices of all products by a percentage.
+              {t('admin.products_description')}
             </p>
             <div className="flex space-x-2">
               <button
@@ -170,10 +170,10 @@ export default function BulkOperationsPage() {
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           <div className="p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Bulk Stock Update
+              {t('products')}
             </h3>
             <p className="text-gray-600 mb-4">
-              Update stock levels of all products.
+              {t('admin.products_description')}
             </p>
             <div className="flex space-x-2">
               <button
@@ -181,14 +181,14 @@ export default function BulkOperationsPage() {
                 disabled={loading}
                 className="flex-1 bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 transition-colors disabled:opacity-50"
               >
-                -1 Stock
+                -1
               </button>
               <button
                 onClick={() => handleUpdateProductStock(1)}
                 disabled={loading}
                 className="flex-1 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition-colors disabled:opacity-50"
               >
-                +1 Stock
+                +1
               </button>
             </div>
           </div>

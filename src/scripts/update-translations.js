@@ -28,10 +28,10 @@ async function updateCategoryTranslations() {
         for (const category of categories) {
             // Find matching translation by comparing Lithuanian name
             const translationEntry = Object.entries(categoryTranslations)
-                .find(([_, trans]) => trans.lt === category.name_lt);
+                .find(([, trans]) => trans.lt === category.name_lt);
             
             if (translationEntry) {
-                const [key, translations] = translationEntry;
+                const [, translations] = translationEntry;
                 
                 try {
                     await pb.collection('categories').update(category.id, {

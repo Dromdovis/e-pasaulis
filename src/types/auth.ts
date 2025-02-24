@@ -16,10 +16,6 @@ export interface AuthModel {
   emailVisibility: boolean;
 }
 
-export interface User extends AuthModel {
-  // Additional user-specific fields can be added here
-}
-
 export interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -32,4 +28,5 @@ export interface AuthState {
   login: (email: string, password: string) => Promise<AuthModel>;
   logout: () => void;
   register: (email: string, password: string, name: string) => Promise<void>;
+  refreshUser: () => Promise<void>;
 } 

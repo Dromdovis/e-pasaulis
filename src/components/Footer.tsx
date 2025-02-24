@@ -6,55 +6,50 @@ export default function Footer() {
   const { t } = useLanguage();
 
   return (
-    <footer className="bg-[rgb(var(--card-bg))] shadow-lg mt-auto">
-      <div className="max-w-7xl mx-auto px-4 py-8">
+    <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
+      <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* About Section */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">{t('about_us')}</h3>
-            <p className="text-secondary-600 dark:text-secondary-300">
+          <div>
+            <h3 className="text-lg font-semibold mb-4">{t('about_us')}</h3>
+            <p className="text-gray-600 dark:text-gray-400">
               {t('about_description')}
             </p>
           </div>
 
           {/* Quick Links */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">{t('quick_links')}</h3>
+          <div>
+            <h3 className="text-lg font-semibold mb-4">{t('quick_links')}</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/about" className="text-secondary-600 dark:text-secondary-300 hover:text-primary-600">
+                <Link href="/about" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
                   {t('about')}
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-secondary-600 dark:text-secondary-300 hover:text-primary-600">
+                <Link href="/contact" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
                   {t('contact')}
-                </Link>
-              </li>
-              <li>
-                <Link href="/shipping" className="text-secondary-600 dark:text-secondary-300 hover:text-primary-600">
-                  {t('shipping_info')}
                 </Link>
               </li>
             </ul>
           </div>
 
           {/* Customer Service */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">{t('customer_service')}</h3>
+          <div>
+            <h3 className="text-lg font-semibold mb-4">{t('customer_service')}</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/faq" className="text-secondary-600 dark:text-secondary-300 hover:text-primary-600">
+                <Link href="/faq" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
                   {t('faq')}
                 </Link>
               </li>
               <li>
-                <Link href="/returns" className="text-secondary-600 dark:text-secondary-300 hover:text-primary-600">
+                <Link href="/returns" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
                   {t('returns')}
                 </Link>
               </li>
               <li>
-                <Link href="/support" className="text-secondary-600 dark:text-secondary-300 hover:text-primary-600">
+                <Link href="/support" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
                   {t('support')}
                 </Link>
               </li>
@@ -62,18 +57,18 @@ export default function Footer() {
           </div>
 
           {/* Contact Info */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">{t('contact_us')}</h3>
-            <ul className="space-y-2 text-secondary-600 dark:text-secondary-300">
-              <li>{t('email')}: info@e-pasaulis.lt</li>
-              <li>{t('phone')}: +370 63605050</li>
-              <li>{t('address')}: Klaipėda, Lithuania</li>
+          <div>
+            <h3 className="text-lg font-semibold mb-4">{t('contact_us')}</h3>
+            <ul className="space-y-2 text-gray-600 dark:text-gray-400">
+              <li>{t('phone')}: +370 XXX XXXXX</li>
+              <li>{t('email')}: info@example.com</li>
+              <li>{t('address')}: Kaunas, Lithuania</li>
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-secondary-200 dark:border-secondary-700 mt-8 pt-8 text-center text-secondary-600 dark:text-secondary-300">
-          <p>&copy; {new Date().getFullYear()} E-Pasaulis. {t('all_rights_reserved')}</p>
+        <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-800 text-center text-gray-600 dark:text-gray-400">
+          <p>&copy; {new Date().getFullYear()} Your Company. {t('all_rights_reserved')}</p>
         </div>
       </div>
     </footer>

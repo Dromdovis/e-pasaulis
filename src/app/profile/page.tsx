@@ -4,18 +4,29 @@ import { useAuth } from '@/lib/auth';
 import { pb } from '@/lib/db';
 import Image from 'next/image';
 import { User } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function ProfilePage() {
+  const router = useRouter();
   const { user, refreshUser } = useAuth();
   const [isUploading, setIsUploading] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+
+  // Redirect if not logged in
+  if (!user) {
+    router.push('/login');
+    return null;
+  }
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.[0]) return;
     
     setIsUploading(true);
+    setError(null);
     try {
       const formData = new FormData();
       formData.append('avatar', e.target.files[0]);
@@ -24,6 +35,7 @@ export default function ProfilePage() {
       await refreshUser();
     } catch (error) {
       console.error('Failed to update avatar:', error);
+      setError('Failed to update avatar. Please try again.');
     } finally {
       setIsUploading(false);
     }
@@ -31,9 +43,13 @@ export default function ProfilePage() {
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!currentPassword || !newPassword) return;
+    if (!currentPassword || !newPassword) {
+      setPasswordError('Please fill in both password fields');
+      return;
+    }
 
     setIsUpdating(true);
+    setPasswordError(null);
     try {
       await pb.collection('users').update(user.id, {
         oldPassword: currentPassword,
@@ -44,6 +60,7 @@ export default function ProfilePage() {
       setNewPassword('');
     } catch (error) {
       console.error('Failed to update password:', error);
+      setPasswordError('Failed to update password. Please check your current password and try again.');
     } finally {
       setIsUpdating(false);
     }
@@ -58,7 +75,7 @@ export default function ProfilePage() {
         <h2 className="text-lg font-semibold mb-4">Profilio nuotrauka</h2>
         <div className="flex items-center gap-6">
           <div className="relative w-24 h-24">
-            {user?.avatar ? (
+            {user.avatar ? (
               <Image
                 src={user.avatar}
                 alt="Profile"
@@ -71,18 +88,23 @@ export default function ProfilePage() {
               </div>
             )}
           </div>
-          <label className="cursor-pointer">
-            <span className="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-md">
-              {isUploading ? 'Įkeliama...' : 'Pakeisti nuotrauką'}
-            </span>
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleAvatarChange}
-              disabled={isUploading}
-            />
-          </label>
+          <div className="flex flex-col gap-2">
+            <label className="cursor-pointer">
+              <span className="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-md">
+                {isUploading ? 'Įkeliama...' : 'Pakeisti nuotrauką'}
+              </span>
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleAvatarChange}
+                disabled={isUploading}
+              />
+            </label>
+            {error && (
+              <p className="text-red-500 text-sm">{error}</p>
+            )}
+          </div>
         </div>
       </div>
 
@@ -99,7 +121,7 @@ export default function ProfilePage() {
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               className="w-full px-3 py-2 border rounded-md"
-              required
+              disabled={isUpdating}
             />
           </div>
           <div>
@@ -111,13 +133,16 @@ export default function ProfilePage() {
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               className="w-full px-3 py-2 border rounded-md"
-              required
+              disabled={isUpdating}
             />
           </div>
+          {passwordError && (
+            <p className="text-red-500 text-sm">{passwordError}</p>
+          )}
           <button
             type="submit"
-            disabled={isUpdating}
             className="bg-primary-600 text-white px-4 py-2 rounded-md hover:bg-primary-700 disabled:opacity-50"
+            disabled={isUpdating}
           >
             {isUpdating ? 'Atnaujinama...' : 'Atnaujinti slaptažodį'}
           </button>

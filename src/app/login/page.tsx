@@ -1,8 +1,6 @@
-/* eslint-disable react/no-unescaped-entities */
 // src/app/login/page.tsx
 'use client';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import Link from 'next/link';
@@ -11,7 +9,6 @@ import { Eye, EyeOff } from 'lucide-react';
 
 export default function LoginPage() {
   const { t } = useLanguage();
-  const router = useRouter();
   const { login, isLoading, intendedPath, isAuthenticated, user, initialize, isInitialized } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -32,20 +29,20 @@ export default function LoginPage() {
         ? '/admin'
         : intendedPath || '/';
       
-      // Use router.push for client-side navigation
-      router.push(redirectPath);
+      // Use window.location.href for hard navigation
+      window.location.href = redirectPath;
     }
-  }, [isInitialized, isAuthenticated, user, intendedPath, router]);
+  }, [isInitialized, isAuthenticated, user, intendedPath]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
     try {
-      const user = await login(email, password);
-      
+      await login(email, password);
       // Let the useEffect handle the redirect
     } catch (error) {
+      console.error('Login error:', error);
       setError(t('invalid_credentials'));
     }
   };

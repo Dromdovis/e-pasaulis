@@ -1,95 +1,111 @@
 'use client';
 
-import { useLanguage } from '@/lib/i18n/LanguageContext';
-import type { TranslationKey } from '@/lib/i18n/types';
-import { 
-  Users, 
-  Package, 
-  FolderTree, 
-  Heart, 
-  ShoppingCart, 
-  Star,
-  Settings,
-  Database,
-  ShoppingBag
-} from 'lucide-react';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/auth';
+import { UserRole } from '@/types/auth';
+import { Users, Package, Folder, Star, Upload } from 'lucide-react';
 import Link from 'next/link';
-import { CategoryIcon } from '@/components/icons/CategoryIcon';
 
 interface DashboardCard {
-  title: TranslationKey;
-  description: TranslationKey;
+  title: string;
+  description: string;
   href: string;
   icon: React.ElementType;
   color: string;
 }
 
 export default function AdminDashboard() {
-  const { t } = useLanguage();
+  const router = useRouter();
+  const { user, isAuthenticated, isLoading, isInitialized } = useAuth();
+
+  useEffect(() => {
+    if (isInitialized && !isLoading) {
+      if (!isAuthenticated) {
+        router.push('/login');
+        return;
+      }
+      
+      if (!user || (user.role !== UserRole.ADMIN && user.role !== UserRole.SUPER_ADMIN)) {
+        router.push('/');
+        return;
+      }
+    }
+  }, [isInitialized, isLoading, isAuthenticated, user, router]);
+
+  if (isLoading || !isInitialized) {
+    return (
+      <div className="flex justify-center items-center min-h-[50vh]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
 
   const dashboardCards: DashboardCard[] = [
     {
-      title: 'users',
-      description: 'admin.users_description',
+      title: 'Users',
+      description: 'Manage user accounts, roles, and permissions',
       href: '/admin/users',
       icon: Users,
       color: 'bg-blue-500'
     },
     {
-      title: 'products',
-      description: 'admin.products_description',
+      title: 'Products',
+      description: 'Add, edit, and manage product listings',
       href: '/admin/products',
-      icon: ShoppingBag,
+      icon: Package,
       color: 'bg-green-500'
     },
     {
-      title: 'reviews',
-      description: 'admin.reviews_description',
-      href: '/admin/reviews',
-      icon: Star,
+      title: 'Categories',
+      description: 'Organize products with categories',
+      href: '/admin/categories',
+      icon: Folder,
       color: 'bg-yellow-500'
     },
     {
-      title: 'bulk_operations',
-      description: 'admin.bulk_operations_description',
-      href: '/admin/bulk',
-      icon: Database,
-      color: 'bg-indigo-500'
+      title: 'Reviews',
+      description: 'Monitor and moderate product reviews',
+      href: '/admin/reviews',
+      icon: Star,
+      color: 'bg-purple-500'
     },
     {
-      title: 'categories',
-      description: 'admin.categories_description',
-      href: '/admin/categories',
-      icon: CategoryIcon,
-      color: 'bg-purple-500'
+      title: 'Bulk Operations',
+      description: 'Import/export products and perform bulk updates',
+      href: '/admin/bulk',
+      icon: Upload,
+      color: 'bg-red-500'
     }
   ];
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">{t('admin_panel')}</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {dashboardCards.map((card) => (
-          <Link
-            key={card.title}
-            href={card.href}
-            className="block group"
-          >
-            <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200">
-              <div className={`p-4 ${card.color}`}>
-                <card.icon className="h-6 w-6 text-white" />
+        {dashboardCards.map((card) => {
+          const Icon = card.icon;
+          return (
+            <Link
+              key={card.href}
+              href={card.href}
+              className="block p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
+            >
+              <div className="flex items-center space-x-4">
+                <div className={`p-3 rounded-full ${card.color}`}>
+                  <Icon className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold">{card.title}</h2>
+                  <p className="text-gray-600 mt-1">{card.description}</p>
+                </div>
               </div>
-              <div className="p-4">
-                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-primary-600">
-                  {t(card.title)}
-                </h3>
-                <p className="mt-1 text-sm text-gray-500">
-                  {t(card.description)}
-                </p>
-              </div>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

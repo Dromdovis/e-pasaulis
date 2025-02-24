@@ -12,8 +12,11 @@ export function QueryProvider({ children }: { children: ReactNode }) {
           queries: {
             staleTime: 60 * 1000, // 1 minute
             gcTime: 5 * 60 * 1000, // 5 minutes
-            retry: 1,
-            refetchOnWindowFocus: false,
+            retry: 3, // Increase retries in production
+            retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+            refetchOnWindowFocus: true, // Enable refetch on window focus in production
+            refetchOnReconnect: true, // Enable refetch on reconnect
+            refetchOnMount: true, // Enable refetch on mount
           },
         },
       })

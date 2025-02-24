@@ -30,7 +30,10 @@ export default function ReviewsPage() {
     return true;
   });
 
-  const handleFilterChange = (key: keyof typeof activeFilters, value: any) => {
+  const handleFilterChange = (
+    key: keyof typeof activeFilters,
+    value: typeof activeFilters[keyof typeof activeFilters]
+  ) => {
     setActiveFilters(prev => ({
       ...prev,
       [key]: value

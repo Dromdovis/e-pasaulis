@@ -3,6 +3,15 @@ import { StockSubject, StockNotifier } from '../lib/patterns/observer';
 import { Product } from '../types';
 import { pb } from '../lib/db';
 
+interface ProductData {
+  id?: string;
+  name: string;
+  price: number;
+  specifications: Record<string, string | number | boolean>;
+  stock?: number;
+  category: string;
+}
+
 export class ProductService {
   private stockSubject: StockSubject;
   private stockNotifier: StockNotifier;
@@ -13,10 +22,10 @@ export class ProductService {
     this.stockSubject.attach(this.stockNotifier);
   }
 
-  async createProduct(type: string, productData: any): Promise<Product> {
+  async createProduct(type: string, productData: ProductData): Promise<Product> {
     // Create product using factory pattern
     const product = ProductFactory.createProduct(type, {
-      id: productData.id,
+      id: productData.id || crypto.randomUUID(),
       name: productData.name,
       price: productData.price,
       specifications: productData.specifications,
