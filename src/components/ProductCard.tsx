@@ -10,7 +10,7 @@ import type { Product } from '@/types';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { memo, useCallback } from 'react';
 
-const ProductCard = memo(({ product }: { product: Product }) => {
+const ProductCard = memo(({ product, isPriority = false }: { product: Product; isPriority?: boolean }) => {
   const { t } = useLanguage();
   
   // Split store selectors to minimize re-renders
@@ -24,7 +24,7 @@ const ProductCard = memo(({ product }: { product: Product }) => {
 
   const imageUrl = product.image 
     ? `${pb.baseUrl}/api/files/${product.collectionId}/${product.id}/${product.image}`
-    : '/no-image.jpg';
+    : '/no-image400.jpg';
 
   const handleAction = useCallback((e: React.MouseEvent, action: () => void) => {
     e.preventDefault();
@@ -49,8 +49,8 @@ const ProductCard = memo(({ product }: { product: Product }) => {
             fill
             className="object-cover absolute top-0 left-0"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            priority={false}
-            loading="lazy"
+            priority={isPriority}
+            loading={isPriority ? undefined : 'lazy'}
             quality={75}
           />
           <div className="absolute top-2 right-2 flex gap-2">

@@ -1,14 +1,18 @@
+'use client';
+
 import { Suspense } from 'react';
 import ProductDetails from '../../product/[id]/ProductDetails';
 import { Reviews } from '@/components/Reviews';
 import { SimilarProducts } from '@/components/SimilarProducts';
 import { useScrollRestoration } from '@/lib/hooks/useScrollRestoration';
 
-export default function ProductsPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+interface ProductPageProps {
+  params: {
+    id: string;
+  };
+}
+
+export default function ProductsPage({ params }: ProductPageProps) {
   // Add scroll restoration
   const { isRestoring } = useScrollRestoration(`products_page_${params.id}`);
 

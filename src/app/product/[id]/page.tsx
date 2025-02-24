@@ -5,9 +5,14 @@ import { pb } from '@/lib/db';
 import { notFound } from 'next/navigation';
 import ProductDetails from './ProductDetails';
 import type { Product } from '@/types';
+import { Reviews } from '@/components/Reviews';
+import { SimilarProducts } from '@/components/SimilarProducts';
+import { getDynamicParam } from '@/lib/utils/params';
 
 interface Props {
-  params: { id: string };
+  params: {
+    id: string;
+  };
 }
 
 export async function generateMetadata(
@@ -15,7 +20,8 @@ export async function generateMetadata(
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   try {
-    const product = await pb.collection('products').getOne<Product>(params.id);
+    const id = await getDynamicParam(params.id);
+    const product = await pb.collection('products').getOne<Product>(id);
     
     const previousImages = (await parent).openGraph?.images || [];
     
@@ -41,30 +47,33 @@ export async function generateMetadata(
 
 // Main page component
 export default async function ProductPage({ params }: Props) {
-  const id = await params.id;
-  if (!id) {
-    notFound();
-  }
-
-  return (
-    <Suspense fallback={
-      <div className="max-w-7xl mx-auto p-8">
-        <div className="animate-pulse">
-          <div className="h-8 w-64 bg-gray-200 rounded mb-8"></div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="aspect-square bg-gray-200 rounded"></div>
-            <div className="space-y-4">
-              <div className="h-8 w-48 bg-gray-200 rounded"></div>
-              <div className="h-24 w-full bg-gray-200 rounded"></div>
-              <div className="h-12 w-full bg-gray-200 rounded"></div>
+  try {
+    const id = await getDynamicParam(params.id);
+    
+    return (
+      <Suspense fallback={
+        <div className="max-w-7xl mx-auto p-8">
+          <div className="animate-pulse">
+            <div className="h-8 w-64 bg-gray-200 rounded mb-8"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="aspect-square bg-gray-200 rounded"></div>
+              <div className="space-y-4">
+                <div className="h-8 w-48 bg-gray-200 rounded"></div>
+                <div className="h-24 w-full bg-gray-200 rounded"></div>
+                <div className="h-12 w-full bg-gray-200 rounded"></div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    }>
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <ProductDetails productId={id} />
-      </div>
-    </Suspense>
-  );
+      }>
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <ProductDetails productId={id} />
+          <SimilarProducts currentProductId={id} categoryId={''} />
+          <Reviews productId={id} />
+        </div>
+      </Suspense>
+    );
+  } catch (error) {
+    notFound();
+  }
 }

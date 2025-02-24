@@ -50,8 +50,13 @@ export default function ProductDetails({ productId }: { productId: string }) {
     };
   }, [productId]);
 
-  const getImageUrl = (filename?: string) => {
-    if (!product || !filename) return '/no-image.jpg';
+  const getImageUrl = (filename?: string, isMainImage = false) => {
+    if (!product || !filename) {
+      // Use different sizes based on context
+      return isMainImage 
+        ? '/no-image800.jpg'    // Main product image
+        : '/no-image200.jpg';   // Thumbnail gallery
+    }
     return `${pb.baseUrl}/api/files/${product.collectionId}/${product.id}/${filename}`;
   };
 
@@ -141,12 +146,13 @@ export default function ProductDetails({ productId }: { productId: string }) {
         <div className="space-y-4">
           <div className="relative aspect-square bg-white rounded-lg overflow-hidden border border-gray-200">
             <Image
-              src={getImageUrl(selectedImage || product.image || '')}
+              src={getImageUrl(selectedImage || product.image || '', true)}
               alt={product.name}
               width={500}
               height={500}
               className="w-full h-auto rounded-lg"
-              priority
+              priority={true}
+              quality={85}
             />
           </div>
           
@@ -159,7 +165,7 @@ export default function ProductDetails({ productId }: { productId: string }) {
                   ${selectedImage === img ? 'border-blue-500' : 'border-gray-200 hover:border-blue-300'}`}
               >
                 <Image
-                  src={getImageUrl(img)}
+                  src={getImageUrl(img, false)}
                   alt={`${product.name} thumbnail ${index + 1}`}
                   fill
                   className="object-contain"
