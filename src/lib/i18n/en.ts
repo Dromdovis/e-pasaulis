@@ -14,6 +14,7 @@ export const en: TranslationKeys = {
   admin_panel: 'Admin Panel',
   users: 'Users',
   products: 'Products',
+  settings: 'Settings',
 
   // Categories
   categories: 'Categories',
@@ -164,5 +165,13 @@ export const en: TranslationKeys = {
 
   // Dialog actions
   cancel: 'Cancel',
-  confirm: 'Confirm'
+  confirm: 'Confirm',
+
+  // Language selection
+  select_language: 'EN',
+  language_en: 'English',
+  language_lt: 'Lithuanian',
+
+  // Search
+  search_placeholder: 'Search among {{count}} products...'
 } as const; 

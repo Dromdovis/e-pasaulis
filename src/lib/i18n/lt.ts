@@ -14,6 +14,7 @@ export const lt: TranslationKeys = {
   admin_panel: 'Administratoriaus skydelis',
   users: 'Vartotojai',
   products: 'Produktai',
+  settings: 'Nustatymai',
 
   // Categories
   categories: 'Kategorijos',
@@ -137,6 +138,7 @@ export const lt: TranslationKeys = {
   search_results_for: 'Paieškos rezultatai',
   no_results_found: 'Rezultatų nerasta',
   no_products_found: 'Tokių prekių nerasta',
+  search_placeholder: 'Ieškokite tarp {{count}} prekių...',
   
   // Error messages
   something_went_wrong: 'Įvyko klaida',
@@ -164,5 +166,10 @@ export const lt: TranslationKeys = {
 
   // Dialog actions
   cancel: 'Atšaukti',
-  confirm: 'Patvirtinti'
+  confirm: 'Patvirtinti',
+
+  // Language selection
+  select_language: 'LT',
+  language_en: 'Anglų',
+  language_lt: 'Lietuvių'
 } as const; 

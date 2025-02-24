@@ -1,13 +1,16 @@
 'use client';
 import { createPortal } from 'react-dom';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface LanguageDropdownProps {
-  onSelect: (lang: 'en' | 'lt') => void;
+  onSelect: (lang: string) => void;
   onClose: () => void;
-  buttonRect: DOMRect | null;
+  buttonRect: DOMRect | undefined;
 }
 
 export function LanguageDropdown({ onSelect, onClose, buttonRect }: LanguageDropdownProps) {
+  const { t } = useLanguage();
+  
   if (!buttonRect) return null;
 
   return createPortal(
@@ -26,7 +29,7 @@ export function LanguageDropdown({ onSelect, onClose, buttonRect }: LanguageDrop
         }}
         className="w-full px-4 py-2 text-left hover:bg-secondary-100 dark:hover:bg-secondary-700"
       >
-        English
+        {t('language_en')}
       </button>
       <button
         onClick={() => {
@@ -35,7 +38,7 @@ export function LanguageDropdown({ onSelect, onClose, buttonRect }: LanguageDrop
         }}
         className="w-full px-4 py-2 text-left hover:bg-secondary-100 dark:hover:bg-secondary-700"
       >
-        Lietuvių
+        {t('language_lt')}
       </button>
     </div>,
     document.body

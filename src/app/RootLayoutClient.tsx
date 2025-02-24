@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { Providers } from '@/lib/providers';
 import Navbar from '@/components/Navbar';
@@ -12,25 +12,24 @@ export default function RootLayoutClient({
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
-
-  useEffect(() => {
-    // Enable smooth scrolling
-    document.documentElement.style.scrollBehavior = 'smooth';
-
-    return () => {
-      document.documentElement.style.scrollBehavior = 'auto';
-    };
-  }, []);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <Providers>
       <div className="flex flex-col min-h-screen">
-        <Navbar />
-        <Breadcrumbs />
-        <main className="flex-grow bg-gray-100 pt-4">
-          {children}
-        </main>
+        <Navbar 
+          mobileMenuOpen={mobileMenuOpen} 
+          onMobileMenuClose={() => setMobileMenuOpen(false)} 
+          onMobileMenuOpen={() => setMobileMenuOpen(true)}
+        />
+        
+        <div className="flex-grow bg-[rgb(var(--background))]">
+          <Breadcrumbs />
+          <main className="min-h-screen">
+            {children}
+          </main>
+        </div>
+        
         <Footer />
       </div>
     </Providers>

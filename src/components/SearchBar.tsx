@@ -1,35 +1,26 @@
 'use client';
 
-import { useState } from 'react';
 import { Search } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { useProductCount } from '@/lib/hooks/useProductCount';
 
 export function SearchBar() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
   const { t } = useLanguage();
+  const { data: productCount = 0 } = useProductCount();
 
   return (
-    <div className="relative">
-      <button 
-        onClick={() => setIsOpen(!isOpen)}
-        className="p-2 hover:bg-gray-100 rounded-full"
-      >
-        <Search className="w-5 h-5" />
-      </button>
-
-      {isOpen && (
-        <div className="absolute top-full right-0 mt-2 w-96 bg-white rounded-lg shadow-lg p-4">
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder={t('search_products')}
-            className="w-full p-2 border rounded-lg"
-          />
-          {/* Add search results here */}
-        </div>
-      )}
+    <div className="relative w-full">
+      <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+        <Search className="h-5 w-5 text-gray-400" />
+      </div>
+      <input
+        type="text"
+        placeholder={t('search_placeholder', { count: productCount.toLocaleString() })}
+        className="w-full pl-10 pr-4 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-full 
+        text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400
+        focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
+        transition-colors duration-200"
+      />
     </div>
   );
 } 

@@ -10,7 +10,7 @@ import type { TranslationKey } from './types';
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (key: TranslationKey) => string;
+  t: (key: TranslationKey, params?: Record<string, string | number>) => string;
   isInitialized: boolean;
 }
 
@@ -40,13 +40,15 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     }
   }, [language, isInitialized]);
 
-  const t = useCallback((key: TranslationKey): string => {
-    const translation = translations[language]?.[key];
-    if (!translation) {
-      console.warn(`Translation missing for key: ${key} in language: ${language}`);
-      // Fallback to English if translation is missing
-      return translations.en[key] || key;
+  const t = useCallback((key: TranslationKey, params?: Record<string, string | number>): string => {
+    let translation = translations[language]?.[key] || translations.en[key] || key;
+    
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        translation = translation.replace(`{{${key}}}`, String(value));
+      });
     }
+    
     return translation;
   }, [language]);
 

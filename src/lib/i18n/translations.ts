@@ -8,6 +8,7 @@ export type TranslationKeys = {
   register: string;
   logout: string;
   profile: string;
+  settings: string;
   cart: string;
   favorites: string;
   filter: string;
@@ -164,6 +165,14 @@ export type TranslationKeys = {
   error_deleting_review: string;
   cancel: string;
   confirm: string;
+
+  // New translations
+  select_language: string;
+  language_en: string;
+  language_lt: string;
+
+  // New translations
+  search_placeholder: string;
 };
 
 // Define the translations object with language-specific values
@@ -175,6 +184,7 @@ export const translations: Record<Language, TranslationKeys> = {
     register: 'Register',
     logout: 'Logout',
     profile: 'Profile',
+    settings: 'Settings',
     cart: 'Cart',
     favorites: 'Favorites',
     filter: 'Filter',
@@ -330,7 +340,15 @@ export const translations: Record<Language, TranslationKeys> = {
     delete_confirm: 'Are you sure you want to delete this review?',
     error_deleting_review: 'Error deleting review',
     cancel: 'Cancel',
-    confirm: 'Confirm'
+    confirm: 'Confirm',
+
+    // New translations
+    select_language: 'Language',
+    language_en: 'English',
+    language_lt: 'Lithuanian',
+    favorites: 'Favorites',
+    cart: 'Cart',
+    search_placeholder: 'Search among {{count}} products...',
   },
   lt: {
     // Navigation
@@ -339,6 +357,7 @@ export const translations: Record<Language, TranslationKeys> = {
     register: 'Registruotis',
     logout: 'Atsijungti',
     profile: 'Profilis',
+    settings: 'Nustatymai',
     cart: 'Krepšelis',
     favorites: 'Mėgstami',
     filter: 'Filtruoti',
@@ -494,7 +513,15 @@ export const translations: Record<Language, TranslationKeys> = {
     delete_confirm: 'Ar tikrai norite pašalinti šį atsiliepimą?',
     error_deleting_review: 'Klaida pašalinant atsiliepimą',
     cancel: 'Atšaukti',
-    confirm: 'Patvirtinti'
+    confirm: 'Patvirtinti',
+
+    // New translations
+    select_language: 'Kalba',
+    language_en: 'English',
+    language_lt: 'Lithuanian',
+    favorites: 'Mėgstami',
+    cart: 'Krepšelis',
+    search_placeholder: 'Ieškokite tarp {{count}} produktų...',
   }
 } as const;
 

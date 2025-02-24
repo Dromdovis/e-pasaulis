@@ -66,6 +66,19 @@ export default function ProductGrid({
     refetch();
   };
 
+  const getLoadingCardCount = () => {
+    if (typeof window !== 'undefined') {
+      const width = window.innerWidth;
+      if (width >= 1536) return 6; // 2xl
+      if (width >= 1280) return 5; // xl
+      if (width >= 1024) return 4; // lg
+      if (width >= 768) return 3; // md
+      if (width >= 640) return 2; // sm
+      return 1;
+    }
+    return 4;
+  };
+
   if (isLoading || isRestoring) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -93,7 +106,7 @@ export default function ProductGrid({
           <p>{t('no_products_found' as TranslationKey)}</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 auto-rows-fr">
           {products.map((product, index) => (
             <ProductCard 
               key={product.id} 
@@ -102,9 +115,13 @@ export default function ProductGrid({
             />
           ))}
           {isFetchingNextPage && (
-            [...Array(4)].map((_, i) => <ProductCardSkeleton key={`loading-${i}`} />)
+            <>
+              {Array.from({ length: getLoadingCardCount() }).map((_, i) => (
+                <ProductCardSkeleton key={`loading-${i}`} />
+              ))}
+            </>
           )}
-          <div ref={ref} />
+          <div ref={ref} className="col-span-full h-1" />
         </div>
       )}
     </div>
