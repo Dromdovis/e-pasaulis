@@ -2,7 +2,6 @@
 
 import { Suspense } from 'react';
 import ProductDetails from '../../product/[id]/ProductDetails';
-import { Reviews } from '@/components/Reviews';
 import { SimilarProducts } from '@/components/SimilarProducts';
 import { useScrollRestoration } from '@/lib/hooks/useScrollRestoration';
 
@@ -24,7 +23,6 @@ export default function ProductsPage({ params }: ProductPageProps) {
         <>
           <ProductDetails productId={params.id} />
           <SimilarProducts currentProductId={params.id} categoryId={''} />
-          <Reviews productId={params.id} />
         </>
       )}
     </Suspense>

@@ -1,0 +1,344 @@
+              thumbnail_uploaded = False
+  
++             # Build a list of all file paths to upload at the end
++             thumbnail_file = None
++             gallery_files = []
++             
+              # Process each image individually
+              async with aiohttp.ClientSession() as session:
+...
+                              # Read image data into memory
+                              image_data = await response.read()
+-                             mime_type = f"image/{ext}"
+                              
+-                             # Save image to temporary file first to avoid URL query issues
++                             # Save image to temporary file
+                              temp_file_path = os.path.join(self.images_dir, filename)
+                              with open(temp_file_path, 'wb') as f:
+                                  f.write(image_data)
+                              
+-                             try:
+-                                 # The first image (i==0) becomes the thumbnail
++                             # Store file paths for later upload
+                              if i == 0:
+-                                     # Use PocketBase's direct file handling API
+-                                     with open(temp_file_path, 'rb') as file:
+-                                         files = {
+-                                             'image': (filename, file, mime_type)
+-                                         }
+-                                         # Direct API call instead of SDK method to have more control
+-                                         result = self.pb_client.send('/api/collections/products/records/' + product_id, {
+-                                             'method': 'PATCH',
+-                                             'files': files,
+-                                         })
++                                 thumbnail_file = temp_file_path
++                             else:
++                                 gallery_files.append(temp_file_path)
++                                 
++                     except aiohttp.ClientError as e:
++                         logger.error(f"Connection error downloading image {i+1} for {product_name}: {e}")
++                         continue
++                     except Exception as e:
++                         logger.error(f"Unexpected error processing image {i+1} for {product_name}: {e}")
++                         continue
++             
++             # Now upload the thumbnail first
++             if thumbnail_file:
++                 try:
++                     # Use requests directly for more reliable multipart upload
++                     import requests
++                     
++                     pb_url = os.getenv('NEXT_PUBLIC_POCKETBASE_URL', 'http://127.0.0.1:8090')
++                     endpoint = f"{pb_url}/api/collections/products/records/{product_id}"
++                     
++                     # Get the auth token from PocketBase client
++                     auth_token = self.pb_client.auth_store.token
++                     
++                     # Upload thumbnail
++                     with open(thumbnail_file, 'rb') as file:
++                         files = {'image': (os.path.basename(thumbnail_file), file, f'image/{os.path.splitext(thumbnail_file)[1][1:]}' or 'image/jpeg')}
++                         headers = {'Authorization': f"Bearer {auth_token}"}
++                         
++                         response = requests.patch(endpoint, files=files, headers=headers)
++                         
++                         if response.status_code == 200:
+                              logger.info(f"Successfully uploaded thumbnail image for product {product_id}")
+                              thumbnail_uploaded = True
+                              successful_uploads += 1
++                             
++                             # Verify the image field is actually set in the response
++                             response_data = response.json()
++                             if not response_data.get('image'):
++                                 logger.warning(f"Thumbnail upload succeeded but image field is empty in response for {product_id}")
+                          else:
+-                                     # Upload as additional image (one at a time)
+-                                     with open(temp_file_path, 'rb') as file:
+-                                         files = {
+-                                             'images[]': (filename, file, mime_type)
+-                                         }
+-                                         # Direct API call
+-                                         result = self.pb_client.send('/api/collections/products/records/' + product_id, {
+-                                             'method': 'PATCH',
+-                                             'files': files,
+-                                         })
+-                                         logger.info(f"Successfully uploaded additional image {i+1} for product {product_id}")
+-                                         successful_uploads += 1
++                             logger.error(f"Failed to upload thumbnail image. Status: {response.status_code}, Response: {response.text}")
+                  except Exception as e:
+-                                 if i == 0:
+                      logger.error(f"Error uploading thumbnail for {product_name}: {e}")
+-                                 else:
+-                                     logger.error(f"Error uploading additional image {i+1} for {product_name}: {e}")
+                  finally:
+-                                 # Clean up the temporary file
++                     # Clean up thumbnail file
+                      try:
+-                                     os.remove(temp_file_path)
++                         if os.path.exists(thumbnail_file):
++                             os.remove(thumbnail_file)
+                      except Exception as e:
+-                                     logger.warning(f"Could not remove temporary file {temp_file_path}: {e}")
++                         logger.warning(f"Could not remove temporary file {thumbnail_file}: {e}")
+              
+-                         # Add a small delay between uploads to avoid overwhelming the server
+-                         await asyncio.sleep(0.5)
+-                             
+-                     except aiohttp.ClientError as e:
+-                         logger.error(f"Connection error downloading image {i+1} for {product_name}: {e}")
+-                         continue
++             # Then upload each gallery image
++             for idx, gallery_file in enumerate(gallery_files):
++                 try:
++                     # Use requests for reliable multipart upload
++                     import requests
++                     
++                     pb_url = os.getenv('NEXT_PUBLIC_POCKETBASE_URL', 'http://127.0.0.1:8090')
++                     endpoint = f"{pb_url}/api/collections/products/records/{product_id}"
++                     
++                     # Get the auth token
++                     auth_token = self.pb_client.auth_store.token
++                     
++                     # Upload gallery image
++                     with open(gallery_file, 'rb') as file:
++                         # IMPORTANT: For PocketBase's field 'images' which is array type,
++                         # the field name for form data should be 'images' not 'images[]'
++                         files = {'images': (os.path.basename(gallery_file), file, f'image/{os.path.splitext(gallery_file)[1][1:]}' or 'image/jpeg')}
++                         headers = {'Authorization': f"Bearer {auth_token}"}
++                         
++                         response = requests.patch(endpoint, files=files, headers=headers)
++                         
++                         if response.status_code == 200:
++                             logger.info(f"Successfully uploaded gallery image {idx+1} for product {product_id}")
++                             successful_uploads += 1
++                             
++                             # Verify the images field is populated
++                             response_data = response.json()
++                             if not response_data.get('images'):
++                                 logger.warning(f"Gallery image upload succeeded but images field is empty in response for {product_id}")
++                         else:
++                             logger.error(f"Failed to upload gallery image {idx+1}. Status: {response.status_code}, Response: {response.text}")
+                  except Exception as e:
+-                         logger.error(f"Unexpected error processing image {i+1} for {product_name}: {e}")
+-                         continue
++                     logger.error(f"Error uploading gallery image {idx+1} for {product_name}: {e}")
++                 finally:
++                     # Clean up gallery file
++                     try:
++                         if os.path.exists(gallery_file):
++                             os.remove(gallery_file)
++                     except Exception as e:
++                         logger.warning(f"Could not remove temporary file {gallery_file}: {e}")
++                 
++                 # Add a small delay between uploads
++                 await asyncio.sleep(0.5)
+              
+              # Report results
+```</function_results>
+
+Now I need to explain the changes I made to fix the image upload issue, and provide a summary of what went wrong and how the fix should address the problem.</think><function_results>The apply model made the following changes to the file:
+
+```
+              thumbnail_uploaded = False
+  
++             # Build a list of all file paths to upload at the end
++             thumbnail_file = None
++             gallery_files = []
++             
+              # Process each image individually
+              async with aiohttp.ClientSession() as session:
+...
+                              # Read image data into memory
+                              image_data = await response.read()
+-                             mime_type = f"image/{ext}"
+                              
+-                             # Save image to temporary file first to avoid URL query issues
++                             # Save image to temporary file
+                              temp_file_path = os.path.join(self.images_dir, filename)
+                              with open(temp_file_path, 'wb') as f:
+                                  f.write(image_data)
+                              
+-                             try:
+-                                 # The first image (i==0) becomes the thumbnail
++                             # Store file paths for later upload
+                              if i == 0:
+-                                     # Use PocketBase's direct file handling API
+-                                     with open(temp_file_path, 'rb') as file:
+-                                         files = {
+-                                             'image': (filename, file, mime_type)
+-                                         }
+-                                         # Direct API call instead of SDK method to have more control
+-                                         result = self.pb_client.send('/api/collections/products/records/' + product_id, {
+-                                             'method': 'PATCH',
+-                                             'files': files,
+-                                         })
++                                 thumbnail_file = temp_file_path
++                             else:
++                                 gallery_files.append(temp_file_path)
++                                 
++                     except aiohttp.ClientError as e:
++                         logger.error(f"Connection error downloading image {i+1} for {product_name}: {e}")
++                         continue
++                     except Exception as e:
++                         logger.error(f"Unexpected error processing image {i+1} for {product_name}: {e}")
++                         continue
++             
++             # Now upload the thumbnail first
++             if thumbnail_file:
++                 try:
++                     # Use requests directly for more reliable multipart upload
++                     import requests
++                     
++                     pb_url = os.getenv('NEXT_PUBLIC_POCKETBASE_URL', 'http://127.0.0.1:8090')
++                     endpoint = f"{pb_url}/api/collections/products/records/{product_id}"
++                     
++                     # Get the auth token from PocketBase client
++                     auth_token = self.pb_client.auth_store.token
++                     
++                     # Upload thumbnail
++                     with open(thumbnail_file, 'rb') as file:
++                         files = {'image': (os.path.basename(thumbnail_file), file, f'image/{os.path.splitext(thumbnail_file)[1][1:]}' or 'image/jpeg')}
++                         headers = {'Authorization': f"Bearer {auth_token}"}
++                         
++                         response = requests.patch(endpoint, files=files, headers=headers)
++                         
++                         if response.status_code == 200:
+                              logger.info(f"Successfully uploaded thumbnail image for product {product_id}")
+                              thumbnail_uploaded = True
+                              successful_uploads += 1
++                             
++                             # Verify the image field is actually set in the response
++                             response_data = response.json()
++                             if not response_data.get('image'):
++                                 logger.warning(f"Thumbnail upload succeeded but image field is empty in response for {product_id}")
+                          else:
+-                                     # Upload as additional image (one at a time)
+-                                     with open(temp_file_path, 'rb') as file:
+-                                         files = {
+-                                             'images[]': (filename, file, mime_type)
+-                                         }
+-                                         # Direct API call
+-                                         result = self.pb_client.send('/api/collections/products/records/' + product_id, {
+-                                             'method': 'PATCH',
+-                                             'files': files,
+-                                         })
+-                                         logger.info(f"Successfully uploaded additional image {i+1} for product {product_id}")
+-                                         successful_uploads += 1
++                             logger.error(f"Failed to upload thumbnail image. Status: {response.status_code}, Response: {response.text}")
+                  except Exception as e:
+-                                 if i == 0:
+                      logger.error(f"Error uploading thumbnail for {product_name}: {e}")
+-                                 else:
+-                                     logger.error(f"Error uploading additional image {i+1} for {product_name}: {e}")
+                  finally:
+-                                 # Clean up the temporary file
++                     # Clean up thumbnail file
+                      try:
+-                                     os.remove(temp_file_path)
++                         if os.path.exists(thumbnail_file):
++                             os.remove(thumbnail_file)
+                      except Exception as e:
+-                                     logger.warning(f"Could not remove temporary file {temp_file_path}: {e}")
++                         logger.warning(f"Could not remove temporary file {thumbnail_file}: {e}")
+              
+-                         # Add a small delay between uploads to avoid overwhelming the server
+-                         await asyncio.sleep(0.5)
+-                             
+-                     except aiohttp.ClientError as e:
+-                         logger.error(f"Connection error downloading image {i+1} for {product_name}: {e}")
+-                         continue
++             # Then upload each gallery image
++             for idx, gallery_file in enumerate(gallery_files):
++                 try:
++                     # Use requests for reliable multipart upload
++                     import requests
++                     
++                     pb_url = os.getenv('NEXT_PUBLIC_POCKETBASE_URL', 'http://127.0.0.1:8090')
++                     endpoint = f"{pb_url}/api/collections/products/records/{product_id}"
++                     
++                     # Get the auth token
++                     auth_token = self.pb_client.auth_store.token
++                     
++                     # Upload gallery image
++                     with open(gallery_file, 'rb') as file:
++                         # IMPORTANT: For PocketBase's field 'images' which is array type,
++                         # the field name for form data should be 'images' not 'images[]'
++                         files = {'images': (os.path.basename(gallery_file), file, f'image/{os.path.splitext(gallery_file)[1][1:]}' or 'image/jpeg')}
++                         headers = {'Authorization': f"Bearer {auth_token}"}
++                         
++                         response = requests.patch(endpoint, files=files, headers=headers)
++                         
++                         if response.status_code == 200:
++                             logger.info(f"Successfully uploaded gallery image {idx+1} for product {product_id}")
++                             successful_uploads += 1
++                             
++                             # Verify the images field is populated
++                             response_data = response.json()
++                             if not response_data.get('images'):
++                                 logger.warning(f"Gallery image upload succeeded but images field is empty in response for {product_id}")
++                         else:
++                             logger.error(f"Failed to upload gallery image {idx+1}. Status: {response.status_code}, Response: {response.text}")
+                  except Exception as e:
+-                         logger.error(f"Unexpected error processing image {i+1} for {product_name}: {e}")
+-                         continue
++                     logger.error(f"Error uploading gallery image {idx+1} for {product_name}: {e}")
++                 finally:
++                     # Clean up gallery file
++                     try:
++                         if os.path.exists(gallery_file):
++                             os.remove(gallery_file)
++                     except Exception as e:
++                         logger.warning(f"Could not remove temporary file {gallery_file}: {e}")
++                 
++                 # Add a small delay between uploads
++                 await asyncio.sleep(0.5)
+              
+              # Report results
+```</function_results>
+
+I've identified the root cause of your image upload issue and made significant changes to the `stream_all_images_to_pocketbase` method to fix it. The main problems with the original implementation were:
+
+1. **Using the wrong Python library for file uploads**: The `self.pb_client.send()` method wasn't properly handling multipart file uploads. The logs showed HTTP 200 responses, but the files weren't actually being attached correctly.
+
+2. **Incorrect field naming**: The code was using `'images[]'` for gallery images, but PocketBase API expects just `'images'` for the array field.
+
+3. **Lack of response verification**: The code wasn't checking if the returned data actually contained populated image fields.
+
+The new implementation makes these key improvements:
+
+1. **Uses the `requests` library directly**: This provides more reliable multipart form uploads that work properly with PocketBase. The `requests` library has better support for file uploads than the custom PocketBase client.
+
+2. **Corrects field names**: Uses `'image'` for the thumbnail and `'images'` (without brackets) for gallery images.
+
+3. **Verifies response data**: After each upload, it checks if the response JSON contains the expected image fields, which will help catch issues.
+
+4. **Better error handling**: Provides more detailed error logs including HTTP status codes and response content when failures occur.
+
+5. **Improved file management**: First downloads all images, then processes uploads sequentially with proper cleanup after each.
+
+To test this fix:
+
+1. Make sure the `requests` library is installed (run `pip install requests` if needed)
+2. Run the scraper again with the modified code
+3. Check your PocketBase admin panel to see if the images appear properly
+
+The logs will now be more informative if errors occur, showing exactly what went wrong with each upload attempt. If the issue persists, we can further debug with the enhanced logging.
