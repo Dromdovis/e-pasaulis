@@ -23,6 +23,16 @@ export default function AdminLayout({
     }
   }, [initialize, isInitialized]);
 
+  // Handle authentication redirects
+  useEffect(() => {
+    if (isInitialized && !isLoading) {
+      if (!isAuthenticated) {
+        console.log('Not authenticated, redirecting to login');
+        router.push('/login');
+      }
+    }
+  }, [isInitialized, isLoading, isAuthenticated, router]);
+
   // Debug log auth state
   useEffect(() => {
     console.log('Admin Layout - Auth State:', {
@@ -44,11 +54,13 @@ export default function AdminLayout({
     );
   }
 
-  // Handle not authenticated state
+  // Return null while redirecting to login
   if (!isAuthenticated) {
-    console.log('Not authenticated, redirecting to login');
-    router.push('/login');
-    return null;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      </div>
+    );
   }
 
   // Handle not admin state
@@ -57,15 +69,15 @@ export default function AdminLayout({
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
-          <h2 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h2>
+          <h2 className="text-2xl font-bold text-red-600 mb-4">{t('access_denied')}</h2>
           <p className="text-gray-600 mb-4">
-            You do not have permission to access the admin panel.
+            {t('access_denied_message')}
           </p>
           <Link 
             href="/"
             className="block w-full bg-primary-600 text-white text-center py-2 px-4 rounded hover:bg-primary-700 transition-colors"
           >
-            Return to Home
+            {t('return_to_home')}
           </Link>
         </div>
       </div>

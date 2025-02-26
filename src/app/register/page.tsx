@@ -30,13 +30,11 @@ async function isPocketBaseAvailable() {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_POCKETBASE_URL;
     if (!baseUrl) {
-      console.error('PocketBase URL is not defined');
       return false;
     }
 
     // Use the users collection endpoint which is public for checking availability
     const url = `${baseUrl}/api/collections/users/records`;
-    console.log('Checking PocketBase availability at:', url);
     
     const response = await fetch(url, {
       method: 'GET',
@@ -46,18 +44,8 @@ async function isPocketBaseAvailable() {
     });
 
     // Any response (even 403) means the server is running
-    const isAvailable = response.status !== 404 && response.status !== 502 && response.status !== 503;
-    console.log('Response status:', response.status);
-    console.log('PocketBase server status:', isAvailable ? 'Available' : 'Not Available');
-    
-    if (!isAvailable) {
-      const text = await response.text();
-      console.log('Response body:', text);
-    }
-    
-    return isAvailable;
+    return response.status !== 404 && response.status !== 502 && response.status !== 503;
   } catch (error) {
-    console.error('PocketBase connection error:', error);
     return false;
   }
 }
@@ -164,15 +152,8 @@ export default function Register() {
         role: 'user',
       };
 
-      console.log('Attempting to create user with data:', {
-        ...data,
-        password: '[HIDDEN]',
-        passwordConfirm: '[HIDDEN]'
-      });
-
       try {
         const newUser = await pb.collection('users').create(data);
-        console.log('User created successfully:', newUser);
 
         // Authenticate immediately after registration
         await pb.collection('users').authWithPassword(
@@ -192,8 +173,7 @@ export default function Register() {
         // Redirect to home page with products
         window.location.href = '/';
       } catch (error: unknown) {
-        console.error('Registration error full details:', error);
-        
+        // Handle validation errors
         if (error && typeof error === 'object' && 'data' in error) {
           const errorData = error.data as { data?: ValidationErrors };
           
@@ -217,7 +197,6 @@ export default function Register() {
         }
       }
     } catch (error) {
-      console.error('Unexpected error:', error);
       setError(t('registration_failed'));
     } finally {
       setLoading(false);

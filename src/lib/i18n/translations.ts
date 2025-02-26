@@ -16,6 +16,21 @@ export type TranslationKeys = {
   admin_panel: string;
   users: string;
   products: string;
+  logged_in_as: string;
+
+  // Admin panel
+  dashboard: string;
+  orders: string;
+  access_denied: string;
+  access_denied_message: string;
+  return_to_home: string;
+  bulk_operations: string;
+  admin_dashboard: string;
+  manage_users: string;
+  manage_products: string;
+  manage_categories: string;
+  monitor_reviews: string;
+  import_export: string;
 
   // Categories
   categories: string;
@@ -129,6 +144,12 @@ export type TranslationKeys = {
   email_already_exists: string;
   invalid_email: string;
   password_too_short: string;
+  name_required: string;
+  email_required: string;
+  password_required: string;
+  invalid_email_format: string;
+  server_unavailable: string;
+  username_already_exists: string;
 
   // Error handling
   try_again: string;
@@ -166,12 +187,27 @@ export type TranslationKeys = {
   cancel: string;
   confirm: string;
 
+  // Price range
+  price_range: string;
+  invalid_price_range_negative: string;
+  invalid_price_range_order: string;
+
+  // Returns page
+  return_policy: string;
+  return_policy_description: string;
+  return_policy_point_1: string;
+  return_policy_point_2: string;
+  return_policy_point_3: string;
+  return_process: string;
+  return_process_step_1: string;
+  return_process_step_2: string;
+  return_process_step_3: string;
+  return_process_step_4: string;
+
   // New translations
   select_language: string;
   language_en: string;
   language_lt: string;
-
-  // New translations
   search_placeholder: string;
 };
 
@@ -192,6 +228,21 @@ export const translations: Record<Language, TranslationKeys> = {
     admin_panel: 'Admin Panel',
     users: 'Users',
     products: 'Products',
+    logged_in_as: 'Logged in as',
+
+    // Admin panel
+    dashboard: 'Dashboard',
+    orders: 'Orders',
+    access_denied: 'Access Denied',
+    access_denied_message: 'You do not have permission to access the admin panel.',
+    return_to_home: 'Return to Home',
+    bulk_operations: 'Bulk Operations',
+    admin_dashboard: 'Admin Dashboard',
+    manage_users: 'Manage user accounts, roles, and permissions',
+    manage_products: 'Add, edit, and manage product listings',
+    manage_categories: 'Organize products with categories',
+    monitor_reviews: 'Monitor and moderate product reviews',
+    import_export: 'Import/export products and perform bulk updates',
 
     // Categories
     categories: 'Categories',
@@ -305,6 +356,12 @@ export const translations: Record<Language, TranslationKeys> = {
     email_already_exists: 'Email already exists',
     invalid_email: 'Invalid email address',
     password_too_short: 'Password must be at least 8 characters long',
+    name_required: 'Name is required',
+    email_required: 'Email is required',
+    password_required: 'Password is required',
+    invalid_email_format: 'Invalid email format',
+    server_unavailable: 'Server is currently unavailable. Please try again later.',
+    username_already_exists: 'Username already exists',
 
     // Error handling
     try_again: 'Try again',
@@ -342,12 +399,27 @@ export const translations: Record<Language, TranslationKeys> = {
     cancel: 'Cancel',
     confirm: 'Confirm',
 
+    // Price range
+    price_range: 'Price Range',
+    invalid_price_range_negative: 'Price cannot be negative',
+    invalid_price_range_order: 'Minimum price must be less than maximum price',
+
+    // Returns page
+    return_policy: 'Return Policy',
+    return_policy_description: 'At e-pasaulis, we want you to be completely satisfied with your purchase. If you are not satisfied, you may return most products within 30 days of delivery for a full refund.',
+    return_policy_point_1: 'Items must be returned in original, undamaged packaging',
+    return_policy_point_2: 'Products must be in new, unused condition with all original tags and labels attached',
+    return_policy_point_3: 'Digital downloads, opened software, and personalized items are not eligible for return',
+    return_process: 'Return Process',
+    return_process_step_1: 'Login to your account and navigate to your order history',
+    return_process_step_2: 'Select the order containing the item(s) you wish to return',
+    return_process_step_3: 'Complete the return form with the reason for your return',
+    return_process_step_4: 'Print the provided return label and ship the package back to us',
+
     // New translations
     select_language: 'Language',
     language_en: 'English',
     language_lt: 'Lithuanian',
-    favorites: 'Favorites',
-    cart: 'Cart',
     search_placeholder: 'Search among {{count}} products...',
   },
   lt: {
@@ -365,6 +437,21 @@ export const translations: Record<Language, TranslationKeys> = {
     admin_panel: 'Administratoriaus skydelis',
     users: 'Vartotojai',
     products: 'Produktai',
+    logged_in_as: 'Prisijungęs kaip',
+
+    // Admin panel
+    dashboard: 'Valdymo skydas',
+    orders: 'Užsakymai',
+    access_denied: 'Prieiga uždrausta',
+    access_denied_message: 'Jūs neturite teisių pasiekti administratoriaus skydelį.',
+    return_to_home: 'Grįžti į pradžią',
+    bulk_operations: 'Masinės operacijos',
+    admin_dashboard: 'Administratoriaus valdymo skydas',
+    manage_users: 'Valdyti vartotojų paskyras, roles ir teises',
+    manage_products: 'Pridėti, redaguoti ir valdyti produktų sąrašus',
+    manage_categories: 'Organizuoti produktus pagal kategorijas',
+    monitor_reviews: 'Stebėti ir moderuoti produktų atsiliepimus',
+    import_export: 'Importuoti/eksportuoti produktus ir atlikti masines operacijas',
 
     // Categories
     categories: 'Kategorijos',
@@ -478,6 +565,12 @@ export const translations: Record<Language, TranslationKeys> = {
     email_already_exists: 'Toks el. paštas jau egzistuoja',
     invalid_email: 'Neteisingas el. pašto adresas',
     password_too_short: 'Slaptažodis turi būti bent 8 simbolių ilgio',
+    name_required: 'Vardas yra privalomas',
+    email_required: 'El. paštas yra privalomas',
+    password_required: 'Slaptažodis yra privalomas',
+    invalid_email_format: 'Neteisingas el. pašto formatas',
+    server_unavailable: 'Serveris šiuo metu nepasiekiamas. Bandykite vėliau.',
+    username_already_exists: 'Toks vartotojo vardas jau egzistuoja',
 
     // Error handling
     try_again: 'Bandyti dar kartą',
@@ -515,13 +608,28 @@ export const translations: Record<Language, TranslationKeys> = {
     cancel: 'Atšaukti',
     confirm: 'Patvirtinti',
 
+    // Price range
+    price_range: 'Kainų diapazonas',
+    invalid_price_range_negative: 'Kaina negali būti neigiama',
+    invalid_price_range_order: 'Minimali kaina turi būti mažesnė už maksimalią kainą',
+
+    // Returns page
+    return_policy: 'Grąžinimo politika',
+    return_policy_description: 'E-pasaulis nori, kad jūs būtumėte visiškai patenkinti savo pirkiniu. Jei nesate patenkinti, daugelį produktų galite grąžinti per 30 dienų nuo pristatymo ir gauti visą pinigų grąžinimą.',
+    return_policy_point_1: 'Prekės turi būti grąžinamos originalioje, nepažeistoje pakuotėje',
+    return_policy_point_2: 'Produktai turi būti nauji, nenaudoti, su visomis originaliomis etiketėmis',
+    return_policy_point_3: 'Skaitmeniniai atsisiuntimai, atidaryti programinės įrangos paketai ir personalizuotos prekės negali būti grąžintos',
+    return_process: 'Grąžinimo procesas',
+    return_process_step_1: 'Prisijunkite prie savo paskyros ir eikite į užsakymų istoriją',
+    return_process_step_2: 'Pasirinkite užsakymą, kuriame yra prekė(-s), kurią(-as) norite grąžinti',
+    return_process_step_3: 'Užpildykite grąžinimo formą, nurodydami grąžinimo priežastį',
+    return_process_step_4: 'Atsispausdinkite pateiktą grąžinimo etiketę ir išsiųskite paketą atgal mums',
+
     // New translations
     select_language: 'Kalba',
-    language_en: 'English',
-    language_lt: 'Lithuanian',
-    favorites: 'Mėgstami',
-    cart: 'Krepšelis',
-    search_placeholder: 'Ieškokite tarp {{count}} produktų...',
+    language_en: 'Anglų',
+    language_lt: 'Lietuvių',
+    search_placeholder: 'Ieškoti tarp {{count}} produktų...',
   }
 } as const;
 

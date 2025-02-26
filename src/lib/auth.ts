@@ -100,32 +100,22 @@ export const useAuth = create<AuthState>()(
       setIntendedPath: (path: string | null) => set({ intendedPath: path }),
       
       initialize: async () => {
-        console.log('🔄 initialize - Starting initialization');
         if (get().isInitialized) {
-          console.log('🔄 initialize - Already initialized, skipping');
           return;
         }
 
         try {
           set({ isLoading: true });
           const model = pb.authStore.model as AuthModel | null;
-          console.log('🔄 initialize - PocketBase auth model:', model);
           
           if (model?.id) {
             try {
               const options: PocketBaseOptions = { requestKey: null };
-              console.log('🔄 initialize - Fetching fresh user data for ID:', model.id);
               const user = await pb.collection('users').getOne<PBUser>(model.id, options);
               
               const authUser = convertToAuthModel(user);
               const isValid = pb.authStore.isValid && !!authUser.role;
               const isAdmin = authUser.role === UserRole.ADMIN || authUser.role === UserRole.SUPER_ADMIN;
-
-              console.log('🔄 initialize - Setting auth state:', {
-                isAuthenticated: isValid,
-                userRole: authUser.role,
-                isAdmin
-              });
 
               set({
                 isAuthenticated: isValid,
@@ -136,18 +126,15 @@ export const useAuth = create<AuthState>()(
               });
               return;
             } catch (error) {
-              console.error('❌ initialize - Failed to fetch user data:', error);
               pb.authStore.clear();
             }
           }
 
-          console.log('🔄 initialize - No valid user, clearing state');
           set({
             ...getInitialState(),
             isInitialized: true
           });
         } catch (error) {
-          console.error('❌ initialize - Auth initialization failed:', error);
           pb.authStore.clear();
           set({
             ...getInitialState(),
@@ -157,24 +144,15 @@ export const useAuth = create<AuthState>()(
       },
 
       login: async (email: string, password: string) => {
-        console.log('🔑 login - Starting login process');
         try {
           set({ isLoading: true });
           const options: PocketBaseOptions = { requestKey: null };
           
-          console.log('🔑 login - Authenticating with PocketBase');
           const authData = await pb.collection('users').authWithPassword(email, password, options);
-          console.log('🔑 login - Auth successful, fetching fresh user data');
           
           const user = await pb.collection('users').getOne<PBUser>(authData.record.id, options);
           const authUser = convertToAuthModel(user);
           const isAdmin = authUser.role === UserRole.ADMIN || authUser.role === UserRole.SUPER_ADMIN;
-
-          console.log('🔑 login - Setting auth state:', {
-            isAuthenticated: true,
-            userRole: authUser.role,
-            isAdmin
-          });
           
           set({ 
             isAuthenticated: true, 
@@ -185,7 +163,6 @@ export const useAuth = create<AuthState>()(
           });
           return authUser;
         } catch (error) {
-          console.error('❌ login - Login failed:', error);
           set({ isLoading: false });
           throw error;
         }
@@ -225,36 +202,30 @@ export const useAuth = create<AuthState>()(
           });
         } catch (error) {
           set({ isLoading: false });
-          console.error('Registration failed:', error);
           throw error;
         }
       },
 
       refreshUser: async () => {
-        console.log('🔄 refreshUser - Starting refresh');
         const currentUser = get().user;
         if (!currentUser?.id) {
-          console.log('🔄 refreshUser - No current user, skipping');
           return;
         }
 
         try {
           set({ isLoading: true });
           const options: PocketBaseOptions = { requestKey: null };
-          console.log('🔄 refreshUser - Fetching fresh user data for ID:', currentUser.id);
           
           const user = await pb.collection('users').getOne<PBUser>(currentUser.id, options);
           const authUser = convertToAuthModel(user);
           const isAdmin = authUser.role === UserRole.ADMIN || authUser.role === UserRole.SUPER_ADMIN;
 
-          console.log('🔄 refreshUser - Setting updated user state');
           set({
             user: authUser,
             isAdmin,
             isLoading: false
           });
         } catch (error) {
-          console.error('❌ refreshUser - Failed to refresh user:', error);
           set({ isLoading: false });
           throw error;
         }
@@ -283,17 +254,10 @@ if (typeof window !== 'undefined') {
       if (model?.id) {
         // Fetch fresh user data to ensure role is up to date
         const user = await pb.collection('users').getOne<PBUser>(model.id);
-        console.log('Auth change - Fetched user data:', user);
         
         const authUser = convertToAuthModel(user);
         const isValid = pb.authStore.isValid && !!authUser.role;
         const isAdmin = authUser.role === UserRole.ADMIN || authUser.role === UserRole.SUPER_ADMIN;
-
-        console.log('Auth change - Setting auth state:', {
-          isAuthenticated: isValid,
-          user: authUser,
-          isAdmin
-        });
 
         useAuth.setState({
           isAuthenticated: isValid,
@@ -308,7 +272,6 @@ if (typeof window !== 'undefined') {
         });
       }
     } catch (error) {
-      console.error('Auth state change error:', error);
       pb.authStore.clear();
       useAuth.setState({
         isAuthenticated: false,
@@ -358,7 +321,6 @@ export class AuthService {
       });
       return true;
     } catch (error) {
-      console.error('Auth validation failed:', error);
       useAuth.getState().logout();
       return false;
     }
@@ -387,15 +349,11 @@ export class AuthService {
   static async getAllUsers(): Promise<AuthModel[]> {
     try {
       const currentUser = await this.getCurrentUser();
-      console.log('🔒 getAllUsers - Current user role:', currentUser?.role);
       
       if (!currentUser || (currentUser.role !== UserRole.ADMIN && currentUser.role !== UserRole.SUPER_ADMIN)) {
-        console.error('❌ getAllUsers - Unauthorized access, user role:', currentUser?.role);
         throw new Error('Unauthorized access');
       }
 
-      console.log('✅ getAllUsers - Authorized access, fetching users');
-      
       // Use filter to get users (this endpoint has different permissions than getFullList)
       const result = await pb.collection('users').getList<PBUser>(1, 100, {
         requestKey: null,
@@ -405,7 +363,6 @@ export class AuthService {
 
       return result.items.map(user => convertToAuthModel(user));
     } catch (error) {
-      console.error('❌ getAllUsers - Failed to fetch users:', error);
       throw error;
     }
   }
@@ -425,9 +382,7 @@ export class AuthService {
       );
       
       await Promise.all(updates);
-      console.log('Successfully updated email visibility for all users');
     } catch (error) {
-      console.error('Failed to update email visibility:', error);
       throw error;
     }
   }
@@ -451,7 +406,6 @@ export async function validateAuthState() {
     await pb.collection('users').getOne(userId);
     return true;
   } catch (error) {
-    console.log('Auth validation failed:', error);
     pb.authStore.clear();
     return false;
   }

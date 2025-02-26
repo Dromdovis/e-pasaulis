@@ -42,7 +42,8 @@ export default function LoginPage() {
       await login(email, password);
       // Let the useEffect handle the redirect
     } catch (error) {
-      console.error('Login error:', error);
+      // Don't log the detailed error to console, just show the user-friendly message
+      // Handle different error cases if needed in the future
       setError(t('invalid_credentials'));
     }
   };

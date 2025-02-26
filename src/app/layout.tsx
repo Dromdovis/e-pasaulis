@@ -5,7 +5,13 @@ import RootLayoutClient from './RootLayoutClient';
 
 export const metadata: Metadata = {
   title: "E-Pasaulis",
-  description: "Your one-stop e-commerce solution",
+  description: "Global Technology E-Shop",
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.png', type: 'image/png' }
+    ],
+  }
 };
 
 export default function RootLayout({

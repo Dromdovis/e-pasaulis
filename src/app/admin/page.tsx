@@ -6,10 +6,12 @@ import { useAuth } from '@/lib/auth';
 import { UserRole } from '@/types/auth';
 import { Users, Package, Folder, Star, Upload } from 'lucide-react';
 import Link from 'next/link';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
+import type { TranslationKey } from '@/lib/i18n/translations';
 
 interface DashboardCard {
-  title: string;
-  description: string;
+  titleKey: TranslationKey;
+  descriptionKey: TranslationKey;
   href: string;
   icon: React.ElementType;
   color: string;
@@ -17,6 +19,7 @@ interface DashboardCard {
 
 export default function AdminDashboard() {
   const router = useRouter();
+  const { t } = useLanguage();
   const { user, isAuthenticated, isLoading, isInitialized } = useAuth();
 
   useEffect(() => {
@@ -43,36 +46,36 @@ export default function AdminDashboard() {
 
   const dashboardCards: DashboardCard[] = [
     {
-      title: 'Users',
-      description: 'Manage user accounts, roles, and permissions',
+      titleKey: 'users',
+      descriptionKey: 'manage_users',
       href: '/admin/users',
       icon: Users,
       color: 'bg-blue-500'
     },
     {
-      title: 'Products',
-      description: 'Add, edit, and manage product listings',
+      titleKey: 'products',
+      descriptionKey: 'manage_products',
       href: '/admin/products',
       icon: Package,
       color: 'bg-green-500'
     },
     {
-      title: 'Categories',
-      description: 'Organize products with categories',
+      titleKey: 'categories',
+      descriptionKey: 'manage_categories',
       href: '/admin/categories',
       icon: Folder,
       color: 'bg-yellow-500'
     },
     {
-      title: 'Reviews',
-      description: 'Monitor and moderate product reviews',
+      titleKey: 'reviews',
+      descriptionKey: 'monitor_reviews',
       href: '/admin/reviews',
       icon: Star,
       color: 'bg-purple-500'
     },
     {
-      title: 'Bulk Operations',
-      description: 'Import/export products and perform bulk updates',
+      titleKey: 'bulk_operations',
+      descriptionKey: 'import_export',
       href: '/admin/bulk',
       icon: Upload,
       color: 'bg-red-500'
@@ -82,7 +85,7 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+        <h1 className="text-2xl font-bold">{t('admin_dashboard')}</h1>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -99,8 +102,8 @@ export default function AdminDashboard() {
                   <Icon className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold">{card.title}</h2>
-                  <p className="text-gray-600 mt-1">{card.description}</p>
+                  <h2 className="text-xl font-semibold">{t(card.titleKey)}</h2>
+                  <p className="text-gray-600 mt-1">{t(card.descriptionKey)}</p>
                 </div>
               </div>
             </Link>
