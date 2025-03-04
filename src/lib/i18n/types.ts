@@ -9,4 +9,10 @@ export interface Translations extends EnTranslations {
 }
 
 // Export the translation key type
-export type TranslationKey = keyof EnTranslations; 
+export type TranslationKey = keyof EnTranslations;
+
+export interface TranslationKeys {
+  [key: string]: string | TranslationKeys;
+}
+
+export type Language = 'en' | 'lt'; 

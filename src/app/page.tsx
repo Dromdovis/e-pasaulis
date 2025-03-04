@@ -5,7 +5,6 @@ import { Suspense, useState } from 'react';
 import CategorySidebar from '@/components/CategorySidebar';
 import ProductGrid from '@/components/ProductGrid';
 import { ProductFilters } from '@/components/ProductFilters';
-import { SearchBar } from '@/components/SearchBar';
 import FilterTags from '@/components/FilterTags';
 import type { Category } from '@/types';
 import { pb } from '@/lib/db';

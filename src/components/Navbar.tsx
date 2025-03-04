@@ -14,6 +14,11 @@ import { UserRole } from '@/types/auth';
 import { SearchBar } from '@/components/SearchBar';
 import { LanguageDropdown } from '@/components/LanguageDropdown';
 import UserMenu from '@/components/UserMenu';
+import type { StoreState } from '@/lib/store';
+import { useTranslation } from 'next-i18next';
+import { CartButton } from './CartButton';
+import { FavoritesButton } from './FavoritesButton';
+import { LanguageSelector } from './LanguageSelector';
 
 interface NavbarProps {
   mobileMenuOpen: boolean;
@@ -122,15 +127,16 @@ const contrastTheme = {
 };
 
 export default function Navbar({ mobileMenuOpen, onMobileMenuClose, onMobileMenuOpen }: NavbarProps) {
-  const { t, language, setLanguage } = useLanguage();
-  const { user, logout } = useAuth();
+  const { t } = useTranslation('common');
+  const { user, isAuthenticated, logout } = useAuth();
+  const router = useRouter();
+  const { language, setLanguage } = useLanguage();
   const [langMenuOpen, setLangMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const langButtonRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
-  const cart = useStore(state => state.cart);
-  const favorites = useStore(state => state.favorites);
+  const cart = useStore((state: StoreState) => state.cart);
+  const favorites = useStore((state: StoreState) => state.favorites);
   const [mobileLangOpen, setMobileLangOpen] = useState(false);
   
   // Animation state
@@ -141,6 +147,8 @@ export default function Navbar({ mobileMenuOpen, onMobileMenuClose, onMobileMenu
 
   // Check if user is admin or super_admin
   const isAdmin = user?.role === UserRole.ADMIN || user?.role === UserRole.SUPER_ADMIN;
+
+  const displayName = user?.name || user?.email || t('navigation.user');
 
   const handleLogout = async () => {
     await logout();
@@ -346,137 +354,13 @@ export default function Navbar({ mobileMenuOpen, onMobileMenuClose, onMobileMenu
   };
 
   return (
-    <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+    <nav className="bg-white shadow-sm dark:bg-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           {/* Left section */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2">
-              {/* Animated Digital Hexagon Logo SVG with size and pulse animations */}
-              <div className="relative flex items-center justify-center" style={{ 
-                width: '40px', 
-                height: '40px',
-                filter: `drop-shadow(0 0 ${2 + pulseIntensity * 4}px ${logoColors.accent})`,
-                transition: 'filter 0.5s ease'
-              }}>
-                <svg 
-                  width="40" 
-                  height="40" 
-                  viewBox="0 0 40 40" 
-                  fill="none" 
-                  xmlns="http://www.w3.org/2000/svg"
-                  style={{ 
-                    transform: `scale(${sizeFactor})`,
-                    transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
-                  }}
-                >
-                  <defs>
-                    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor={logoColors.background.start} />
-                      <stop offset="100%" stopColor={logoColors.background.end} />
-                    </linearGradient>
-                    <radialGradient id="pulseGlow" cx="50%" cy="50%" r="70%" fx="50%" fy="50%">
-                      <stop offset="0%" stopColor={logoColors.accent} stopOpacity={0.1 + (pulseIntensity * 0.3)} />
-                      <stop offset="70%" stopColor={logoColors.accent} stopOpacity={0.05 + (pulseIntensity * 0.2)} />
-                      <stop offset="100%" stopColor={logoColors.background.end} stopOpacity="0" />
-                    </radialGradient>
-                    {/* New shadow effect for pulse animation */}
-                    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                      <feGaussianBlur stdDeviation={1 + pulseIntensity * 2} result="blur" />
-                      <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                    </filter>
-                    {/* Add drop shadow filter specifically for the E letter */}
-                    <filter id="letterShadow" x="-20%" y="-20%" width="140%" height="140%">
-                      <feDropShadow dx="0" dy="0" stdDeviation="1" 
-                        floodColor={progress < 0.5 ? "#000000" : "#FFFFFF"} 
-                        floodOpacity={0.5 + pulseIntensity * 0.2} />
-                    </filter>
-                    {/* Add glow filter for dotted rings */}
-                    <filter id="dotRingGlow" x="-20%" y="-20%" width="140%" height="140%">
-                      <feGaussianBlur stdDeviation="1.5" result="dotBlur" />
-                      <feComposite in="SourceGraphic" in2="dotBlur" operator="over" />
-                    </filter>
-                  </defs>
-                  
-                  {/* Main circle background */}
-                  <circle cx="20" cy="20" r="19" fill="url(#logoGradient)" stroke={logoColors.elements.secondary} strokeWidth="0.5" />
-                  
-                  {/* Enhanced glow effect that pulses with animation */}
-                  <circle cx="20" cy="20" r="17" fill="url(#pulseGlow)" />
-                  
-                  {/* Hexagonal globe structure - perfectly centered */}
-                  <path 
-                    d="M20 7.5L32 14V26L20 32.5L8 26V14L20 7.5Z" 
-                    stroke={logoColors.elements.secondary} 
-                    strokeOpacity="0.7" 
-                    strokeWidth="0.8" 
-                    fill="none" 
-                  />
-                  
-                  {/* Network connections - adjusted for centered hexagon coordinates */}
-                  <line x1="20" y1="7.5" x2="20" y2="32.5" stroke={logoColors.elements.secondary} strokeOpacity="0.6" strokeWidth="0.6" />
-                  <line x1="8" y1="14" x2="32" y2="14" stroke={logoColors.elements.secondary} strokeOpacity="0.6" strokeWidth="0.6" />
-                  <line x1="8" y1="26" x2="32" y2="26" stroke={logoColors.elements.secondary} strokeOpacity="0.6" strokeWidth="0.6" />
-                  <line x1="8" y1="14" x2="20" y2="32.5" stroke={logoColors.elements.secondary} strokeOpacity="0.5" strokeWidth="0.5" />
-                  <line x1="8" y1="26" x2="20" y2="7.5" stroke={logoColors.elements.secondary} strokeOpacity="0.5" strokeWidth="0.5" />
-                  <line x1="32" y1="14" x2="20" y2="32.5" stroke={logoColors.elements.secondary} strokeOpacity="0.5" strokeWidth="0.5" />
-                  <line x1="32" y1="26" x2="20" y2="7.5" stroke={logoColors.elements.secondary} strokeOpacity="0.5" strokeWidth="0.5" />
-                  
-                  {/* Connection nodes - adjusted for centered hexagon coordinates with pulse effect */}
-                  <circle cx="20" cy="7.5" r={1 + pulseIntensity * 0.3} fill={logoColors.accent} filter="url(#glow)" />
-                  <circle cx="8" cy="14" r={1 + pulseIntensity * 0.3} fill={logoColors.accent} filter="url(#glow)" />
-                  <circle cx="32" cy="14" r={1 + pulseIntensity * 0.3} fill={logoColors.accent} filter="url(#glow)" />
-                  <circle cx="8" cy="26" r={1 + pulseIntensity * 0.3} fill={logoColors.accent} filter="url(#glow)" />
-                  <circle cx="32" cy="26" r={1 + pulseIntensity * 0.3} fill={logoColors.accent} filter="url(#glow)" />
-                  <circle cx="20" cy="32.5" r={1 + pulseIntensity * 0.3} fill={logoColors.accent} filter="url(#glow)" />
-                  
-                  {/* E shaped network within the hexagon - with enhanced visibility */}
-                  <path 
-                    d="M15 13.5H25M15 20H23M15 26.5H25M15 13.5V26.5" 
-                    stroke={logoColors.elements.secondary} 
-                    strokeWidth="2" 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round"
-                    filter="url(#letterShadow)"
-                  />
-                  
-                  {/* Small data points - keeping only those that don't interfere with the E shape */}
-                  <circle cx="25" cy="13.5" r="0.7" fill={logoColors.elements.secondary} fillOpacity="0.8" />
-                  <circle cx="23" cy="20" r="0.7" fill={logoColors.elements.secondary} fillOpacity="0.8" />
-                  <circle cx="25" cy="26.5" r="0.7" fill={logoColors.elements.secondary} fillOpacity="0.8" />
-                  
-                  {/* Enhanced Digital pulse rings - with added glow effect */}
-                  <circle 
-                    cx="20" cy="20" r="16" 
-                    stroke={logoColors.ring} 
-                    strokeOpacity="0.9" 
-                    strokeWidth="0.6" 
-                    strokeDasharray="1 3" 
-                    fill="none" 
-                    filter="url(#dotRingGlow)"
-                  />
-                  
-                  <circle 
-                    cx="20" cy="20" r="12" 
-                    stroke={logoColors.ring} 
-                    strokeOpacity="0.7" 
-                    strokeWidth="0.5" 
-                    strokeDasharray="0.8 4" 
-                    fill="none" 
-                    filter="url(#dotRingGlow)"
-                  />
-                  
-                  {/* Outer ring with enhanced visibility */}
-                  <circle 
-                    cx="20" cy="20" r="19" 
-                    stroke={logoColors.elements.secondary} 
-                    strokeOpacity="0.9" 
-                    strokeWidth={1 + pulseIntensity * 0.5} 
-                    fill="none" 
-                  />
-                </svg>
-              </div>
-              <span className="text-xl font-bold text-gray-900 dark:text-white">E-Pasaulis</span>
+            <Link href="/" className="text-xl font-bold text-gray-900 dark:text-white">
+              e-pasaulis
             </Link>
           </div>
 
@@ -489,123 +373,85 @@ export default function Navbar({ mobileMenuOpen, onMobileMenuClose, onMobileMenu
 
           {/* Right section */}
           <div className="flex items-center space-x-4">
-            {/* Desktop Language Selector */}
-            <div className="hidden sm:flex items-center relative" ref={langButtonRef}>
-              <button
-                onClick={() => setLangMenuOpen(!langMenuOpen)}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full flex items-center space-x-1"
-              >
-                <Globe className="w-5 h-5" />
-                <span className="text-sm font-medium">{language.toUpperCase()}</span>
-              </button>
-              {langMenuOpen && (
-                <div className="absolute right-0 top-full mt-2 py-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-xl z-50">
-                  <button
-                    onClick={() => handleLanguageChange('en')}
-                    className={`block w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 text-left ${
-                      language === 'en' ? 'text-primary-600 dark:text-primary-400' : ''
-                    }`}
-                  >
-                    {t('language_en')}
-                  </button>
-                  <button
-                    onClick={() => handleLanguageChange('lt')}
-                    className={`block w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 text-left ${
-                      language === 'lt' ? 'text-primary-600 dark:text-primary-400' : ''
-                    }`}
-                  >
-                    {t('language_lt')}
-                  </button>
-                </div>
-              )}
-            </div>
+            <LanguageSelector />
 
             {/* Desktop Icons */}
             <div className="hidden sm:flex items-center space-x-4">
-              <Link href="/favorites" className="relative">
-                <Heart className="w-6 h-6" />
-                {favorites.length > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs">
-                    {favorites.length}
-                  </span>
-                )}
-              </Link>
-              <Link href="/cart" className="relative">
-                <ShoppingCart className="w-6 h-6" />
-                {cart.length > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs">
-                    {cart.length}
-                  </span>
-                )}
-              </Link>
+              <CartButton />
+              <FavoritesButton />
 
               {/* User Menu */}
               <div className="relative" ref={userMenuRef}>
-                {user ? (
-                  <button
-                    onClick={() => setUserMenuOpen(!userMenuOpen)}
-                    className="flex items-center space-x-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
-                  >
-                    <UserCircle className="w-6 h-6" />
-                    <span className="text-sm font-medium hidden sm:inline">{user.name || user.email}</span>
-                  </button>
+                {isAuthenticated && user ? (
+                  <>
+                    <button
+                      onClick={() => setUserMenuOpen(!userMenuOpen)}
+                      className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
+                    >
+                      <UserCircle className="w-6 h-6" />
+                      <span className="text-sm font-medium hidden sm:inline">{displayName}</span>
+                    </button>
+
+                    {userMenuOpen && (
+                      <div className="absolute right-0 mt-2 py-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-xl z-50">
+                        <Link
+                          href="/profile"
+                          className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                          onClick={() => setUserMenuOpen(false)}
+                        >
+                          <div className="flex items-center space-x-2">
+                            <User className="w-4 h-4" />
+                            <span>{t('navigation.profile')}</span>
+                          </div>
+                        </Link>
+
+                        <Link
+                          href="/settings"
+                          className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                          onClick={() => setUserMenuOpen(false)}
+                        >
+                          <div className="flex items-center space-x-2">
+                            <Settings className="w-4 h-4" />
+                            <span>{t('navigation.settings')}</span>
+                          </div>
+                        </Link>
+
+                        {isAdmin && (
+                          <Link
+                            href="/admin"
+                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                            onClick={() => setUserMenuOpen(false)}
+                          >
+                            <div className="flex items-center space-x-2">
+                              <LayoutDashboard className="w-4 h-4" />
+                              <span>{t('navigation.adminPanel')}</span>
+                            </div>
+                          </Link>
+                        )}
+
+                        <button
+                          onClick={() => {
+                            setUserMenuOpen(false);
+                            handleLogout();
+                          }}
+                          className="block w-full px-4 py-2 text-sm text-left text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        >
+                          <div className="flex items-center space-x-2">
+                            <LogOut className="w-4 h-4" />
+                            <span>{t('navigation.logout')}</span>
+                          </div>
+                        </button>
+                      </div>
+                    )}
+                  </>
                 ) : (
                   <Link
                     href="/login"
-                    className="flex items-center space-x-2 text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
+                    className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
                   >
                     <UserCircle className="w-6 h-6" />
-                    <span className="hidden sm:inline">{t('login')}</span>
+                    <span className="hidden sm:inline">{t('navigation.login')}</span>
                   </Link>
-                )}
-
-                {userMenuOpen && user && (
-                  <div className="absolute right-0 top-full mt-2 py-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-xl z-50">
-                    <Link
-                      href="/profile"
-                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                      onClick={() => setUserMenuOpen(false)}
-                    >
-                      <div className="flex items-center space-x-2">
-                        <User className="w-4 h-4" />
-                        <span>{t('profile')}</span>
-                      </div>
-                    </Link>
-                    <Link
-                      href="/settings"
-                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                      onClick={() => setUserMenuOpen(false)}
-                    >
-                      <div className="flex items-center space-x-2">
-                        <Settings className="w-4 h-4" />
-                        <span>{t('settings')}</span>
-                      </div>
-                    </Link>
-                    {isAdmin && (
-                      <Link
-                        href="/admin"
-                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                        onClick={() => setUserMenuOpen(false)}
-                      >
-                        <div className="flex items-center space-x-2">
-                          <LayoutDashboard className="w-4 h-4" />
-                          <span>{t('admin_panel')}</span>
-                        </div>
-                      </Link>
-                    )}
-                    <button
-                      onClick={() => {
-                        setUserMenuOpen(false);
-                        handleLogout();
-                      }}
-                      className="block w-full px-4 py-2 text-sm text-left text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    >
-                      <div className="flex items-center space-x-2">
-                        <LogOut className="w-4 h-4" />
-                        <span>{t('logout')}</span>
-                      </div>
-                    </button>
-                  </div>
                 )}
               </div>
             </div>
@@ -630,103 +476,60 @@ export default function Navbar({ mobileMenuOpen, onMobileMenuClose, onMobileMenu
       {mobileMenuOpen && (
         <div className="sm:hidden border-t border-gray-200 dark:border-gray-700">
           <div className="px-2 pt-2 pb-3 space-y-1">
-            {/* Language Selection in Mobile Menu */}
-            <div className="px-3 py-2">
-              <button
-                onClick={() => setMobileLangOpen(!mobileLangOpen)}
-                className="flex items-center justify-between w-full py-2"
-              >
-                <div className="flex items-center">
-                  <Globe className="w-5 h-5 mr-2" />
-                  <span className="font-medium">{t('select_language')}</span>
-                </div>
-                <ChevronDown className={`w-5 h-5 transition-transform ${mobileLangOpen ? 'transform rotate-180' : ''}`} />
-              </button>
-              
-              {mobileLangOpen && (
-                <div className="ml-7 mt-2 space-y-2 bg-gray-50 dark:bg-gray-700 rounded-md p-2">
-                  <button
-                    onClick={() => {
-                      handleLanguageChange('en');
-                      setMobileLangOpen(false);
-                    }}
-                    className={`block w-full text-left px-3 py-2 rounded-md ${
-                      language === 'en' ? 'bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-300'
-                    }`}
-                  >
-                    {t('language_en')}
-                  </button>
-                  <button
-                    onClick={() => {
-                      handleLanguageChange('lt');
-                      setMobileLangOpen(false);
-                    }}
-                    className={`block w-full text-left px-3 py-2 rounded-md ${
-                      language === 'lt' ? 'bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-300'
-                    }`}
-                  >
-                    {t('language_lt')}
-                  </button>
-                </div>
-              )}
-            </div>
-
             {/* Profile Section in Mobile Menu */}
-            {user ? (
-              <>
-                <div className="px-3 py-2 border-t dark:border-gray-700">
-                  <div className="flex items-center mb-3">
-                    <UserCircle className="w-5 h-5 mr-2" />
-                    <span className="font-medium">{user.name || user.email}</span>
-                  </div>
-                  <div className="space-y-1 ml-7">
-                    <Link
-                      href="/profile"
-                      className="block px-3 py-2 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                      onClick={onMobileMenuClose}
-                    >
-                      <div className="flex items-center">
-                        <User className="w-4 h-4 mr-2" />
-                        <span>{t('profile')}</span>
-                      </div>
-                    </Link>
-                    <Link
-                      href="/settings"
-                      className="block px-3 py-2 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                      onClick={onMobileMenuClose}
-                    >
-                      <div className="flex items-center">
-                        <Settings className="w-4 h-4 mr-2" />
-                        <span>{t('settings')}</span>
-                      </div>
-                    </Link>
-                    {isAdmin && (
-                      <Link
-                        href="/admin"
-                        className="block px-3 py-2 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                        onClick={onMobileMenuClose}
-                      >
-                        <div className="flex items-center">
-                          <LayoutDashboard className="w-4 h-4 mr-2" />
-                          <span>{t('admin_panel')}</span>
-                        </div>
-                      </Link>
-                    )}
-                    <button
-                      onClick={() => {
-                        onMobileMenuClose();
-                        handleLogout();
-                      }}
-                      className="block w-full px-3 py-2 text-left rounded-md text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    >
-                      <div className="flex items-center">
-                        <LogOut className="w-4 h-4 mr-2" />
-                        <span>{t('logout')}</span>
-                      </div>
-                    </button>
-                  </div>
+            {isAuthenticated && user ? (
+              <div className="px-3 py-2 border-t dark:border-gray-700">
+                <div className="flex items-center mb-3">
+                  <UserCircle className="w-5 h-5 mr-2" />
+                  <span className="font-medium">{displayName}</span>
                 </div>
-              </>
+                <div className="space-y-1 ml-7">
+                  <Link
+                    href="/profile"
+                    className="block px-3 py-2 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    onClick={onMobileMenuClose}
+                  >
+                    <div className="flex items-center">
+                      <User className="w-4 h-4 mr-2" />
+                      <span>{t('navigation.profile')}</span>
+                    </div>
+                  </Link>
+                  <Link
+                    href="/settings"
+                    className="block px-3 py-2 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    onClick={onMobileMenuClose}
+                  >
+                    <div className="flex items-center">
+                      <Settings className="w-4 h-4 mr-2" />
+                      <span>{t('navigation.settings')}</span>
+                    </div>
+                  </Link>
+                  {isAdmin && (
+                    <Link
+                      href="/admin"
+                      className="block px-3 py-2 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      onClick={onMobileMenuClose}
+                    >
+                      <div className="flex items-center">
+                        <LayoutDashboard className="w-4 h-4 mr-2" />
+                        <span>{t('navigation.adminPanel')}</span>
+                      </div>
+                    </Link>
+                  )}
+                  <button
+                    onClick={() => {
+                      onMobileMenuClose();
+                      handleLogout();
+                    }}
+                    className="block w-full px-3 py-2 text-left rounded-md text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
+                    <div className="flex items-center">
+                      <LogOut className="w-4 h-4 mr-2" />
+                      <span>{t('navigation.logout')}</span>
+                    </div>
+                  </button>
+                </div>
+              </div>
             ) : (
               <Link
                 href="/login"
@@ -735,7 +538,7 @@ export default function Navbar({ mobileMenuOpen, onMobileMenuClose, onMobileMenu
               >
                 <div className="flex items-center">
                   <UserCircle className="w-5 h-5 mr-2" />
-                  <span>{t('login')}</span>
+                  <span>{t('navigation.login')}</span>
                 </div>
               </Link>
             )}
@@ -747,7 +550,7 @@ export default function Navbar({ mobileMenuOpen, onMobileMenuClose, onMobileMenu
               onClick={onMobileMenuClose}
             >
               <Heart className="w-5 h-5 mr-2" />
-              <span>{t('favorites')}</span>
+              <span>{t('navigation.favorites')}</span>
               {favorites.length > 0 && (
                 <span className="ml-auto bg-red-500 text-white rounded-full px-2 py-1 text-xs">
                   {favorites.length}
@@ -760,7 +563,7 @@ export default function Navbar({ mobileMenuOpen, onMobileMenuClose, onMobileMenu
               onClick={onMobileMenuClose}
             >
               <ShoppingCart className="w-5 h-5 mr-2" />
-              <span>{t('cart')}</span>
+              <span>{t('navigation.cart')}</span>
               {cart.length > 0 && (
                 <span className="ml-auto bg-red-500 text-white rounded-full px-2 py-1 text-xs">
                   {cart.length}

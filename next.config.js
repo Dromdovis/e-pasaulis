@@ -1,7 +1,9 @@
 // next.config.js
+const { i18n } = require('./next-i18next.config');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Disable font optimization since it's causing issues
+  reactStrictMode: true,
   images: {
     remotePatterns: [
       {
@@ -12,17 +14,10 @@ const nextConfig = {
       },
     ],
     unoptimized: true,
+    domains: ['localhost'],
   },
   typescript: {
     ignoreBuildErrors: false,
-  },
-  i18n: {
-    // List all languages you want to support
-    locales: ['en', 'lt'],
-    // Default language
-    defaultLocale: 'en',
-    // Set to false to avoid detection issues
-    localeDetection: false,
   },
   // Reduce memory usage during builds
   onDemandEntries: {
@@ -35,6 +30,11 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['@mui/icons-material', '@mui/material'],
     optimizeCss: true,
+  },
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en', 'lt'],
+    localeDetection: true,
   },
 };
 

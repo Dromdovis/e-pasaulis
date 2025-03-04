@@ -1,0 +1,22 @@
+{
+  "common": {
+    "language": {
+      "en": "English",
+      "lt": "Lithuanian",
+      "select": "Select language"
+    },
+    "navigation": {
+      "home": "Home",
+      "products": "Products",
+      "about": "About",
+      "contact": "Contact",
+      "cart": "Cart",
+      "favorites": "Favorites",
+      "profile": "Profile",
+      "admin": "Admin Panel",
+      "login": "Login",
+      "register": "Register",
+      "logout": "Logout"
+    }
+  }
+} 

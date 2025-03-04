@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import * as Slider from '@radix-ui/react-slider';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 
@@ -15,26 +15,25 @@ export default function PriceRangeSlider({ min, max, onChange }: PriceRangeSlide
   const [range, setRange] = useState([min, max]);
   const [error, setError] = useState<string>('');
 
-  useEffect(() => {
-    validateRange(min, max);
-    setRange([min, max]);
-  }, [min, max]);
-
-  const validateRange = (minValue: number, maxValue: number) => {
-    if (minValue < 0) {
+  const validateRange = useCallback(() => {
+    if (min < 0) {
       setError(t('invalid_price_range_negative'));
       return false;
     }
-    if (minValue >= maxValue) {
+    if (min >= max) {
       setError(t('invalid_price_range_order'));
       return false;
     }
     setError('');
     return true;
-  };
+  }, [min, max, t]);
+
+  useEffect(() => {
+    validateRange();
+  }, [validateRange]);
 
   const handleChange = (newRange: number[]) => {
-    if (validateRange(newRange[0], newRange[1])) {
+    if (validateRange()) {
       setRange(newRange);
       onChange({ min: newRange[0], max: newRange[1] });
     }

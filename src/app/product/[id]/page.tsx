@@ -9,10 +9,11 @@ import { Reviews } from '@/components/Reviews';
 import { SimilarProducts } from '@/components/SimilarProducts';
 import { getDynamicParam } from '@/lib/utils/params';
 
-interface Props {
-  params: {
+type Props = {
+  params: Promise<{
     id: string;
-  };
+  }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 export async function generateMetadata(
@@ -20,7 +21,8 @@ export async function generateMetadata(
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   try {
-    const id = await getDynamicParam(params.id);
+    const resolvedParams = await params;
+    const id = await getDynamicParam(resolvedParams.id);
     const product = await pb.collection('products').getOne<Product>(id);
     
     const previousImages = (await parent).openGraph?.images || [];
@@ -38,6 +40,7 @@ export async function generateMetadata(
       },
     };
   } catch (error) {
+    console.error('Error generating metadata:', error);
     return {
       title: 'Product Not Found | E-Pasaulis',
       description: 'The requested product could not be found'
@@ -48,7 +51,8 @@ export async function generateMetadata(
 // Main page component
 export default async function ProductPage({ params }: Props) {
   try {
-    const id = await getDynamicParam(params.id);
+    const resolvedParams = await params;
+    const id = await getDynamicParam(resolvedParams.id);
     
     return (
       <Suspense fallback={
@@ -74,6 +78,7 @@ export default async function ProductPage({ params }: Props) {
       </Suspense>
     );
   } catch (error) {
+    console.error('Error loading product:', error);
     notFound();
   }
 }

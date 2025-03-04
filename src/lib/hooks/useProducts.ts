@@ -1,6 +1,16 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { pb } from '@/lib/db';
 import type { Product } from '@/types';
+import { ClientResponseError } from 'pocketbase';
+
+export interface UseProductsOptions {
+  categoryId?: string;
+  priceMin?: number;
+  priceMax?: number;
+  sortBy?: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'newest';
+  inStockOnly?: boolean;
+  query?: string;
+}
 
 interface ProductsResponse {
   items: Product[];
@@ -9,90 +19,82 @@ interface ProductsResponse {
   perPage: number;
 }
 
-interface UseProductsOptions {
-  categoryId?: string;
-  priceMin?: number;
-  priceMax?: number;
-  perPage?: number;
-  inStockOnly?: boolean;
-  sortBy?: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'newest';
-}
-
 export function useProducts(options: UseProductsOptions = {}) {
-  const { categoryId, priceMin, priceMax, sortBy = 'newest', perPage = 12, inStockOnly } = options;
+  const { categoryId, priceMin, priceMax, sortBy = 'newest', inStockOnly, query } = options;
 
-  return useInfiniteQuery({
-    queryKey: ['products', categoryId, priceMin, priceMax, sortBy, inStockOnly],
+  return useInfiniteQuery<ProductsResponse, ClientResponseError, ProductsResponse, [string, UseProductsOptions], number>({
+    queryKey: ['products', options],
     queryFn: async ({ pageParam = 1 }) => {
       try {
         let filter = '';
+        const conditions: string[] = [];
+
         if (categoryId) {
-          filter += `category = "${categoryId}"`;
-        }
-        if (priceMin !== undefined) {
-          filter += filter ? ' && ' : '';
-          filter += `price >= ${priceMin}`;
-        }
-        if (priceMax !== undefined) {
-          filter += filter ? ' && ' : '';
-          filter += `price <= ${priceMax}`;
-        }
-        if (inStockOnly) {
-          filter += filter ? ' && ' : '';
-          filter += 'stock > 0';
+          conditions.push(`category = "${categoryId}"`);
         }
 
-        let sort = '-created';
+        if (priceMin !== undefined) {
+          conditions.push(`price >= ${priceMin}`);
+        }
+
+        if (priceMax !== undefined) {
+          conditions.push(`price <= ${priceMax}`);
+        }
+
+        if (inStockOnly) {
+          conditions.push('stock > 0');
+        }
+
+        if (query) {
+          conditions.push(`name ~ "${query}" || description ~ "${query}"`);
+        }
+
+        filter = conditions.join(' && ');
+
+        let sort = '';
         switch (sortBy) {
           case 'price_asc':
-            sort = '+price';
+            sort = 'price';
             break;
           case 'price_desc':
             sort = '-price';
             break;
           case 'name_asc':
-            sort = '+name';
+            sort = 'name';
             break;
           case 'name_desc':
             sort = '-name';
             break;
-          // newest uses default -created
+          default:
+            sort = '-created';
         }
 
-        const response = await pb.collection('products').getList<Product>(pageParam, perPage, {
+        const response = await pb.collection('products').getList<Product>(pageParam, 12, {
           sort,
           filter,
-          expand: 'category',
-          $autoCancel: false,
+          expand: 'category'
         });
-        
+
         return {
           items: response.items,
           totalItems: response.totalItems,
           page: pageParam,
-          perPage
+          perPage: 12
         };
       } catch (error) {
-        console.error('Error fetching products:', error);
-        throw error;
+        if (error instanceof ClientResponseError) {
+          throw error;
+        }
+        throw new Error('Failed to fetch products');
       }
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      if (!lastPage) return undefined;
-      const nextPage = lastPage.page + 1;
-      const totalPages = Math.ceil(lastPage.totalItems / lastPage.perPage);
-      return nextPage <= totalPages ? nextPage : undefined;
+      const hasNextPage = lastPage.page * lastPage.perPage < lastPage.totalItems;
+      return hasNextPage ? lastPage.page + 1 : undefined;
     },
     getPreviousPageParam: (firstPage) => {
       return firstPage.page > 1 ? firstPage.page - 1 : undefined;
-    },
-    // Add staleTime and refetch settings
-    staleTime: 30 * 1000, // Data becomes stale after 30 seconds
-    refetchOnMount: true, // Refetch when component mounts
-    refetchOnWindowFocus: false, // Refetch when window regains focus
-    refetchInterval: 60 * 1000, // Refetch every minute
-    retry: 3, // Add retry attempts
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    }
   });
 } 

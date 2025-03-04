@@ -6,15 +6,15 @@ export const metadata: Metadata = {
   description: 'Edit product details in the admin panel',
 };
 
-interface PageProps {
-  params: { id: string };
-  searchParams: { [key: string]: string | string[] | undefined };
+type PageProps = {
+  params: Promise<{ id: string }>;
 }
 
-export default function Page(props: PageProps) {
+export default async function Page({ params }: PageProps) {
+  const resolvedParams = await params;
   return (
     <div className="container mx-auto px-4 py-8">
-      <EditProductForm productId={props.params.id} />
+      <EditProductForm productId={resolvedParams.id} />
     </div>
   );
 }

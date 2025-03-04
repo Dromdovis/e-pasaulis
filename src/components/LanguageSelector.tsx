@@ -1,35 +1,37 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { useTranslation } from 'next-i18next';
-import { Globe, ChevronDown } from 'lucide-react';
-import { useRouter } from 'next/router';
+import { Languages } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
+import { getDictionary } from '@/lib/dictionary';
 
-interface LanguageOption {
-  code: string;
-  label: string;
-}
+const languages = [
+  { code: 'en', label: 'English' },
+  { code: 'lt', label: 'Lietuvių' },
+];
 
-export function LanguageDropdown() {
-  const { t, i18n } = useTranslation('common');
+export function LanguageSelector() {
+  const pathname = usePathname();
+  const params = useParams();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
-  const languages: LanguageOption[] = [
-    { code: 'en', label: t('language.en') },
-    { code: 'lt', label: t('language.lt') },
-  ];
+  // Get current language from URL
+  const currentLang = pathname?.split('/')[1] || 'en';
 
-  const handleLanguageChange = async (langCode: string) => {
-    await i18n.changeLanguage(langCode);
-    router.push(router.asPath, router.asPath, { locale: langCode });
+  const handleLanguageChange = (langCode: string) => {
+    // Get the path after the locale
+    const pathWithoutLocale = pathname?.split('/').slice(2).join('/') || '';
+    const newPath = `/${langCode}/${pathWithoutLocale}`;
+    router.push(newPath);
     setIsOpen(false);
   };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
@@ -39,17 +41,16 @@ export function LanguageDropdown() {
   }, []);
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
         aria-expanded={isOpen}
         aria-haspopup="true"
-        aria-label={t('language.select')}
+        aria-label="Select language"
       >
-        <Globe className="w-5 h-5" />
-        <span className="text-sm font-medium">{i18n.language.toUpperCase()}</span>
-        <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'transform rotate-180' : ''}`} />
+        <Languages className="w-5 h-5" />
+        <span className="text-sm font-medium">{currentLang.toUpperCase()}</span>
       </button>
 
       {isOpen && (
@@ -59,7 +60,7 @@ export function LanguageDropdown() {
               key={lang.code}
               onClick={() => handleLanguageChange(lang.code)}
               className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                i18n.language === lang.code
+                currentLang === lang.code
                   ? 'text-primary-600 dark:text-primary-400 bg-gray-50 dark:bg-gray-700'
                   : 'text-gray-700 dark:text-gray-200'
               }`}

@@ -1,0 +1,226 @@
+{
+  "dashboard": {
+    "title": "Admin Dashboard",
+    "welcome": "Welcome to the Admin Dashboard",
+    "quickStats": "Quick Statistics",
+    "totalUsers": "Total Users",
+    "totalProducts": "Total Products",
+    "totalOrders": "Total Orders",
+    "recentActivity": "Recent Activity"
+  },
+  "users": {
+    "title": "User Management",
+    "list": "User List",
+    "add": "Add User",
+    "edit": "Edit User",
+    "delete": "Delete User",
+    "confirmDelete": "Are you sure you want to delete this user?",
+    "fields": {
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "createdAt": "Created At",
+      "lastLogin": "Last Login",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "messages": {
+      "saved": "User saved successfully",
+      "deleted": "User deleted successfully",
+      "error": "Error saving user"
+    },
+    "filters": {
+      "all": "All Users",
+      "admin": "Administrators",
+      "customer": "Customers",
+      "active": "Active Users",
+      "inactive": "Inactive Users"
+    }
+  },
+  "products": {
+    "title": "Product Management",
+    "list": "Product List",
+    "add": "Add Product",
+    "edit": "Edit Product",
+    "delete": "Delete Product",
+    "confirmDelete": "Are you sure you want to delete this product?",
+    "fields": {
+      "name": "Product Name",
+      "description": "Description",
+      "price": "Price",
+      "stock": "Stock Level",
+      "category": "Category",
+      "images": "Product Images",
+      "status": "Status",
+      "featured": "Featured Product",
+      "sku": "SKU",
+      "weight": "Weight",
+      "dimensions": "Dimensions",
+      "manufacturer": "Manufacturer"
+    },
+    "messages": {
+      "saved": "Product saved successfully",
+      "deleted": "Product deleted successfully",
+      "error": "Error saving product",
+      "imageUploaded": "Image uploaded successfully",
+      "imageDeleted": "Image deleted successfully"
+    },
+    "filters": {
+      "all": "All Products",
+      "inStock": "In Stock",
+      "outOfStock": "Out of Stock",
+      "featured": "Featured",
+      "onSale": "On Sale"
+    }
+  },
+  "categories": {
+    "title": "Category Management",
+    "list": "Category List",
+    "add": "Add Category",
+    "edit": "Edit Category",
+    "delete": "Delete Category",
+    "confirmDelete": "Are you sure you want to delete this category?",
+    "fields": {
+      "name": "Category Name",
+      "description": "Description",
+      "parent": "Parent Category",
+      "image": "Category Image",
+      "slug": "URL Slug",
+      "status": "Status",
+      "featured": "Featured Category"
+    },
+    "messages": {
+      "saved": "Category saved successfully",
+      "deleted": "Category deleted successfully",
+      "error": "Error saving category",
+      "hasProducts": "Cannot delete category with products"
+    }
+  },
+  "orders": {
+    "title": "Order Management",
+    "list": "Order List",
+    "view": "View Order",
+    "update": "Update Order",
+    "fields": {
+      "orderId": "Order ID",
+      "customer": "Customer",
+      "date": "Order Date",
+      "status": "Status",
+      "total": "Total Amount",
+      "paymentStatus": "Payment Status",
+      "shippingStatus": "Shipping Status"
+    },
+    "status": {
+      "pending": "Pending",
+      "processing": "Processing",
+      "shipped": "Shipped",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled",
+      "refunded": "Refunded"
+    },
+    "messages": {
+      "updated": "Order updated successfully",
+      "error": "Error updating order"
+    }
+  },
+  "reviews": {
+    "title": "Review Management",
+    "list": "Review List",
+    "moderate": "Moderate Review",
+    "delete": "Delete Review",
+    "confirmDelete": "Are you sure you want to delete this review?",
+    "fields": {
+      "product": "Product",
+      "customer": "Customer",
+      "rating": "Rating",
+      "comment": "Comment",
+      "date": "Review Date",
+      "status": "Status"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "messages": {
+      "approved": "Review approved successfully",
+      "rejected": "Review rejected successfully",
+      "deleted": "Review deleted successfully"
+    }
+  },
+  "settings": {
+    "title": "System Settings",
+    "general": {
+      "title": "General Settings",
+      "siteName": "Site Name",
+      "siteDescription": "Site Description",
+      "logo": "Site Logo",
+      "favicon": "Favicon",
+      "currency": "Default Currency",
+      "timezone": "Timezone"
+    },
+    "email": {
+      "title": "Email Settings",
+      "fromName": "From Name",
+      "fromEmail": "From Email",
+      "smtpHost": "SMTP Host",
+      "smtpPort": "SMTP Port",
+      "smtpUser": "SMTP Username",
+      "smtpPass": "SMTP Password"
+    },
+    "payment": {
+      "title": "Payment Settings",
+      "provider": "Payment Provider",
+      "testMode": "Test Mode",
+      "liveKey": "Live API Key",
+      "testKey": "Test API Key"
+    }
+  },
+  "bulk": {
+    "title": "Bulk Operations",
+    "import": {
+      "title": "Import Data",
+      "products": "Import Products",
+      "categories": "Import Categories",
+      "users": "Import Users",
+      "selectFile": "Select File",
+      "upload": "Upload",
+      "processing": "Processing...",
+      "success": "Import completed successfully",
+      "error": "Error during import",
+      "template": "Download Template"
+    },
+    "export": {
+      "title": "Export Data",
+      "products": "Export Products",
+      "categories": "Export Categories",
+      "users": "Export Users",
+      "orders": "Export Orders",
+      "download": "Download",
+      "processing": "Processing...",
+      "success": "Export completed successfully",
+      "error": "Error during export",
+      "format": "Select Format"
+    }
+  },
+  "common": {
+    "save": "Save Changes",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View Details",
+    "back": "Go Back",
+    "actions": "Actions",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "perPage": "Items per page",
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "draft": "Draft",
+      "published": "Published",
+      "archived": "Archived"
+    }
+  }
+} 

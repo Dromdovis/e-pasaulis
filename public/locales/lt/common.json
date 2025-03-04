@@ -1,0 +1,52 @@
+{
+  "navigation": {
+    "home": "Pradžia",
+    "login": "Prisijungti",
+    "register": "Registruotis",
+    "logout": "Atsijungti",
+    "profile": "Profilis",
+    "settings": "Nustatymai",
+    "cart": "Krepšelis",
+    "favorites": "Mėgstami",
+    "filter": "Filtruoti",
+    "search": "Ieškoti",
+    "admin_panel": "Administratoriaus skydelis"
+  },
+  "admin": {
+    "dashboard": "Valdymo skydelis",
+    "orders": "Užsakymai",
+    "users": "Vartotojai",
+    "products": "Produktai",
+    "access_denied": "Prieiga uždrausta",
+    "access_denied_message": "Jūs neturite teisių pasiekti administratoriaus skydelį.",
+    "return_to_home": "Grįžti į pradžią",
+    "bulk_operations": "Masinės operacijos",
+    "admin_dashboard": "Administratoriaus skydelis",
+    "manage_users": "Vartotojų Valdymas",
+    "manage_products": "Produktų Valdymas",
+    "manage_categories": "Kategorijų Valdymas",
+    "monitor_reviews": "Atsiliepimų Valdymas",
+    "import_export": "Importuoti/Eksportuoti",
+    "admin_users_description": "Valdykite vartotojų paskyras, roles ir teises",
+    "admin_products_description": "Pridėkite, redaguokite ir valdykite produktų sąrašus",
+    "admin_categories_description": "Organizuokite ir struktūrizuokite produktų kategorijas",
+    "admin_reviews_description": "Stebėkite ir moderuokite produktų atsiliepimus",
+    "admin_bulk_description": "Importuokite/eksportuokite duomenis ir atlikite masines operacijas"
+  },
+  "auth": {
+    "logged_in_as": "Prisijungęs kaip",
+    "email": "El. paštas",
+    "password": "Slaptažodis",
+    "confirm_password": "Pakartokite slaptažodį",
+    "name": "Vardas",
+    "logging_in": "Jungiamasi...",
+    "registering": "Registruojama...",
+    "dont_have_account": "Neturite paskyros?",
+    "already_have_account": "Jau turite paskyrą?"
+  },
+  "roles": {
+    "super_admin": "Super Administratorius",
+    "admin": "Administratorius",
+    "user": "Vartotojas"
+  }
+} 

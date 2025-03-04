@@ -1,0 +1,226 @@
+{
+  "dashboard": {
+    "title": "Administratoriaus Skydelis",
+    "welcome": "Sveiki atvykę į administratoriaus skydelį",
+    "quickStats": "Greita statistika",
+    "totalUsers": "Visi vartotojai",
+    "totalProducts": "Visi produktai",
+    "totalOrders": "Visi užsakymai",
+    "recentActivity": "Naujausi veiksmai"
+  },
+  "users": {
+    "title": "Vartotojų valdymas",
+    "list": "Vartotojų sąrašas",
+    "add": "Pridėti vartotoją",
+    "edit": "Redaguoti vartotoją",
+    "delete": "Ištrinti vartotoją",
+    "confirmDelete": "Ar tikrai norite ištrinti šį vartotoją?",
+    "fields": {
+      "name": "Vardas",
+      "email": "El. paštas",
+      "role": "Rolė",
+      "createdAt": "Sukurta",
+      "lastLogin": "Paskutinis prisijungimas",
+      "status": "Būsena",
+      "actions": "Veiksmai"
+    },
+    "messages": {
+      "saved": "Vartotojas sėkmingai išsaugotas",
+      "deleted": "Vartotojas sėkmingai ištrintas",
+      "error": "Klaida išsaugant vartotoją"
+    },
+    "filters": {
+      "all": "Visi vartotojai",
+      "admin": "Administratoriai",
+      "customer": "Klientai",
+      "active": "Aktyvūs vartotojai",
+      "inactive": "Neaktyvūs vartotojai"
+    }
+  },
+  "products": {
+    "title": "Produktų valdymas",
+    "list": "Produktų sąrašas",
+    "add": "Pridėti produktą",
+    "edit": "Redaguoti produktą",
+    "delete": "Ištrinti produktą",
+    "confirmDelete": "Ar tikrai norite ištrinti šį produktą?",
+    "fields": {
+      "name": "Produkto pavadinimas",
+      "description": "Aprašymas",
+      "price": "Kaina",
+      "stock": "Kiekis sandėlyje",
+      "category": "Kategorija",
+      "images": "Produkto nuotraukos",
+      "status": "Būsena",
+      "featured": "Išskirtas produktas",
+      "sku": "Kodas",
+      "weight": "Svoris",
+      "dimensions": "Matmenys",
+      "manufacturer": "Gamintojas"
+    },
+    "messages": {
+      "saved": "Produktas sėkmingai išsaugotas",
+      "deleted": "Produktas sėkmingai ištrintas",
+      "error": "Klaida išsaugant produktą",
+      "imageUploaded": "Nuotrauka sėkmingai įkelta",
+      "imageDeleted": "Nuotrauka sėkmingai ištrinta"
+    },
+    "filters": {
+      "all": "Visi produktai",
+      "inStock": "Yra sandėlyje",
+      "outOfStock": "Išparduota",
+      "featured": "Išskirti",
+      "onSale": "Išpardavimas"
+    }
+  },
+  "categories": {
+    "title": "Kategorijų valdymas",
+    "list": "Kategorijų sąrašas",
+    "add": "Pridėti kategoriją",
+    "edit": "Redaguoti kategoriją",
+    "delete": "Ištrinti kategoriją",
+    "confirmDelete": "Ar tikrai norite ištrinti šią kategoriją?",
+    "fields": {
+      "name": "Kategorijos pavadinimas",
+      "description": "Aprašymas",
+      "parent": "Tėvinė kategorija",
+      "image": "Kategorijos nuotrauka",
+      "slug": "URL nuoroda",
+      "status": "Būsena",
+      "featured": "Išskirta kategorija"
+    },
+    "messages": {
+      "saved": "Kategorija sėkmingai išsaugota",
+      "deleted": "Kategorija sėkmingai ištrinta",
+      "error": "Klaida išsaugant kategoriją",
+      "hasProducts": "Negalima ištrinti kategorijos su produktais"
+    }
+  },
+  "orders": {
+    "title": "Užsakymų valdymas",
+    "list": "Užsakymų sąrašas",
+    "view": "Peržiūrėti užsakymą",
+    "update": "Atnaujinti užsakymą",
+    "fields": {
+      "orderId": "Užsakymo ID",
+      "customer": "Klientas",
+      "date": "Užsakymo data",
+      "status": "Būsena",
+      "total": "Bendra suma",
+      "paymentStatus": "Mokėjimo būsena",
+      "shippingStatus": "Pristatymo būsena"
+    },
+    "status": {
+      "pending": "Laukiama",
+      "processing": "Vykdoma",
+      "shipped": "Išsiųsta",
+      "delivered": "Pristatyta",
+      "cancelled": "Atšaukta",
+      "refunded": "Grąžinta"
+    },
+    "messages": {
+      "updated": "Užsakymas sėkmingai atnaujintas",
+      "error": "Klaida atnaujinant užsakymą"
+    }
+  },
+  "reviews": {
+    "title": "Atsiliepimų valdymas",
+    "list": "Atsiliepimų sąrašas",
+    "moderate": "Moderuoti atsiliepimą",
+    "delete": "Ištrinti atsiliepimą",
+    "confirmDelete": "Ar tikrai norite ištrinti šį atsiliepimą?",
+    "fields": {
+      "product": "Produktas",
+      "customer": "Klientas",
+      "rating": "Įvertinimas",
+      "comment": "Komentaras",
+      "date": "Atsiliepimo data",
+      "status": "Būsena"
+    },
+    "status": {
+      "pending": "Laukiama",
+      "approved": "Patvirtinta",
+      "rejected": "Atmesta"
+    },
+    "messages": {
+      "approved": "Atsiliepimas sėkmingai patvirtintas",
+      "rejected": "Atsiliepimas sėkmingai atmestas",
+      "deleted": "Atsiliepimas sėkmingai ištrintas"
+    }
+  },
+  "settings": {
+    "title": "Sistemos nustatymai",
+    "general": {
+      "title": "Bendri nustatymai",
+      "siteName": "Svetainės pavadinimas",
+      "siteDescription": "Svetainės aprašymas",
+      "logo": "Logotipas",
+      "favicon": "Favicon",
+      "currency": "Pagrindinė valiuta",
+      "timezone": "Laiko juosta"
+    },
+    "email": {
+      "title": "El. pašto nustatymai",
+      "fromName": "Siuntėjo vardas",
+      "fromEmail": "Siuntėjo el. paštas",
+      "smtpHost": "SMTP serveris",
+      "smtpPort": "SMTP prievadas",
+      "smtpUser": "SMTP vartotojas",
+      "smtpPass": "SMTP slaptažodis"
+    },
+    "payment": {
+      "title": "Mokėjimo nustatymai",
+      "provider": "Mokėjimo tiekėjas",
+      "testMode": "Testavimo režimas",
+      "liveKey": "Live API raktas",
+      "testKey": "Testavimo API raktas"
+    }
+  },
+  "bulk": {
+    "title": "Masinės operacijos",
+    "import": {
+      "title": "Importuoti duomenis",
+      "products": "Importuoti produktus",
+      "categories": "Importuoti kategorijas",
+      "users": "Importuoti vartotojus",
+      "selectFile": "Pasirinkti failą",
+      "upload": "Įkelti",
+      "processing": "Apdorojama...",
+      "success": "Importavimas sėkmingai baigtas",
+      "error": "Klaida importuojant",
+      "template": "Atsisiųsti šabloną"
+    },
+    "export": {
+      "title": "Eksportuoti duomenis",
+      "products": "Eksportuoti produktus",
+      "categories": "Eksportuoti kategorijas",
+      "users": "Eksportuoti vartotojus",
+      "orders": "Eksportuoti užsakymus",
+      "download": "Atsisiųsti",
+      "processing": "Apdorojama...",
+      "success": "Eksportavimas sėkmingai baigtas",
+      "error": "Klaida eksportuojant",
+      "format": "Pasirinkti formatą"
+    }
+  },
+  "common": {
+    "save": "Išsaugoti pakeitimus",
+    "cancel": "Atšaukti",
+    "delete": "Ištrinti",
+    "edit": "Redaguoti",
+    "view": "Peržiūrėti detaliau",
+    "back": "Grįžti atgal",
+    "actions": "Veiksmai",
+    "search": "Ieškoti",
+    "filter": "Filtruoti",
+    "sort": "Rūšiuoti",
+    "perPage": "Įrašų per puslapį",
+    "status": {
+      "active": "Aktyvus",
+      "inactive": "Neaktyvus",
+      "draft": "Juodraštis",
+      "published": "Paskelbta",
+      "archived": "Archyvuota"
+    }
+  }
+} 

@@ -1,0 +1,22 @@
+{
+  "common": {
+    "language": {
+      "en": "Anglų",
+      "lt": "Lietuvių",
+      "select": "Pasirinkti kalbą"
+    },
+    "navigation": {
+      "home": "Pradžia",
+      "products": "Produktai",
+      "about": "Apie",
+      "contact": "Kontaktai",
+      "cart": "Krepšelis",
+      "favorites": "Mėgstami",
+      "profile": "Profilis",
+      "admin": "Administravimas",
+      "login": "Prisijungti",
+      "register": "Registruotis",
+      "logout": "Atsijungti"
+    }
+  }
+} 

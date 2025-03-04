@@ -31,6 +31,11 @@ export type TranslationKeys = {
   manage_categories: string;
   monitor_reviews: string;
   import_export: string;
+  admin_users_description: string;
+  admin_products_description: string;
+  admin_categories_description: string;
+  admin_reviews_description: string;
+  admin_bulk_description: string;
 
   // Categories
   categories: string;
@@ -209,6 +214,10 @@ export type TranslationKeys = {
   language_en: string;
   language_lt: string;
   search_placeholder: string;
+
+  // User roles
+  super_admin: string;
+  user: string;
 };
 
 // Define the translations object with language-specific values
@@ -238,11 +247,16 @@ export const translations: Record<Language, TranslationKeys> = {
     return_to_home: 'Return to Home',
     bulk_operations: 'Bulk Operations',
     admin_dashboard: 'Admin Dashboard',
-    manage_users: 'Manage user accounts, roles, and permissions',
-    manage_products: 'Add, edit, and manage product listings',
-    manage_categories: 'Organize products with categories',
-    monitor_reviews: 'Monitor and moderate product reviews',
-    import_export: 'Import/export products and perform bulk updates',
+    manage_users: 'User Management',
+    manage_products: 'Product Management',
+    manage_categories: 'Category Management',
+    monitor_reviews: 'Review Management',
+    import_export: 'Import/Export',
+    admin_users_description: 'Manage user accounts, roles, and permissions',
+    admin_products_description: 'Add, edit, and manage product listings',
+    admin_categories_description: 'Organize and structure product categories',
+    admin_reviews_description: 'Monitor and moderate product reviews',
+    admin_bulk_description: 'Import/export data and perform bulk operations',
 
     // Categories
     categories: 'Categories',
@@ -421,6 +435,10 @@ export const translations: Record<Language, TranslationKeys> = {
     language_en: 'English',
     language_lt: 'Lithuanian',
     search_placeholder: 'Search among {{count}} products...',
+
+    // User roles
+    super_admin: 'Super Administrator',
+    user: 'User',
   },
   lt: {
     // Navigation
@@ -440,18 +458,23 @@ export const translations: Record<Language, TranslationKeys> = {
     logged_in_as: 'Prisijungęs kaip',
 
     // Admin panel
-    dashboard: 'Valdymo skydas',
+    dashboard: 'Valdymo skydelis',
     orders: 'Užsakymai',
     access_denied: 'Prieiga uždrausta',
     access_denied_message: 'Jūs neturite teisių pasiekti administratoriaus skydelį.',
     return_to_home: 'Grįžti į pradžią',
     bulk_operations: 'Masinės operacijos',
-    admin_dashboard: 'Administratoriaus valdymo skydas',
-    manage_users: 'Valdyti vartotojų paskyras, roles ir teises',
-    manage_products: 'Pridėti, redaguoti ir valdyti produktų sąrašus',
-    manage_categories: 'Organizuoti produktus pagal kategorijas',
-    monitor_reviews: 'Stebėti ir moderuoti produktų atsiliepimus',
-    import_export: 'Importuoti/eksportuoti produktus ir atlikti masines operacijas',
+    admin_dashboard: 'Administratoriaus skydelis',
+    manage_users: 'Vartotojų Valdymas',
+    manage_products: 'Produktų Valdymas',
+    manage_categories: 'Kategorijų Valdymas',
+    monitor_reviews: 'Atsiliepimų Valdymas',
+    import_export: 'Importuoti/Eksportuoti',
+    admin_users_description: 'Valdykite vartotojų paskyras, roles ir teises',
+    admin_products_description: 'Pridėkite, redaguokite ir valdykite produktų sąrašus',
+    admin_categories_description: 'Organizuokite ir struktūrizuokite produktų kategorijas',
+    admin_reviews_description: 'Stebėkite ir moderuokite produktų atsiliepimus',
+    admin_bulk_description: 'Importuokite/eksportuokite duomenis ir atlikite masines operacijas',
 
     // Categories
     categories: 'Kategorijos',
@@ -630,6 +653,10 @@ export const translations: Record<Language, TranslationKeys> = {
     language_en: 'Anglų',
     language_lt: 'Lietuvių',
     search_placeholder: 'Ieškoti tarp {{count}} produktų...',
+
+    // User roles
+    super_admin: 'Super Administratorius',
+    user: 'Vartotojas',
   }
 } as const;
 

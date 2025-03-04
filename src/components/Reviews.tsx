@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/lib/auth';
 import { pb } from '@/lib/db';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
@@ -8,6 +8,7 @@ import { Star, ChevronDown, Edit2, Trash2 } from 'lucide-react';
 import { useToast } from '@/lib/providers/ToastProvider';
 import type { Review } from '@/types/review';
 import { ConfirmDialog } from './ConfirmDialog';
+import { ClientResponseError } from 'pocketbase';
 
 type ReviewSortOption = 'newest' | 'oldest' | 'highest' | 'lowest';
 
@@ -39,22 +40,16 @@ export function Reviews({ productId }: ReviewsProps) {
     { value: 'lowest', label: t('reviewSortLowest') },
   ];
 
-  const getSortQuery = (option: ReviewSortOption) => {
+  const getSortQuery = useCallback((option: ReviewSortOption) => {
     switch (option) {
       case 'newest': return '-created';
       case 'oldest': return '+created';
       case 'highest': return '-rating';
       case 'lowest': return '+rating';
     }
-  };
+  }, []);
 
-  useEffect(() => {
-    if (productId) {
-      loadReviews();
-    }
-  }, [productId, sortOption, user?.id]);
-
-  const loadReviews = async () => {
+  const loadReviews = useCallback(async () => {
     if (!productId) return;
     
     setIsLoading(true);
@@ -87,16 +82,21 @@ export function Reviews({ productId }: ReviewsProps) {
       } else {
         setReviews([]);
       }
-    } catch (err: any) {
-      if (!err?.isAbort) {
+    } catch (err) {
+      if (err instanceof ClientResponseError) {
         console.error('Error loading reviews:', err);
         setError(t('errorLoadingReviews'));
-        setReviews([]);
       }
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [productId, sortOption, user?.id, t, getSortQuery]);
+
+  useEffect(() => {
+    if (productId) {
+      loadReviews();
+    }
+  }, [productId, sortOption, user?.id, loadReviews]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,7 +107,6 @@ export function Reviews({ productId }: ReviewsProps) {
 
     try {
       if (editingReview) {
-        // Update existing review
         await pb.collection('reviews').update(editingReview, {
           rating,
           comment,
@@ -116,7 +115,6 @@ export function Reviews({ productId }: ReviewsProps) {
         });
         showToast(t('reviewUpdated'), 'success');
       } else {
-        // Create new review
         await pb.collection('reviews').create({
           rating,
           comment,
@@ -126,14 +124,15 @@ export function Reviews({ productId }: ReviewsProps) {
         showToast(t('reviewSubmitted'), 'success');
       }
       
-      // Reset form and refresh reviews
       setRating(5);
       setComment('');
       setEditingReview(null);
       loadReviews();
-    } catch (error: any) {
-      console.error('Error submitting review:', error);
-      showToast(t('errorSubmittingReview'), 'error');
+    } catch (error) {
+      if (error instanceof ClientResponseError) {
+        console.error('Error submitting review:', error);
+        showToast(t('errorSubmittingReview'), 'error');
+      }
     }
   };
 
@@ -142,9 +141,13 @@ export function Reviews({ productId }: ReviewsProps) {
       await pb.collection('reviews').delete(reviewId);
       showToast(t('review_deleted'), 'success');
       loadReviews();
+      setIsConfirmOpen(false);
+      setReviewToDelete(null);
     } catch (error) {
-      console.error('Error deleting review:', error);
-      showToast(t('error_deleting_review'), 'error');
+      if (error instanceof ClientResponseError) {
+        console.error('Error deleting review:', error);
+        showToast(t('error_deleting_review'), 'error');
+      }
     }
   };
 
@@ -217,7 +220,7 @@ export function Reviews({ productId }: ReviewsProps) {
 
       <div className="space-y-4">
         {reviews.length === 0 ? (
-          <p className="text-gray-500 text-center py-8">{t('noReviews')}</p>
+          <p className="text-center text-gray-500 py-8">{t('noReviews')}</p>
         ) : (
           reviews.map((review) => (
             <div key={review.id} className="bg-white p-6 rounded-lg shadow-sm">

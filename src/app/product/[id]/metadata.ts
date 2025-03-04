@@ -24,9 +24,10 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
       },
     };
   } catch (error) {
+    console.error('Error generating metadata:', error);
     return {
-      title: 'Product | E-Pasaulis',
-      description: 'Product details',
+      title: 'Product Not Found | E-Pasaulis',
+      description: 'The requested product could not be found'
     };
   }
 } 

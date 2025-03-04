@@ -1,15 +1,15 @@
 'use client';
 
+import React from 'react';
 import { useProducts } from '@/lib/hooks/useProducts';
 import ProductCard from './ProductCard';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import ProductCardSkeleton from './skeletons/ProductCardSkeleton';
 import { useInView } from 'react-intersection-observer';
-import { useEffect, useState } from 'react';
-import { withErrorBoundary } from './ErrorBoundary';
+import { useEffect } from 'react';
 import type { TranslationKey } from '@/lib/i18n/types';
-import { ChevronDown } from 'lucide-react';
 import { useScrollRestoration } from '@/lib/hooks/useScrollRestoration';
+import { ClientResponseError } from 'pocketbase';
 
 interface ProductGridProps {
   selectedCategory?: string;
@@ -47,7 +47,8 @@ export default function ProductGrid({
     priceMin: priceRange?.min,
     priceMax: priceRange?.max,
     sortBy,
-    inStockOnly
+    inStockOnly,
+    query: searchQuery
   });
 
   const { isRestoring } = useScrollRestoration(
@@ -91,9 +92,9 @@ export default function ProductGrid({
 
   return (
     <div>
-      {isError ? (
+      {isError && error instanceof ClientResponseError ? (
         <div className="text-center text-red-500 p-4">
-          <p>Error loading products: {error?.message}</p>
+          <p>Error loading products: {error.message}</p>
           <button 
             onClick={handleRetry} 
             className="text-primary-600 hover:text-primary-700 font-medium"

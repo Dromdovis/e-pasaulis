@@ -13,21 +13,37 @@
 
 import { create } from 'zustand';
 import { pb } from './db';
-import type { AuthModel, AuthState } from '@/types/auth';
+import type { AuthModel, AuthState, LoginData } from '@/types/auth';
 import { UserRole } from '@/types/auth';
 import { persist } from 'zustand/middleware';
-import { PBUser, PocketBaseOptions } from '@/types/pocketbase';
+import { BaseModel } from 'pocketbase';
+
+interface PBUser extends BaseModel {
+  id: string;
+  collectionId: string;
+  collectionName: string;
+  username: string;
+  email: string;
+  name: string;
+  role: string;
+  avatar?: string;
+  verified: boolean;
+  emailVisibility: boolean;
+  created: string;
+  updated: string;
+}
 
 /**
  * Initial authentication state
  */
-const getInitialState = () => ({
+const getInitialState = (): Omit<AuthState, 'initialize' | 'login' | 'logout' | 'register' | 'refreshUser' | 'setIntendedPath'> => ({
   isAuthenticated: false,
   isLoading: false,
   user: null,
-  intendedPath: null as string | null,
+  intendedPath: null,
   isAdmin: false,
-  isInitialized: false
+  isInitialized: false,
+  error: null
 });
 
 /**
@@ -36,24 +52,16 @@ const getInitialState = () => ({
  * @returns Validated UserRole enum value
  */
 const validateUserRole = (role: string): UserRole => {
-  console.log('🔑 validateUserRole - Input role:', role);
   const normalizedRole = role.toLowerCase();
-  console.log('🔑 validateUserRole - Normalized role:', normalizedRole);
   
-  let validatedRole: UserRole;
   switch (normalizedRole) {
     case 'admin':
-      validatedRole = UserRole.ADMIN;
-      break;
+      return UserRole.ADMIN;
     case 'super_admin':
-      validatedRole = UserRole.SUPER_ADMIN;
-      break;
+      return UserRole.SUPER_ADMIN;
     default:
-      validatedRole = UserRole.USER;
+      return UserRole.USER;
   }
-  
-  console.log('🔑 validateUserRole - Output role:', validatedRole);
-  return validatedRole;
 };
 
 /**
@@ -61,15 +69,12 @@ const validateUserRole = (role: string): UserRole => {
  * Implements Adapter pattern to transform between data models
  */
 const convertToAuthModel = (user: PBUser): AuthModel => {
-  console.log('👤 convertToAuthModel - Input user:', {
-    ...user,
-    // Safely mask email if it exists
-    email: user.email ? `${user.email.slice(0, 3)}***${user.email.slice(-3)}` : 'no-email'
-  });
-  
   const validatedRole = validateUserRole(user.role);
-  const authModel = {
+  return {
     id: user.id,
+    collectionId: user.collectionId,
+    collectionName: user.collectionName,
+    username: user.username || '',
     email: user.email || '',
     name: user.name || '',
     role: validatedRole,
@@ -79,14 +84,6 @@ const convertToAuthModel = (user: PBUser): AuthModel => {
     verified: user.verified || false,
     emailVisibility: user.emailVisibility || false
   };
-  
-  console.log('👤 convertToAuthModel - Output model:', {
-    ...authModel,
-    // Safely mask email if it exists
-    email: authModel.email ? `${authModel.email.slice(0, 3)}***${authModel.email.slice(-3)}` : 'no-email'
-  });
-  
-  return authModel;
 };
 
 /**
@@ -97,6 +94,7 @@ export const useAuth = create<AuthState>()(
   persist(
     (set, get) => ({
       ...getInitialState(),
+      
       setIntendedPath: (path: string | null) => set({ intendedPath: path }),
       
       initialize: async () => {
@@ -110,7 +108,7 @@ export const useAuth = create<AuthState>()(
           
           if (model?.id) {
             try {
-              const options: PocketBaseOptions = { requestKey: null };
+              const options = { requestKey: null };
               const user = await pb.collection('users').getOne<PBUser>(model.id, options);
               
               const authUser = convertToAuthModel(user);
@@ -122,7 +120,8 @@ export const useAuth = create<AuthState>()(
                 user: authUser,
                 isAdmin,
                 isLoading: false,
-                isInitialized: true
+                isInitialized: true,
+                error: null
               });
               return;
             } catch (error) {
@@ -143,14 +142,15 @@ export const useAuth = create<AuthState>()(
         }
       },
 
-      login: async (email: string, password: string) => {
+      login: async (data: LoginData) => {
         try {
           set({ isLoading: true });
-          const options: PocketBaseOptions = { requestKey: null };
-          
-          const authData = await pb.collection('users').authWithPassword(email, password, options);
-          
-          const user = await pb.collection('users').getOne<PBUser>(authData.record.id, options);
+          const authData = await pb.collection('users').authWithPassword(
+            data.email,
+            data.password,
+            { requestKey: null }
+          );
+          const user = await pb.collection('users').getOne<PBUser>(authData.record.id, { requestKey: null });
           const authUser = convertToAuthModel(user);
           const isAdmin = authUser.role === UserRole.ADMIN || authUser.role === UserRole.SUPER_ADMIN;
           
@@ -159,16 +159,17 @@ export const useAuth = create<AuthState>()(
             user: authUser, 
             isLoading: false, 
             isAdmin,
-            isInitialized: true 
+            isInitialized: true,
+            error: null
           });
-          return authUser;
         } catch (error) {
+          console.error('Login error:', error);
           set({ isLoading: false });
           throw error;
         }
       },
 
-      logout: () => {
+      logout: async () => {
         pb.authStore.clear();
         set({ 
           ...getInitialState(),
@@ -198,9 +199,11 @@ export const useAuth = create<AuthState>()(
             user: authUser, 
             isLoading: false,
             isAdmin: false,
-            isInitialized: true 
+            isInitialized: true,
+            error: null
           });
         } catch (error) {
+          console.error('Registration error:', error);
           set({ isLoading: false });
           throw error;
         }
@@ -214,7 +217,7 @@ export const useAuth = create<AuthState>()(
 
         try {
           set({ isLoading: true });
-          const options: PocketBaseOptions = { requestKey: null };
+          const options = { requestKey: null };
           
           const user = await pb.collection('users').getOne<PBUser>(currentUser.id, options);
           const authUser = convertToAuthModel(user);
@@ -233,7 +236,7 @@ export const useAuth = create<AuthState>()(
     }),
     {
       name: 'auth-storage',
-      partialize: (state) => ({
+      partialize: (state: AuthState) => ({
         isAuthenticated: state.isAuthenticated,
         user: state.user,
         isAdmin: state.isAdmin,
@@ -361,7 +364,7 @@ export class AuthService {
         sort: '-created'
       });
 
-      return result.items.map(user => convertToAuthModel(user));
+      return result.items.map((user: PBUser) => convertToAuthModel(user));
     } catch (error) {
       throw error;
     }
@@ -373,7 +376,7 @@ export class AuthService {
       const users = await pb.collection('users').getFullList<PBUser>();
       
       // Update each user's emailVisibility
-      const updates = users.map(user => 
+      const updates = users.map((user: PBUser) => 
         pb.collection('users').update(user.id, {
           emailVisibility: true
         }, {
