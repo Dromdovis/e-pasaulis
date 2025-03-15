@@ -1,3 +1,4 @@
+/* eslint-disable */
 declare module 'pocketbase' {
   export default class PocketBase {
     constructor(url: string);

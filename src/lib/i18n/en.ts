@@ -15,6 +15,37 @@ export const en: TranslationKeys = {
   users: 'Users',
   products: 'Products',
   settings: 'Settings',
+  logged_in_as: 'Logged in as',
+
+  // Theme
+  theme_switch_light: 'Switch to Light Theme',
+  theme_switch_dark: 'Switch to Dark Theme',
+
+  // Registration Banner
+  close: 'Close',
+  'register.specialOffer': 'Special Offer',
+  'register.discountDescription': 'Get a discount on your first purchase',
+  'register.signUpNow': 'Sign Up Now',
+  'register.newCustomersOnly': 'New customers only',
+
+  // Admin panel
+  dashboard: 'Dashboard',
+  orders: 'Orders',
+  access_denied: 'Access Denied',
+  access_denied_message: 'You do not have permission to access the admin panel.',
+  return_to_home: 'Return to Home',
+  bulk_operations: 'Bulk Operations',
+  admin_dashboard: 'Admin Dashboard',
+  manage_users: 'Manage Users',
+  manage_products: 'Manage Products',
+  manage_categories: 'Manage Categories',
+  monitor_reviews: 'Monitor Reviews',
+  import_export: 'Import/Export',
+  admin_users_description: 'Manage user accounts, roles, and permissions',
+  admin_products_description: 'Add, edit, and manage product listings',
+  admin_categories_description: 'Organize and structure product categories',
+  admin_reviews_description: 'Monitor and moderate product reviews',
+  admin_bulk_description: 'Import/export data and perform bulk operations',
 
   // Categories
   categories: 'Categories',
@@ -75,6 +106,7 @@ export const en: TranslationKeys = {
   registering: 'Registering...',
   dont_have_account: "Don't have an account?",
   already_have_account: 'Already have an account?',
+  register_with_google: 'Register with Google',
 
   // Profile
   profile_settings: 'Profile Settings',
@@ -128,6 +160,12 @@ export const en: TranslationKeys = {
   email_already_exists: 'Email already exists',
   invalid_email: 'Invalid email address',
   password_too_short: 'Password must be at least 8 characters long',
+  name_required: 'Name is required',
+  email_required: 'Email is required',
+  password_required: 'Password is required',
+  invalid_email_format: 'Invalid email format',
+  server_unavailable: 'Server unavailable',
+  username_already_exists: 'Username already exists',
 
   // Error handling
   try_again: 'Try again',
@@ -154,7 +192,7 @@ export const en: TranslationKeys = {
   sort_name_a_z: 'Name: A-Z',
   sort_name_z_a: 'Name: Z-A',
 
-  // Review actions
+  // New translations
   edit: 'Edit',
   delete: 'Delete',
   review_updated: 'Review updated successfully',
@@ -162,16 +200,33 @@ export const en: TranslationKeys = {
   review_error: 'Failed to submit review. Please try again.',
   delete_confirm: 'Are you sure you want to delete this review?',
   error_deleting_review: 'Error deleting review',
-
-  // Dialog actions
   cancel: 'Cancel',
   confirm: 'Confirm',
 
-  // Language selection
+  // Price range
+  price_range: 'Price Range',
+  invalid_price_range_negative: 'Price cannot be negative',
+  invalid_price_range_order: 'Maximum price must be greater than minimum price',
+
+  // Returns page
+  return_policy: 'Return Policy',
+  return_policy_description: 'Our return policy is simple and flexible',
+  return_policy_point_1: 'You can return an item within 14 days of receipt',
+  return_policy_point_2: 'The item must be undamaged and in its original packaging',
+  return_policy_point_3: 'We refund the full amount excluding shipping costs',
+  return_process: 'Return Process',
+  return_process_step_1: 'Contact customer service',
+  return_process_step_2: 'Get a return authorization',
+  return_process_step_3: 'Ship the item to the specified address',
+  return_process_step_4: 'Once we receive the item, we will process your refund',
+
+  // New translations
   select_language: 'EN',
   language_en: 'English',
   language_lt: 'Lithuanian',
+  search_placeholder: 'Search among {{count}} products...',
 
-  // Search
-  search_placeholder: 'Search among {{count}} products...'
+  // User roles
+  super_admin: 'Super Administrator',
+  user: 'User'
 } as const; 

@@ -1,31 +1,34 @@
 // src/app/layout.tsx
-import type { Metadata } from "next";
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
 import './globals.css';
+import { Providers } from './providers';
 import RootLayoutClient from './RootLayoutClient';
 
+const inter = Inter({ subsets: ['latin'] });
+
 export const metadata: Metadata = {
-  title: "E-Pasaulis",
-  description: "Global Technology E-Shop",
-  icons: {
-    icon: [
-      { url: '/favicon.svg', type: 'image/svg+xml' },
-      { url: '/favicon.png', type: 'image/png' }
-    ],
-  }
+  title: {
+    template: '%s | E-pasaulis',
+    default: 'E-pasaulis',
+  },
+  description: 'E-pasaulis - Your electronics store',
 };
 
-export default function RootLayout({
+function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>
-        <RootLayoutClient>
-          {children}
-        </RootLayoutClient>
+    <html lang="en" suppressHydrationWarning>
+      <body className={inter.className}>
+        <Providers>
+          <RootLayoutClient>{children}</RootLayoutClient>
+        </Providers>
       </body>
     </html>
   );
 }
+
+export default RootLayout;

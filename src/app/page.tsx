@@ -1,12 +1,13 @@
 // src/app/page.tsx
 'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import CategorySidebar from '@/components/CategorySidebar';
 import ProductGrid from '@/components/ProductGrid';
 import { ProductFilters } from '@/components/ProductFilters';
 import FilterTags from '@/components/FilterTags';
-import type { Category } from '@/types';
+import SpecificationsFilterPanel from '@/components/SpecificationsFilterPanel';
+import type { Category, Product } from '@/types';
 import { pb } from '@/lib/db';
 import { useQuery } from '@tanstack/react-query';
 import { ProductSort } from '@/components/ProductSort';
@@ -21,6 +22,8 @@ export default function HomePage() {
   const [inStockOnly, setInStockOnly] = useState(false);
   const [sortBy, setSortBy] = useState<'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'newest'>('newest');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
 
   // 2. Other hooks after useState
   const { data: categories = [] } = useQuery({
@@ -30,6 +33,29 @@ export default function HomePage() {
       return response.items;
     }
   });
+
+  // Fetch all products for specification filtering
+  const { data: productsData } = useQuery({
+    queryKey: ['products', selectedCategory?.id],
+    queryFn: async () => {
+      let filter = '';
+      if (selectedCategory?.id) {
+        filter = `category = "${selectedCategory.id}"`;
+      }
+      const response = await pb.collection('products').getList<Product>(1, 100, {
+        filter
+      });
+      return response.items;
+    }
+  });
+
+  // Update allProducts when the query data changes
+  useEffect(() => {
+    if (productsData) {
+      setAllProducts(productsData);
+      setFilteredProducts(productsData);
+    }
+  }, [productsData]);
 
   // 3. useScrollRestoration after other hooks
   const { isRestoring } = useScrollRestoration('home_page');
@@ -50,6 +76,10 @@ export default function HomePage() {
 
   const handleSort = (sortOption: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'newest') => {
     setSortBy(sortOption);
+  };
+
+  const handleSpecificationFilter = (filtered: Product[]) => {
+    setFilteredProducts(filtered);
   };
 
   // Render
@@ -89,6 +119,7 @@ export default function HomePage() {
                       handleCategorySelect(id);
                       setMobileMenuOpen(false);
                     }}
+                    useLinks={true}
                   />
                 </div>
               </div>
@@ -96,12 +127,22 @@ export default function HomePage() {
           )}
 
           {/* Desktop Categories */}
-          <div className="hidden lg:block sticky top-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+          <div className="hidden lg:block sticky top-4">
             <CategorySidebar
               categories={categories}
               selectedCategory={selectedCategory?.id}
               onCategorySelect={handleCategorySelect}
+              useLinks={true}
             />
+            
+            {selectedCategory && (
+              <div className="mt-8">
+                <SpecificationsFilterPanel
+                  products={allProducts}
+                  onFilter={handleSpecificationFilter}
+                />
+              </div>
+            )}
           </div>
         </aside>
 
@@ -119,12 +160,23 @@ export default function HomePage() {
             {/* Product Grid */}
             <div className="flex-1 min-w-0">
               <Suspense fallback={<ProductGridSkeleton />}>
-                <ProductGrid
-                  selectedCategory={selectedCategory?.id}
-                  priceRange={selectedPriceRange}
-                  inStockOnly={inStockOnly}
-                  sortBy={sortBy}
-                />
+                {selectedCategory && filteredProducts !== allProducts ? (
+                  <ProductGrid
+                    products={filteredProducts}
+                    selectedCategory={selectedCategory?.id}
+                    priceRange={selectedPriceRange}
+                    inStockOnly={inStockOnly}
+                    sortBy={sortBy}
+                    useSpecificationFilter={true}
+                  />
+                ) : (
+                  <ProductGrid
+                    selectedCategory={selectedCategory?.id}
+                    priceRange={selectedPriceRange}
+                    inStockOnly={inStockOnly}
+                    sortBy={sortBy}
+                  />
+                )}
               </Suspense>
             </div>
 

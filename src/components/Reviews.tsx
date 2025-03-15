@@ -27,8 +27,10 @@ export function Reviews({ productId }: ReviewsProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [sortOption, setSortOption] = useState<ReviewSortOption>('newest');
   const [isSortOpen, setIsSortOpen] = useState(false);
+  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [editingReview, setEditingReview] = useState<string | null>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [reviewToDelete, setReviewToDelete] = useState<string | null>(null);
@@ -53,15 +55,14 @@ export function Reviews({ productId }: ReviewsProps) {
     if (!productId) return;
     
     setIsLoading(true);
-    setError(null);
+    setErrorMessage(null);
     
     try {
       const response = await pb.collection('reviews').getList<Review>(1, 50, {
         filter: `product_id = "${productId}"`,
         sort: getSortQuery(sortOption),
         expand: 'user_id',
-        requestKey: `reviews_${productId}_${sortOption}`,
-        $autoCancel: false
+        requestKey: null
       });
       
       if (response?.items) {
@@ -85,7 +86,7 @@ export function Reviews({ productId }: ReviewsProps) {
     } catch (err) {
       if (err instanceof ClientResponseError) {
         console.error('Error loading reviews:', err);
-        setError(t('errorLoadingReviews'));
+        setErrorMessage(t('errorLoadingReviews'));
       }
     } finally {
       setIsLoading(false);
@@ -154,7 +155,7 @@ export function Reviews({ productId }: ReviewsProps) {
   return (
     <div className="mt-12">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">{t('reviews')}</h2>
+        <h2 className="text-2xl font-bold">Reviews</h2>
         
         {/* Sort dropdown */}
         <div className="relative">
@@ -162,7 +163,7 @@ export function Reviews({ productId }: ReviewsProps) {
             onClick={() => setIsSortOpen(!isSortOpen)}
             className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-gray-50"
           >
-            <span>{t('sortReviews')}</span>
+            <span>Sort Reviews</span>
             <ChevronDown className="h-4 w-4" />
           </button>
           
@@ -209,6 +210,13 @@ export function Reviews({ productId }: ReviewsProps) {
             placeholder={t('writeReview')}
             required
           />
+          <button
+            type="button"
+            onClick={() => setIsEditing(false)}
+            className="mr-2 text-gray-600 px-4 py-2 rounded-lg border hover:bg-gray-50"
+          >
+            {t('cancel')}
+          </button>
           <button
             type="submit"
             className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700"

@@ -1,7 +1,7 @@
 'use client';
 
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { useRef, useState, useEffect } from 'react';
+import { useRef } from 'react';
 
 interface VirtualizedListProps<T> {
   items: T[];
@@ -17,17 +17,6 @@ export function VirtualizedList<T>({
   overscan = 3,
 }: VirtualizedListProps<T>) {
   const parentRef = useRef<HTMLDivElement>(null);
-  const [parentHeight, setParentHeight] = useState(0);
-
-  useEffect(() => {
-    if (parentRef.current) {
-      const resizeObserver = new ResizeObserver((entries) => {
-        setParentHeight(entries[0].contentRect.height);
-      });
-      resizeObserver.observe(parentRef.current);
-      return () => resizeObserver.disconnect();
-    }
-  }, []);
 
   const virtualizer = useVirtualizer({
     count: items.length,

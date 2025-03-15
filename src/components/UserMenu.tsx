@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { useTranslation } from 'next-i18next';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { UserCircle, User, Settings, LogOut, LayoutDashboard } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -9,7 +9,7 @@ import { useAuth } from '@/lib/auth';
 import { UserRole } from '@/types/auth';
 
 export default function UserMenu() {
-  const { t } = useTranslation('common');
+  const { t } = useLanguage();
   const { user, isAuthenticated, logout } = useAuth();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
@@ -39,12 +39,12 @@ export default function UserMenu() {
         className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
       >
         <UserCircle className="w-6 h-6" />
-        <span className="hidden sm:inline">{t('navigation.login')}</span>
+        <span className="hidden sm:inline">Login</span>
       </Link>
     );
   }
 
-  const displayName = user?.name || user?.email || t('navigation.user');
+  const displayName = user?.name || user?.email || t('user');
   const isAdmin = user?.role === UserRole.ADMIN || user?.role === UserRole.SUPER_ADMIN;
 
   return (
@@ -66,7 +66,7 @@ export default function UserMenu() {
           >
             <div className="flex items-center space-x-2">
               <User className="w-4 h-4" />
-              <span>{t('navigation.profile')}</span>
+              <span>Profile</span>
             </div>
           </Link>
 
@@ -77,7 +77,7 @@ export default function UserMenu() {
           >
             <div className="flex items-center space-x-2">
               <Settings className="w-4 h-4" />
-              <span>{t('navigation.settings')}</span>
+              <span>Settings</span>
             </div>
           </Link>
 
@@ -89,7 +89,7 @@ export default function UserMenu() {
             >
               <div className="flex items-center space-x-2">
                 <LayoutDashboard className="w-4 h-4" />
-                <span>{t('navigation.admin_panel')}</span>
+                <span>Admin Panel</span>
               </div>
             </Link>
           )}
@@ -100,7 +100,7 @@ export default function UserMenu() {
           >
             <div className="flex items-center space-x-2">
               <LogOut className="w-4 h-4" />
-              <span>{t('navigation.logout')}</span>
+              <span>Logout</span>
             </div>
           </button>
         </div>

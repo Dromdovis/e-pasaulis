@@ -12,13 +12,13 @@ import Image from 'next/image';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { UserRole } from '@/types/auth';
 import { SearchBar } from '@/components/SearchBar';
-import { LanguageDropdown } from '@/components/LanguageDropdown';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
+import MobileLanguageSwitcher from '@/components/MobileLanguageSwitcher';
 import UserMenu from '@/components/UserMenu';
 import type { StoreState } from '@/lib/store';
-import { useTranslation } from 'next-i18next';
 import { CartButton } from './CartButton';
 import { FavoritesButton } from './FavoritesButton';
-import { LanguageSelector } from './LanguageSelector';
+import ThemeSwitcher from './ThemeSwitcher';
 
 interface NavbarProps {
   mobileMenuOpen: boolean;
@@ -127,10 +127,9 @@ const contrastTheme = {
 };
 
 export default function Navbar({ mobileMenuOpen, onMobileMenuClose, onMobileMenuOpen }: NavbarProps) {
-  const { t } = useTranslation('common');
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, isInitialized } = useAuth();
   const router = useRouter();
-  const { language, setLanguage } = useLanguage();
+  const { t, changeLanguage } = useLanguage();
   const [langMenuOpen, setLangMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const langButtonRef = useRef<HTMLDivElement>(null);
@@ -145,35 +144,46 @@ export default function Navbar({ mobileMenuOpen, onMobileMenuClose, onMobileMenu
   const [pulseIntensity, setPulseIntensity] = useState(0); // 0-1 for pulse glow intensity
   const [isNeonTech, setIsNeonTech] = useState(true);
 
+  // Force re-render on auth state change to ensure UI reflects current state
+  const [authRenderKey, setAuthRenderKey] = useState(0);
+  
+  useEffect(() => {
+    // Update render key when auth state changes
+    setAuthRenderKey(prev => prev + 1);
+  }, [isAuthenticated, user]);
+
   // Check if user is admin or super_admin
   const isAdmin = user?.role === UserRole.ADMIN || user?.role === UserRole.SUPER_ADMIN;
 
-  const displayName = user?.name || user?.email || t('navigation.user');
+  const displayName = user?.name || user?.email || t('user');
 
   const handleLogout = async () => {
     await logout();
-    router.push('/login');
+    router.push('/');
+    setUserMenuOpen(false);
   };
 
   const handleLanguageChange = (newLang: 'en' | 'lt') => {
-    setLanguage(newLang);
+    changeLanguage(newLang);
     setLangMenuOpen(false);
   };
 
-  // Close menus when clicking outside
+  // Close menus when clicked outside
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    function handleClickOutside(event: MouseEvent) {
       if (langButtonRef.current && !langButtonRef.current.contains(event.target as Node)) {
         setLangMenuOpen(false);
       }
       if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
         setUserMenuOpen(false);
       }
-    };
+    }
 
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [langButtonRef, userMenuRef]);
 
   // Enhanced theme animation logic with size and pulse effects
   useEffect(() => {
@@ -373,93 +383,96 @@ export default function Navbar({ mobileMenuOpen, onMobileMenuClose, onMobileMenu
 
           {/* Right section */}
           <div className="flex items-center space-x-4">
-            <LanguageSelector />
+            <LanguageSwitcher />
+            
+            <ThemeSwitcher />
 
             {/* Desktop Icons */}
-            <div className="hidden sm:flex items-center space-x-4">
-              <CartButton />
-              <FavoritesButton />
+            <CartButton />
+            <FavoritesButton />
 
-              {/* User Menu */}
-              <div className="relative" ref={userMenuRef}>
-                {isAuthenticated && user ? (
-                  <>
-                    <button
-                      onClick={() => setUserMenuOpen(!userMenuOpen)}
-                      className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
-                    >
-                      <UserCircle className="w-6 h-6" />
-                      <span className="text-sm font-medium hidden sm:inline">{displayName}</span>
-                    </button>
-
-                    {userMenuOpen && (
-                      <div className="absolute right-0 mt-2 py-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-xl z-50">
-                        <Link
-                          href="/profile"
-                          className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                          onClick={() => setUserMenuOpen(false)}
-                        >
-                          <div className="flex items-center space-x-2">
-                            <User className="w-4 h-4" />
-                            <span>{t('navigation.profile')}</span>
-                          </div>
-                        </Link>
-
-                        <Link
-                          href="/settings"
-                          className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                          onClick={() => setUserMenuOpen(false)}
-                        >
-                          <div className="flex items-center space-x-2">
-                            <Settings className="w-4 h-4" />
-                            <span>{t('navigation.settings')}</span>
-                          </div>
-                        </Link>
-
-                        {isAdmin && (
-                          <Link
-                            href="/admin"
-                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                            onClick={() => setUserMenuOpen(false)}
-                          >
-                            <div className="flex items-center space-x-2">
-                              <LayoutDashboard className="w-4 h-4" />
-                              <span>{t('navigation.adminPanel')}</span>
-                            </div>
-                          </Link>
-                        )}
-
-                        <button
-                          onClick={() => {
-                            setUserMenuOpen(false);
-                            handleLogout();
-                          }}
-                          className="block w-full px-4 py-2 text-sm text-left text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700"
-                        >
-                          <div className="flex items-center space-x-2">
-                            <LogOut className="w-4 h-4" />
-                            <span>{t('navigation.logout')}</span>
-                          </div>
-                        </button>
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <Link
-                    href="/login"
+            {/* User Menu or Login/Register */}
+            <div ref={userMenuRef} className="relative hidden sm:inline-block text-left">
+              {isInitialized && isAuthenticated && user ? (
+                <>
+                  <button
+                    onClick={() => setUserMenuOpen(!userMenuOpen)}
                     className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
                   >
                     <UserCircle className="w-6 h-6" />
-                    <span className="hidden sm:inline">{t('navigation.login')}</span>
+                    <span className="text-sm font-medium hidden sm:inline">{displayName}</span>
+                  </button>
+
+                  {userMenuOpen && (
+                    <div className="absolute right-0 mt-2 py-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-xl z-50">
+                      <Link
+                        href="/profile"
+                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        <div className="flex items-center space-x-2">
+                          <User className="w-4 h-4" />
+                          <span>Profile</span>
+                        </div>
+                      </Link>
+
+                      <Link
+                        href="/settings"
+                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        <div className="flex items-center space-x-2">
+                          <Settings className="w-4 h-4" />
+                          <span>Settings</span>
+                        </div>
+                      </Link>
+
+                      {isAdmin && (
+                        <Link
+                          href="/admin"
+                          className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                          onClick={() => setUserMenuOpen(false)}
+                        >
+                          <div className="flex items-center space-x-2">
+                            <LayoutDashboard className="w-4 h-4" />
+                            <span>Admin Panel</span>
+                          </div>
+                        </Link>
+                      )}
+
+                      <button
+                        onClick={handleLogout}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <LogOut className="w-4 h-4" />
+                          <span>Logout</span>
+                        </div>
+                      </button>
+                    </div>
+                  )}
+                </>
+              ) : isInitialized ? (
+                <div className="flex items-center space-x-3">
+                  <Link href="/login" className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300">
+                    Login
                   </Link>
-                )}
-              </div>
+                  <Link
+                    href="/register"
+                    className="px-3 py-1.5 bg-primary-600 text-white rounded-md hover:bg-primary-700 shadow-sm"
+                  >
+                    Register
+                  </Link>
+                </div>
+              ) : null}
             </div>
 
-            {/* Mobile Menu Button */}
+            {/* Mobile menu button */}
             <button
-              className="sm:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
-              onClick={onMobileMenuOpen}
+              className="sm:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full z-20"
+              onClick={mobileMenuOpen ? onMobileMenuClose : onMobileMenuOpen}
+              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+              type="button"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -474,10 +487,17 @@ export default function Navbar({ mobileMenuOpen, onMobileMenuClose, onMobileMenu
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="sm:hidden border-t border-gray-200 dark:border-gray-700">
+        <div className="sm:hidden border-t border-gray-200 dark:border-gray-700 pb-4">
           <div className="px-2 pt-2 pb-3 space-y-1">
+            {/* Theme Switcher in Mobile Menu */}
+            <div className="px-3 py-2 rounded-md">
+              <ThemeSwitcher />
+            </div>
+            
+            <MobileLanguageSwitcher />
+            
             {/* Profile Section in Mobile Menu */}
-            {isAuthenticated && user ? (
+            {isInitialized && isAuthenticated && user ? (
               <div className="px-3 py-2 border-t dark:border-gray-700">
                 <div className="flex items-center mb-3">
                   <UserCircle className="w-5 h-5 mr-2" />
@@ -487,89 +507,59 @@ export default function Navbar({ mobileMenuOpen, onMobileMenuClose, onMobileMenu
                   <Link
                     href="/profile"
                     className="block px-3 py-2 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    onClick={onMobileMenuClose}
                   >
                     <div className="flex items-center">
                       <User className="w-4 h-4 mr-2" />
-                      <span>{t('navigation.profile')}</span>
+                      <span>Profile</span>
                     </div>
                   </Link>
                   <Link
                     href="/settings"
                     className="block px-3 py-2 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    onClick={onMobileMenuClose}
                   >
                     <div className="flex items-center">
                       <Settings className="w-4 h-4 mr-2" />
-                      <span>{t('navigation.settings')}</span>
+                      <span>Settings</span>
                     </div>
                   </Link>
                   {isAdmin && (
                     <Link
                       href="/admin"
                       className="block px-3 py-2 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                      onClick={onMobileMenuClose}
                     >
                       <div className="flex items-center">
                         <LayoutDashboard className="w-4 h-4 mr-2" />
-                        <span>{t('navigation.adminPanel')}</span>
+                        <span>Admin Panel</span>
                       </div>
                     </Link>
                   )}
                   <button
-                    onClick={() => {
-                      onMobileMenuClose();
-                      handleLogout();
-                    }}
-                    className="block w-full px-3 py-2 text-left rounded-md text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    onClick={handleLogout}
+                    className="block w-full text-left px-3 py-2 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                   >
                     <div className="flex items-center">
                       <LogOut className="w-4 h-4 mr-2" />
-                      <span>{t('navigation.logout')}</span>
+                      <span>Logout</span>
                     </div>
                   </button>
                 </div>
               </div>
-            ) : (
-              <Link
-                href="/login"
-                className="block px-3 py-2 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                onClick={onMobileMenuClose}
-              >
-                <div className="flex items-center">
-                  <UserCircle className="w-5 h-5 mr-2" />
-                  <span>{t('navigation.login')}</span>
-                </div>
-              </Link>
-            )}
-
-            {/* Favorites and Cart Links */}
-            <Link
-              href="/favorites"
-              className="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-              onClick={onMobileMenuClose}
-            >
-              <Heart className="w-5 h-5 mr-2" />
-              <span>{t('navigation.favorites')}</span>
-              {favorites.length > 0 && (
-                <span className="ml-auto bg-red-500 text-white rounded-full px-2 py-1 text-xs">
-                  {favorites.length}
-                </span>
-              )}
-            </Link>
-            <Link
-              href="/cart"
-              className="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-              onClick={onMobileMenuClose}
-            >
-              <ShoppingCart className="w-5 h-5 mr-2" />
-              <span>{t('navigation.cart')}</span>
-              {cart.length > 0 && (
-                <span className="ml-auto bg-red-500 text-white rounded-full px-2 py-1 text-xs">
-                  {cart.length}
-                </span>
-              )}
-            </Link>
+            ) : isInitialized ? (
+              <div className="px-3 py-2 border-t dark:border-gray-700 space-y-1">
+                <Link
+                  href="/login"
+                  className="block px-3 py-2 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/register"
+                  className="block px-3 py-2 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 bg-primary-100 dark:bg-primary-900/20"
+                >
+                  Register
+                </Link>
+              </div>
+            ) : null}
           </div>
         </div>
       )}

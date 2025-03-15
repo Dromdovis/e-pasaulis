@@ -11,7 +11,7 @@ export type Dictionary = Awaited<ReturnType<typeof dictionaries[Locale]>>;
 export const getDictionary = async (locale: Locale) => {
   try {
     return dictionaries[locale]();
-  } catch (error) {
+  } catch {
     // Fallback to English if the requested locale is not available
     return dictionaries.en();
   }

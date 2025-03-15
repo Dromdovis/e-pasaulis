@@ -14,7 +14,7 @@ interface Settings {
 }
 
 export default function SettingsPage() {
-  const { } = useLanguage();
+  const { t } = useLanguage();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

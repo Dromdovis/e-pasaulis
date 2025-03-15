@@ -1,6 +1,8 @@
-import { generateMetadata } from './metadata';
+import { Metadata } from 'next';
+import { generateMetadata as getMetadata } from './metadata';
 
-export { generateMetadata };
+// Export the metadata generator with the correct type
+export const generateMetadata = getMetadata;
 
 export default function ProductLayout({
   children,

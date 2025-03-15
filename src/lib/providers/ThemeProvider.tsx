@@ -1,21 +1,33 @@
 'use client';
 
-import { createContext, useContext, ReactNode } from 'react';
+import { ThemeProvider as NextThemesProvider } from 'next-themes';
+import { ReactNode, useEffect, useState } from 'react';
 
-interface ThemeContextType {
-  theme: 'light' | 'dark';
+interface ThemeProviderProps {
+  children: ReactNode;
 }
 
-const ThemeContext = createContext<ThemeContextType>({ theme: 'light' });
+export function ThemeProvider({ children }: ThemeProviderProps) {
+  // Use suppressHydrationWarning to prevent hydration mismatch errors
+  // This component ensures client-side only rendering of theme
+  const [mounted, setMounted] = useState(false);
 
-export function ThemeProvider({ children }: { children: ReactNode }) {
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
-    <ThemeContext.Provider value={{ theme: 'light' }}>
-      <div className="min-h-screen bg-gray-50 text-gray-900">
+    <NextThemesProvider
+      attribute="class"
+      defaultTheme="light"
+      enableSystem={false}
+      disableTransitionOnChange
+    >
+      <div suppressHydrationWarning>
         {children}
       </div>
-    </ThemeContext.Provider>
+    </NextThemesProvider>
   );
 }
 
-export const useTheme = () => useContext(ThemeContext); 
+export { useTheme } from 'next-themes'; 

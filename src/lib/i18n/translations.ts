@@ -1,4 +1,4 @@
-export type Language = 'en' | 'lt';
+export type Language = 'en' | 'lt' | 'ru';
 
 // Define the base translation keys and their English values
 export type TranslationKeys = {
@@ -17,6 +17,17 @@ export type TranslationKeys = {
   users: string;
   products: string;
   logged_in_as: string;
+
+  // Theme
+  theme_switch_light: string;
+  theme_switch_dark: string;
+
+  // Registration Banner
+  close: string;
+  'register.specialOffer': string;
+  'register.discountDescription': string;
+  'register.signUpNow': string;
+  'register.newCustomersOnly': string;
 
   // Admin panel
   dashboard: string;
@@ -96,6 +107,7 @@ export type TranslationKeys = {
   registering: string;
   dont_have_account: string;
   already_have_account: string;
+  register_with_google: string;
 
   // Profile
   profile_settings: string;
@@ -239,6 +251,17 @@ export const translations: Record<Language, TranslationKeys> = {
     products: 'Products',
     logged_in_as: 'Logged in as',
 
+    // Theme
+    theme_switch_light: 'Switch to Light Theme',
+    theme_switch_dark: 'Switch to Dark Theme',
+
+    // Registration Banner
+    close: 'Close',
+    'register.specialOffer': 'Special Offer',
+    'register.discountDescription': 'Discount Description',
+    'register.signUpNow': 'Sign Up Now',
+    'register.newCustomersOnly': 'New Customers Only',
+
     // Admin panel
     dashboard: 'Dashboard',
     orders: 'Orders',
@@ -317,6 +340,7 @@ export const translations: Record<Language, TranslationKeys> = {
     registering: 'Registering...',
     dont_have_account: "Don't have an account?",
     already_have_account: 'Already have an account?',
+    register_with_google: 'Register with Google',
 
     // Profile
     profile_settings: 'Profile Settings',
@@ -457,6 +481,17 @@ export const translations: Record<Language, TranslationKeys> = {
     products: 'Produktai',
     logged_in_as: 'Prisijungęs kaip',
 
+    // Theme
+    theme_switch_light: 'Pakeisti į šviesią temą',
+    theme_switch_dark: 'Pakeisti į tamsią temą',
+
+    // Registration Banner
+    close: 'Uždaryti',
+    'register.specialOffer': 'Speciali pasiūlyma',
+    'register.discountDescription': 'Nuolaidos aprašymas',
+    'register.signUpNow': 'Registruokitės dabar',
+    'register.newCustomersOnly': 'Tik naujiems klientams',
+
     // Admin panel
     dashboard: 'Valdymo skydelis',
     orders: 'Užsakymai',
@@ -529,12 +564,13 @@ export const translations: Record<Language, TranslationKeys> = {
     // Auth related
     email: 'El. paštas',
     password: 'Slaptažodis',
-    confirm_password: 'Pakartokite slaptažodį',
+    confirm_password: 'Patvirtinti slaptažodį',
     name: 'Vardas',
     logging_in: 'Jungiamasi...',
     registering: 'Registruojama...',
     dont_have_account: 'Neturite paskyros?',
     already_have_account: 'Jau turite paskyrą?',
+    register_with_google: 'Registruotis su Google',
 
     // Profile
     profile_settings: 'Profilio nustatymai',
@@ -657,6 +693,236 @@ export const translations: Record<Language, TranslationKeys> = {
     // User roles
     super_admin: 'Super Administratorius',
     user: 'Vartotojas',
+  },
+  ru: {
+    // Navigation
+    home: 'Главная',
+    login: 'Войти',
+    register: 'Зарегистрироваться',
+    logout: 'Выйти',
+    profile: 'Профиль',
+    settings: 'Настройки',
+    cart: 'Корзина',
+    favorites: 'Избранное',
+    filter: 'Фильтровать',
+    search: 'Поиск',
+    admin_panel: 'Панель администратора',
+    users: 'Пользователи',
+    products: 'Продукты',
+    logged_in_as: 'Вошли как',
+
+    // Theme
+    theme_switch_light: 'Переключить на светлую тему',
+    theme_switch_dark: 'Переключить на темную тему',
+
+    // Registration Banner
+    close: 'Закрыть',
+    'register.specialOffer': 'Специальное предложение',
+    'register.discountDescription': 'Описание скидки',
+    'register.signUpNow': 'Зарегистрируйтесь сейчас',
+    'register.newCustomersOnly': 'Только для новых клиентов',
+
+    // Admin panel
+    dashboard: 'Панель управления',
+    orders: 'Заказы',
+    access_denied: 'Доступ запрещен',
+    access_denied_message: 'У вас нет прав доступа к панели администратора.',
+    return_to_home: 'Вернуться на главную',
+    bulk_operations: 'Массовые операции',
+    admin_dashboard: 'Панель администратора',
+    manage_users: 'Управление пользователями',
+    manage_products: 'Управление продуктами',
+    manage_categories: 'Управление категориями',
+    monitor_reviews: 'Модерация отзывов',
+    import_export: 'Импорт/Экспорт',
+    admin_users_description: 'Управляйте учетными записями пользователей, ролями и правами доступа',
+    admin_products_description: 'Добавьте, отредактируйте и управляйте списками продуктов',
+    admin_categories_description: 'Организуйте и структурируйте категории продуктов',
+    admin_reviews_description: 'Отслеживайте и модерируйте отзывы о продуктах',
+    admin_bulk_description: 'Импортируйте/экспортируйте данные и выполняйте массовые операции',
+
+    // Categories
+    categories: 'Категории',
+    laptops: 'Ноутбуки',
+    desktops: 'Стационарные компьютеры',
+    phones: 'Мобильные телефоны',
+    tablets: 'Планшеты',
+    monitors: 'Мониторы',
+    keyboards: 'Клавиатуры',
+    mice: 'Мыши',
+    headphones: 'Наушники',
+    graphics_cards: 'Видеокарты',
+    processors: 'Процессоры',
+    memory: 'Память',
+    storage: 'Жесткие диски',
+    power_supplies: 'Блоки питания',
+    cooling: 'Охлаждение',
+    cases: 'Корпуса',
+    motherboards: 'Материнские платы',
+    networking: 'Сетевое оборудование',
+    software: 'Программное обеспечение',
+    gaming: 'Игровая техника',
+    printers: 'Принтеры',
+
+    // Product related
+    in_stock: 'в наличии',
+    out_of_stock: 'Нет в наличии',
+    add_to_cart: 'Добавить в корзину',
+    continue_shopping: 'Продолжить покупки',
+    productSpecifications: 'Спецификации',
+    writeReview: 'Написать отзыв',
+    submitReview: 'Отправить отзыв',
+    updateReview: 'Обновить отзыв',
+    reviews: 'Отзывы',
+    similarProducts: 'Похожие продукты',
+    sortReviews: 'Сортировать отзывы',
+    reviewSortNewest: 'Новые',
+    reviewSortOldest: 'Старые',
+    reviewSortHighest: 'Лучшие',
+    reviewSortLowest: 'Худшие',
+    noReviews: 'Отзывов еще нет',
+    loginToReview: 'Войдите, чтобы написать отзыв',
+    reviewUpdated: 'Отзыв успешно обновлен',
+    reviewSubmitted: 'Отзыв успешно отправлен',
+    errorSubmittingReview: 'Ошибка при отправке отзыва',
+    errorLoadingReviews: 'Ошибка при загрузке отзывов',
+    product_details: 'Детали продукта',
+    product_description: 'Описание',
+    product_price: 'Цена',
+    product_stock: 'Наличие',
+
+    // Auth related
+    email: 'Электронная почта',
+    password: 'Пароль',
+    confirm_password: 'Повторите пароль',
+    name: 'Имя',
+    logging_in: 'Вход...',
+    registering: 'Регистрация...',
+    dont_have_account: 'У вас нет учетной записи?',
+    already_have_account: 'У вас уже есть учетная запись?',
+    register_with_google: 'Зарегистрироваться через Google',
+
+    // Profile
+    profile_settings: 'Настройки профиля',
+    profile_picture: 'Фотография профиля',
+    change_picture: 'Изменить фотографию',
+    current_password: 'Текущий пароль',
+    new_password: 'Новый пароль',
+    update_password: 'Обновить пароль',
+    updating: 'Обновление...',
+
+    // Footer
+    about_us: 'О нас',
+    about_description: 'Ваш надежный источник электроники и компьютерных компонентов.',
+    quick_links: 'Быстрые ссылки',
+    about: 'О нас',
+    contact: 'Контакты',
+    shipping_info: 'Информация о доставке',
+    customer_service: 'Обслуживание клиентов',
+    faq: 'ЧАВО',
+    returns: 'Возвраты',
+    support: 'Поддержка',
+    contact_us: 'Свяжитесь с нами',
+    phone: 'Телефон',
+    address: 'Адрес',
+    all_rights_reserved: 'Все права защищены.',
+
+    // Additional translations
+    sort_by: 'Сортировать по',
+    price_low_high: 'Цена: от низкой',
+    price_high_low: 'Цена: от высокой',
+    newest: 'Новые',
+    loading: 'Загрузка...',
+    load_more: 'Загрузить больше',
+
+    // Form
+    select_category: 'Выберите категорию',
+
+    // Admin
+    admin: {
+      products: {
+        edit: 'Редактировать продукт',
+        productImage: 'Изображение продукта',
+        uploadImage: 'Загрузить изображение'
+      }
+    },
+
+    // Error messages
+    invalid_credentials: 'Неверные данные входа',
+    registration_failed: 'Регистрация не удалась. Проверьте свои данные.',
+    passwords_dont_match: 'Пароли не совпадают',
+    email_already_exists: 'Этот электронный адрес уже существует',
+    invalid_email: 'Неверный электронный адрес',
+    password_too_short: 'Пароль должен быть не менее 8 символов',
+    name_required: 'Имя обязательно',
+    email_required: 'Электронная почта обязательна',
+    password_required: 'Пароль обязателен',
+    invalid_email_format: 'Неверный формат электронной почты',
+    server_unavailable: 'Сервер в данный момент недоступен. Пожалуйста, попробуйте позже.',
+    username_already_exists: 'Этот логин уже существует',
+
+    // Error handling
+    try_again: 'Попробуйте еще раз',
+    error_loading: 'Ошибка при загрузке содержимого',
+
+    // Search
+    search_products: 'Поиск продуктов',
+    search_results_for: 'Результаты поиска',
+    no_results_found: 'Результатов не найдено',
+    no_products_found: 'Таких товаров не найдено',
+    
+    // Error messages
+    something_went_wrong: 'Что-то пошло не так',
+    product_not_found: 'Товар не найден',
+
+    // Favorites
+    add_to_favorites: 'Добавить в избранное',
+    remove_from_favorites: 'Удалить из избранного',
+
+    // Sort options
+    sort_newest: 'Новые',
+    sort_price_low_high: 'Цена: от низкой',
+    sort_price_high_low: 'Цена: от высокой',
+    sort_name_a_z: 'Название: А-Я',
+    sort_name_z_a: 'Название: Я-А',
+
+    // New translations
+    edit: 'Редактировать',
+    delete: 'Удалить',
+    review_updated: 'Отзыв успешно обновлен',
+    review_deleted: 'Отзыв успешно удален',
+    review_error: 'Ошибка при отправке отзыва. Пожалуйста, попробуйте еще раз.',
+    delete_confirm: 'Вы уверены, что хотите удалить этот отзыв?',
+    error_deleting_review: 'Ошибка при удалении отзыва',
+    cancel: 'Отменить',
+    confirm: 'Подтвердить',
+
+    // Price range
+    price_range: 'Диапазон цен',
+    invalid_price_range_negative: 'Цена не может быть отрицательной',
+    invalid_price_range_order: 'Минимальная цена должна быть меньше максимальной цены',
+
+    // Returns page
+    return_policy: 'Политика возврата',
+    return_policy_description: 'E-pasaulis хочет, чтобы вы были полностью удовлетворены своей покупкой. Если вы не удовлетворены, большинство продуктов можно вернуть в течение 30 дней после доставки и получить полный возврат денег.',
+    return_policy_point_1: 'Товары должны быть возвращены в оригинальной, неповрежденной упаковке',
+    return_policy_point_2: 'Товары должны быть новыми, неиспользованными, с всеми оригинальными этикетками',
+    return_policy_point_3: 'Цифровые скачивания, открытые программные пакеты и персонализированные товары не подлежат возврату',
+    return_process: 'Процесс возврата',
+    return_process_step_1: 'Войдите в свою учетную запись и перейдите в историю заказов',
+    return_process_step_2: 'Выберите заказ, содержащий товар(-ы), который вы хотите вернуть',
+    return_process_step_3: 'Заполните форму возврата, указав причину возврата',
+    return_process_step_4: 'Распечатайте предоставленную этикетку возврата и отправьте пакет обратно нам',
+
+    // New translations
+    select_language: 'Язык',
+    language_en: 'Английский',
+    language_lt: 'Литовский',
+    search_placeholder: 'Поиск среди {{count}} товаров...',
+
+    // User roles
+    super_admin: 'Супер Администратор',
+    user: 'Пользователь',
   }
 } as const;
 

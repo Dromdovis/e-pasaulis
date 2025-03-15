@@ -14,6 +14,11 @@ export enum UserRole {
   SUPER_ADMIN = 'super_admin'
 }
 
+export enum AuthProvider {
+  EMAIL = 'email',
+  GOOGLE = 'google'
+}
+
 export interface BaseAuthModel extends BaseModel {
   id: string;
   created: string;
@@ -33,6 +38,7 @@ export interface AuthModel extends BaseModel {
   emailVisibility: boolean;
   created: string;
   updated: string;
+  provider?: AuthProvider;
 }
 
 export interface LoginData {
@@ -51,8 +57,10 @@ export interface AuthState {
   intendedPath: string | null;
   initialize: () => Promise<void>;
   login: (data: LoginData) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
+  registerWithGoogle: () => Promise<void>;
   refreshUser: () => Promise<void>;
   setIntendedPath: (path: string | null) => void;
 } 

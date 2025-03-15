@@ -5,9 +5,9 @@ import { pb } from '@/lib/db';
 import { notFound } from 'next/navigation';
 import ProductDetails from './ProductDetails';
 import type { Product } from '@/types';
-import { Reviews } from '@/components/Reviews';
 import { SimilarProducts } from '@/components/SimilarProducts';
 import { getDynamicParam } from '@/lib/utils/params';
+import { ToastProvider } from '@/lib/providers/ToastProvider';
 
 type Props = {
   params: Promise<{
@@ -70,11 +70,12 @@ export default async function ProductPage({ params }: Props) {
           </div>
         </div>
       }>
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <ProductDetails productId={id} />
-          <SimilarProducts currentProductId={id} categoryId={''} />
-          <Reviews productId={id} />
-        </div>
+        <ToastProvider>
+          <div className="max-w-7xl mx-auto px-4 py-8">
+            <ProductDetails productId={id} />
+            <SimilarProducts currentProductId={id} categoryId={''} />
+          </div>
+        </ToastProvider>
       </Suspense>
     );
   } catch (error) {

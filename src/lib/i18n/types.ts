@@ -4,15 +4,23 @@ import { translations } from './translations';
 type EnTranslations = typeof translations.en;
 
 // Create a type that ensures all translations have the same structure
-export interface Translations extends EnTranslations {
-  // This ensures all translations must have the same keys as the English translations
-}
+export type Translations = EnTranslations;
 
-// Export the translation key type
-export type TranslationKey = keyof EnTranslations;
+// Function to get all possible nested keys as string literals
+type PathsToStringProps<T> = T extends string ? [] : {
+  [K in Extract<keyof T, string>]: [K, ...PathsToStringProps<T[K]>]
+}[Extract<keyof T, string>];
+
+type Join<T extends any[], D extends string> =
+  T extends [] ? never :
+  T extends [infer F] ? F :
+  T extends [infer F, ...infer R] ? F extends string ? `${F}${D}${Join<R, D>}` : never : never;
+
+// Export the translation key type that supports nested access with dot notation
+export type TranslationKey = keyof EnTranslations | Join<PathsToStringProps<EnTranslations>, '.'>;
 
 export interface TranslationKeys {
   [key: string]: string | TranslationKeys;
 }
 
-export type Language = 'en' | 'lt'; 
+export type Language = 'en' | 'lt' | 'ru'; 

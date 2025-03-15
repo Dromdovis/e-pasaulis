@@ -186,7 +186,7 @@ export default function ProductDetails({ productId }: { productId: string }) {
                     <PriceDisplay price={product.price} />
                   </div>
                   <div className="text-sm text-gray-500 mt-1">
-                    {product.stock > 0 ? `${product.stock} ${t('in_stock')}` : t('out_of_stock')}
+                    {product.stock > 0 ? `${product.stock} ${t('stockStatus.inStock')}` : t('stockStatus.outOfStock')}
                   </div>
                 </div>
                 <button
@@ -219,7 +219,7 @@ export default function ProductDetails({ productId }: { productId: string }) {
                     </span>
                   )}
                 </div>
-                {product.stock > 0 ? t('add_to_cart') : t('out_of_stock')}
+                {product.stock > 0 ? t('products.actions.addToCart') : t('stockStatus.outOfStock')}
               </button>
 
               <div className="text-sm text-gray-600">

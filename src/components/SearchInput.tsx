@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, ChangeEvent } from 'react';
 import { useDebounce } from '@/lib/hooks/useDebounce';
-import { Input } from './ui/Input';
+import { Input } from '@/components/ui/Input';
 
 interface SearchInputProps {
   onSearch: (value: string) => void;
@@ -16,13 +16,13 @@ export function SearchInput({ onSearch, placeholder }: SearchInputProps) {
   useEffect(() => {
     const sanitizedValue = value.replace(/[<>]/g, '').trim();
     onSearch(sanitizedValue);
-  }, [debouncedValue, onSearch]);
+  }, [debouncedValue, value, onSearch]);
 
   return (
     <Input
       type="search"
       value={value}
-      onChange={(e) => setValue(e.target.value)}
+      onChange={(e: ChangeEvent<HTMLInputElement>) => setValue(e.target.value)}
       placeholder={placeholder}
       className="w-full max-w-sm"
     />

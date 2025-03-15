@@ -9,40 +9,69 @@ interface CategorySidebarProps {
   categories: Category[];
   selectedCategory?: string;
   onCategorySelect: (categoryId: string) => void;
+  useLinks?: boolean; // Add option to use links instead of buttons
 }
 
 export default function CategorySidebar({ 
   categories, 
   selectedCategory,
-  onCategorySelect 
+  onCategorySelect,
+  useLinks = false
 }: CategorySidebarProps) {
   const { language } = useLanguage();
-  const currentLang = language as 'en' | 'lt';
+  const currentLang = language as 'en' | 'lt' | 'ru';
 
   const handleCategoryClick = useCallback((e: React.MouseEvent, categoryId: string) => {
     e.preventDefault();
     onCategorySelect(categoryId);
   }, [onCategorySelect]);
 
+  // Get translated category name based on current language
+  const getCategoryName = (category: Category) => {
+    if (currentLang === 'ru' && category.name_ru) return category.name_ru;
+    if (currentLang === 'lt' && category.name_lt) return category.name_lt;
+    return category.name_en; // Fallback to English
+  };
+
+  // Get translated heading
+  const getCategoryHeading = () => {
+    if (currentLang === 'ru') return 'Категории';
+    if (currentLang === 'lt') return 'Kategorijos';
+    return 'Categories';
+  };
+
   return (
-    <div className="w-64 bg-[rgb(var(--card-bg))] backdrop-blur-sm shadow-lg shadow-black/5 p-4 rounded-lg sticky top-[4.5rem] h-[800px] overflow-hidden">
+    <div className="w-64 bg-[rgb(var(--card-bg))] backdrop-blur-sm shadow-lg shadow-black/5 p-4 rounded-lg sticky top-[4.5rem] h-[800px] overflow-hidden dark:bg-gray-800 dark:text-gray-100">
       <h2 className="text-xl font-semibold mb-4">
-        {currentLang === 'en' ? 'Categories' : 'Kategorijos'}
+        {getCategoryHeading()}
       </h2>
       <nav className="overflow-y-auto h-[calc(100%-3rem)]">
         <ul className="space-y-1.5">
           {categories.map((category) => (
             <li key={category.id}>
-              <button 
-                onClick={(e) => handleCategoryClick(e, category.id)}
-                className={`block w-full text-left py-1.5 px-2 rounded transition-colors ${
-                  selectedCategory === category.id 
-                    ? 'bg-primary-100 text-primary-900' 
-                    : 'hover:bg-secondary-100'
-                }`}
-              >
-                {currentLang === 'en' ? category.name_en : category.name_lt}
-              </button>
+              {useLinks ? (
+                <Link 
+                  href={`/category/${category.slug}`}
+                  className={`block w-full text-left py-1.5 px-2 rounded transition-colors ${
+                    selectedCategory === category.id 
+                      ? 'bg-primary-100 text-primary-900 dark:bg-primary-800 dark:text-primary-100' 
+                      : 'hover:bg-secondary-100 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  {getCategoryName(category)}
+                </Link>
+              ) : (
+                <button 
+                  onClick={(e) => handleCategoryClick(e, category.id)}
+                  className={`block w-full text-left py-1.5 px-2 rounded transition-colors ${
+                    selectedCategory === category.id 
+                      ? 'bg-primary-100 text-primary-900 dark:bg-primary-800 dark:text-primary-100' 
+                      : 'hover:bg-secondary-100 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  {getCategoryName(category)}
+                </button>
+              )}
             </li>
           ))}
         </ul>

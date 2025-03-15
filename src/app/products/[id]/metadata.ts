@@ -1,7 +1,15 @@
-import { Metadata } from 'next';
+import { Metadata, ResolvingMetadata } from 'next';
 import { pb } from '@/lib/db';
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+type Props = {
+  params: { id: string };
+  searchParams: Record<string, string | string[] | undefined>;
+};
+
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
   try {
     const product = await pb.collection('products').getOne(params.id);
     
@@ -14,7 +22,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
         images: product.image ? [`${pb.baseUrl}/api/files/${product.collectionId}/${product.id}/${product.image}`] : [],
       },
     };
-  } catch (error) {
+  } catch {
     return {
       title: 'Product | E-Pasaulis',
       description: 'Product details',

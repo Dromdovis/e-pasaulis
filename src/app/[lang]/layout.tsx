@@ -3,23 +3,41 @@ import { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { Providers } from '../providers';
 import RootLayoutClient from '../RootLayoutClient';
+import { getPageMetadata, getAlternateLanguageLinks } from '@/lib/i18n/metadata';
+import { locales, type Locale } from '@/lib/i18n/routeTranslations';
 
 const inter = Inter({ subsets: ['latin'] });
 
 interface RootLayoutProps {
   children: ReactNode;
   params: {
-    lang: string;
+    lang: Locale;
   };
 }
 
-export async function generateMetadata({ params }: RootLayoutProps): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: { lang: Locale } }): Promise<Metadata> {
+  const { lang } = params;
+  
+  // Get default metadata for the homepage
+  const metadata = getPageMetadata('/', lang);
+  
+  // Get alternate language links for SEO
+  const alternateLanguages = getAlternateLanguageLinks('/', lang)
+    .reduce((acc, { locale, url }) => {
+      acc[locale] = url;
+      return acc;
+    }, {} as Record<string, string>);
+  
   return {
     title: {
       template: '%s | E-Pasaulis',
-      default: 'E-Pasaulis - Your Electronics Store',
+      default: metadata.title,
     },
-    description: 'E-Pasaulis - Your one-stop shop for electronics',
+    description: metadata.description,
+    alternates: {
+      canonical: `/${lang}`,
+      languages: alternateLanguages,
+    },
     icons: {
       icon: '/favicon.ico',
     },

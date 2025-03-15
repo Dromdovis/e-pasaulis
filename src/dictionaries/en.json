@@ -1,22 +1,79 @@
 {
-  "common": {
-    "language": {
-      "en": "English",
-      "lt": "Lithuanian",
-      "select": "Select language"
-    },
-    "navigation": {
-      "home": "Home",
-      "products": "Products",
-      "about": "About",
-      "contact": "Contact",
-      "cart": "Cart",
-      "favorites": "Favorites",
-      "profile": "Profile",
-      "admin": "Admin Panel",
-      "login": "Login",
-      "register": "Register",
-      "logout": "Logout"
-    }
-  }
+  "language_english": "English",
+  "language_lithuanian": "Lithuanian",
+  "language_russian": "Russian",
+  "language_select": "Select language",
+  
+  "nav_home": "Home",
+  "nav_products": "Products",
+  "nav_about": "About",
+  "nav_contact": "Contact",
+  "nav_cart": "Cart",
+  "nav_favorites": "Favorites",
+  "nav_profile": "Profile",
+  "nav_admin": "Admin Panel",
+  "nav_login": "Login",
+  "nav_register": "Register",
+  "nav_logout": "Logout",
+  "nav_settings": "Settings",
+  
+  "auth": {
+    "register": "Register",
+    "login": "Login",
+    "logout": "Logout",
+    "forgotPassword": "Forgot Password?",
+    "resetPassword": "Reset Password",
+    "changePassword": "Change Password",
+    "registerWithGoogle": "Register with Google",
+    "loginWithGoogle": "Login with Google",
+    "loggingIn": "Logging in...",
+    "registering": "Registering...",
+    "alreadyHaveAccount": "Already have an account?",
+    "dontHaveAccount": "Don't have an account?",
+    "invalidCredentials": "Invalid email or password"
+  },
+  
+  "search_placeholder": "Search among all products...",
+  "search_results": "Search results for",
+  "search_count": "Search in {{count}} products",
+  "search_no_results": "No products found",
+  "search_filter": "Filter",
+  
+  "footer_about": "About Us",
+  "footer_description": "E-Pasaulis is your trusted online electronics store offering a wide range of high-quality products at competitive prices.",
+  "footer_links": "Quick Links",
+  "footer_service": "Customer Service",
+  "footer_contact": "Contact Us",
+  "footer_faq": "FAQ",
+  "footer_returns": "Returns",
+  "footer_support": "Support",
+  "footer_phone": "Phone",
+  "footer_email": "Email",
+  "footer_address": "Address",
+  "footer_rights": "All rights reserved.",
+  
+  "product_specs": "Specifications",
+  "product_filter_specs": "Filter by Specifications",
+  "product_apply_filter": "Apply Filter",
+  "product_reset_filter": "Reset Filter",
+  "product_in_stock": "In Stock",
+  "product_out_of_stock": "Out of Stock",
+  "product_price": "Price",
+  "product_sort": "Sort by",
+  "product_newest": "Newest",
+  "product_price_low": "Price: Low to High",
+  "product_price_high": "Price: High to Low",
+  "product_name_asc": "Name: A to Z",
+  "product_name_desc": "Name: Z to A",
+  
+  "theme_select": "Select theme",
+  "theme_light": "Light",
+  "theme_dark": "Dark",
+  "theme_system": "System",
+  "theme_switch_light": "Switch to light mode",
+  "theme_switch_dark": "Switch to dark mode",
+  
+  "show": "Show",
+  "hide": "Hide",
+  "try_again": "Try Again"
 } 

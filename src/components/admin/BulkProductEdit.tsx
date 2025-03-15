@@ -13,7 +13,7 @@ interface BulkProductEditProps {
 }
 
 export default function BulkProductEdit({ products, onUpdate }: BulkProductEditProps) {
-  const { } = useLanguage();
+  const { t } = useLanguage();
   const { user } = useAuth();
   const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
   const [selectedType, setSelectedType] = useState<ProductType>('physical');

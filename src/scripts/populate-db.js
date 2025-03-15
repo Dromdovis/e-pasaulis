@@ -1,3 +1,5 @@
+/* eslint-env browser, node */
+/* eslint no-undef: 0 */
 // src/scripts/populate-db.js
 import dotenv from 'dotenv';
 import PocketBase from 'pocketbase';

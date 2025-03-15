@@ -1,12 +1,13 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import { UserRole } from '@/types/auth';
 import Link from 'next/link';
-import { useTranslation } from 'next-i18next';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { Toaster } from 'react-hot-toast';
+import { pb } from '@/lib/db';
 
 export default function AdminLayout({
   children,
@@ -14,8 +15,22 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { t } = useTranslation('common');
-  const { user, isAuthenticated, isLoading, initialize, isInitialized } = useAuth();
+  const { t } = useLanguage();
+  const { user, isAuthenticated, isLoading, initialize, isInitialized, isAdmin } = useAuth();
+  // Add a state to track our own initialization
+  const [isLocalInitialized, setIsLocalInitialized] = useState(false);
+
+  // Debug auth state in admin layout
+  useEffect(() => {
+    console.log('Admin Layout - Auth State:', { 
+      isInitialized, 
+      isAuthenticated, 
+      isAdmin, 
+      userRole: user?.role,
+      pbAuthValid: pb.authStore.isValid,
+      pbModelExists: !!pb.authStore.model
+    });
+  }, [isInitialized, isAuthenticated, isAdmin, user]);
 
   const getRoleTranslationKey = (role?: string): string => {
     switch (role?.toLowerCase()) {
@@ -30,30 +45,44 @@ export default function AdminLayout({
     }
   };
 
-  // Initialize auth if needed
+  // Initialize auth if needed and handle only once
   useEffect(() => {
-    if (!isInitialized) {
-      initialize();
-    }
+    const initializeAuth = async () => {
+      if (!isInitialized) {
+        console.log('Admin Layout - Initializing auth');
+        await initialize();
+      }
+      setIsLocalInitialized(true);
+    };
+    
+    initializeAuth();
   }, [initialize, isInitialized]);
 
-  // Handle authentication redirects
+  // Handle authentication redirects only after our local init is complete
   useEffect(() => {
-    if (isInitialized && !isLoading) {
-      if (!isAuthenticated) {
-        router.push('/login');
-        return;
-      }
+    if (!isLocalInitialized) return;
+    
+    console.log('Admin Layout - Checking access rights:', {
+      isAuthenticated,
+      userRole: user?.role,
+      isAdmin
+    });
 
-      if (!user || (user.role !== UserRole.ADMIN && user.role !== UserRole.SUPER_ADMIN)) {
-        router.push('/');
-        return;
-      }
+    if (!isAuthenticated) {
+      console.log('Admin Layout - Not authenticated, redirecting to login');
+      router.push('/login');
+      return;
     }
-  }, [isInitialized, isLoading, isAuthenticated, user, router]);
 
-  // Show loading state while initializing
-  if (!isInitialized || isLoading) {
+    if (!isAdmin) {
+      console.log('Admin Layout - Not admin, redirecting to home');
+      router.push('/');
+      return;
+    }
+  }, [isLocalInitialized, isAuthenticated, user, isAdmin, router]);
+
+  // Show loading state during initialization
+  if (!isLocalInitialized || isLoading || !isAuthenticated || !isAdmin) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-gray-100"></div>
@@ -62,40 +91,7 @@ export default function AdminLayout({
     );
   }
 
-  // Return null while redirecting to login
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-gray-100"></div>
-        <Toaster position="top-right" />
-      </div>
-    );
-  }
-
-  // Handle not admin state
-  const isAdmin = user?.role === UserRole.ADMIN || user?.role === UserRole.SUPER_ADMIN;
-  if (!isAdmin) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-        <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md max-w-md w-full">
-          <h2 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-4">
-            {t('admin.access_denied')}
-          </h2>
-          <p className="text-gray-600 dark:text-gray-300 mb-4">
-            {t('admin.access_denied_message')}
-          </p>
-          <Link 
-            href="/"
-            className="block w-full bg-primary-600 text-white text-center py-2 px-4 rounded hover:bg-primary-700 transition-colors"
-          >
-            {t('admin.return_to_home')}
-          </Link>
-        </div>
-        <Toaster position="top-right" />
-      </div>
-    );
-  }
-
+  // Since we're still in the component at this point, the user is authenticated and is an admin
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
       <Toaster 
@@ -130,12 +126,12 @@ export default function AdminLayout({
               </Link>
               <span className="mx-2 text-gray-300 dark:text-gray-600">|</span>
               <Link href="/admin" className="text-xl font-bold text-gray-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400">
-                {t('navigation.admin_panel')}
+                {t('Admin Panel')}
               </Link>
             </div>
             <div className="flex items-center">
               <span className="text-sm text-gray-500 dark:text-gray-400">
-                {t('auth.logged_in_as')}: {user?.name} ({t(getRoleTranslationKey(user?.role))})
+                {user?.name} ({t(getRoleTranslationKey(user?.role))})
               </span>
             </div>
           </div>

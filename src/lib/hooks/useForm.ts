@@ -8,7 +8,7 @@ interface UseFormProps<T> {
   onSubmit: (values: T) => Promise<void>;
 }
 
-export function useForm<T extends Record<string, any>>({
+export function useForm<T extends Record<string, unknown>>({
   initialValues,
   schema,
   onSubmit,
@@ -17,11 +17,12 @@ export function useForm<T extends Record<string, any>>({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { errors, validate, setErrors } = useFormValidation(schema);
 
-  const handleChange = useCallback((name: keyof T, value: any) => {
+  const handleChange = useCallback((name: keyof T, value: unknown) => {
     setValues((prev) => ({ ...prev, [name]: value }));
     // Clear error for this field when it changes
     setErrors((prev) => {
-      const { [name as string]: _, ...rest } = prev;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { [name as string]: unused, ...rest } = prev;
       return rest;
     });
   }, [setErrors]);

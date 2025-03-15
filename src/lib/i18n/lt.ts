@@ -15,6 +15,30 @@ export const lt: TranslationKeys = {
   users: 'Vartotojai',
   products: 'Produktai',
   settings: 'Nustatymai',
+  logged_in_as: 'Prisijungęs kaip',
+
+  // Theme
+  theme_switch_light: 'Pakeisti į šviesią temą',
+  theme_switch_dark: 'Pakeisti į tamsią temą',
+
+  // Admin panel
+  dashboard: 'Valdymo skydelis',
+  orders: 'Užsakymai',
+  access_denied: 'Prieiga uždrausta',
+  access_denied_message: 'Jūs neturite teisių pasiekti administratoriaus skydelį.',
+  return_to_home: 'Grįžti į pagrindinį puslapį',
+  bulk_operations: 'Masinės operacijos',
+  admin_dashboard: 'Administratoriaus skydelis',
+  manage_users: 'Valdyti vartotojus',
+  manage_products: 'Valdyti produktus',
+  manage_categories: 'Valdyti kategorijas',
+  monitor_reviews: 'Stebėti atsiliepimus',
+  import_export: 'Importuoti/Eksportuoti',
+  admin_users_description: 'Valdyti vartotojų paskyras, roles ir leidimus',
+  admin_products_description: 'Pridėti, redaguoti ir valdyti produktų sąrašus',
+  admin_categories_description: 'Organizuoti ir struktūrizuoti produktų kategorijas',
+  admin_reviews_description: 'Stebėti ir moderuoti produktų atsiliepimus',
+  admin_bulk_description: 'Importuoti/eksportuoti duomenis ir atlikti masines operacijas',
 
   // Categories
   categories: 'Kategorijos',
@@ -75,6 +99,7 @@ export const lt: TranslationKeys = {
   registering: 'Registruojama...',
   dont_have_account: 'Neturite paskyros?',
   already_have_account: 'Jau turite paskyrą?',
+  register_with_google: 'Registruotis su Google',
 
   // Profile
   profile_settings: 'Profilio nustatymai',
@@ -128,6 +153,12 @@ export const lt: TranslationKeys = {
   email_already_exists: 'Toks el. paštas jau egzistuoja',
   invalid_email: 'Neteisingas el. pašto adresas',
   password_too_short: 'Slaptažodis turi būti bent 8 simbolių ilgio',
+  name_required: 'Vardas privalomas',
+  email_required: 'El. paštas privalomas',
+  password_required: 'Slaptažodis privalomas',
+  invalid_email_format: 'Neteisingas el. pašto formatas',
+  server_unavailable: 'Serveris nepasiekiamas',
+  username_already_exists: 'Vartotojo vardas jau egzistuoja',
 
   // Error handling
   try_again: 'Bandyti dar kartą',
@@ -138,11 +169,14 @@ export const lt: TranslationKeys = {
   search_results_for: 'Paieškos rezultatai',
   no_results_found: 'Rezultatų nerasta',
   no_products_found: 'Tokių prekių nerasta',
-  search_placeholder: 'Ieškokite tarp {{count}} prekių...',
   
   // Error messages
   something_went_wrong: 'Įvyko klaida',
   product_not_found: 'Produktas nerastas',
+
+  // Favorites
+  add_to_favorites: 'Pridėti į mėgstamus',
+  remove_from_favorites: 'Pašalinti iš mėgstamų',
 
   // Sort options
   sort_newest: 'Naujausi',
@@ -151,11 +185,7 @@ export const lt: TranslationKeys = {
   sort_name_a_z: 'Pavadinimas: A-Z',
   sort_name_z_a: 'Pavadinimas: Z-A',
 
-  // Favorites
-  add_to_favorites: 'Pridėti į mėgstamus',
-  remove_from_favorites: 'Pašalinti iš mėgstamų',
-
-  // Review actions
+  // New translations
   edit: 'Redaguoti',
   delete: 'Pašalinti',
   review_updated: 'Atsiliepimas sėkmingai atnaujintas',
@@ -163,13 +193,40 @@ export const lt: TranslationKeys = {
   review_error: 'Klaida pateikiant atsiliepimą. Bandykite dar kartą.',
   delete_confirm: 'Ar tikrai norite pašalinti šį atsiliepimą?',
   error_deleting_review: 'Klaida pašalinant atsiliepimą',
-
-  // Dialog actions
   cancel: 'Atšaukti',
   confirm: 'Patvirtinti',
 
-  // Language selection
+  // Price range
+  price_range: 'Kainų diapazonas',
+  invalid_price_range_negative: 'Kaina negali būti neigiama',
+  invalid_price_range_order: 'Maksimali kaina turi būti didesnė už minimalią',
+
+  // Returns page
+  return_policy: 'Grąžinimo politika',
+  return_policy_description: 'Mūsų grąžinimo politika yra paprasta ir lanksti',
+  return_policy_point_1: 'Galite grąžinti produktą per 14 dienų nuo gavimo',
+  return_policy_point_2: 'Produktas turi būti nepažeistas ir originalioje pakuotėje',
+  return_policy_point_3: 'Grąžiname visą sumą, išskyrus siuntimo išlaidas',
+  return_process: 'Grąžinimo procesas',
+  return_process_step_1: 'Susisiekite su klientų aptarnavimu',
+  return_process_step_2: 'Gaukite grąžinimo patvirtinimą',
+  return_process_step_3: 'Išsiųskite produktą nurodytu adresu',
+  return_process_step_4: 'Gavę produktą, atliksime pinigų grąžinimą',
+
+  // New translations
   select_language: 'LT',
   language_en: 'Anglų',
-  language_lt: 'Lietuvių'
+  language_lt: 'Lietuvių',
+  search_placeholder: 'Ieškokite tarp {{count}} prekių...',
+
+  // User roles
+  super_admin: 'Vyriausiasis administratorius',
+  user: 'Vartotojas',
+
+  // Registration Banner
+  close: 'Uždaryti',
+  'register.specialOffer': 'Specialus pasiūlymas',
+  'register.discountDescription': 'Gaukite nuolaidą pirmajam pirkiniui',
+  'register.signUpNow': 'Registruokitės dabar',
+  'register.newCustomersOnly': 'Tik naujiems klientams'
 } as const; 

@@ -7,51 +7,57 @@ import Link from "next/link";
 import Image from "next/image";
 import { pb } from '@/lib/db';
 import type { Product } from '@/types';
+import type { Product as StoreProduct } from '@/types/product';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { memo, useCallback } from 'react';
 
 const ProductCard = memo(({ product, isPriority = false }: { product: Product; isPriority?: boolean }) => {
   const { t } = useLanguage();
+  const store = useStore();
   
-  // Split store selectors to minimize re-renders
-  const favorites = useStore(state => state.favorites);
-  const cart = useStore(state => state.cart);
-  const addToCart = useStore(state => state.addToCart);
-  const toggleFavorite = useStore(state => state.toggleFavorite);
+  // Use primitive values directly to avoid reference issues
+  const isOutOfStock = product.stock <= 0;
   
-  const isFavorite = favorites.includes(product.id);
-  const cartQuantity = cart.find(item => item.productId === product.id)?.quantity || 0;
+  // Check if this product is in favorites
+  const isFavorite = store.favorites.includes(product.id);
+  
+  // Check cart quantity
+  const cartItem = store.cart.find(item => item.productId === product.id);
+  const cartQuantity = cartItem ? cartItem.quantity : 0;
 
   const imageUrl = product.image 
     ? `${pb.baseUrl}/api/files/${product.collectionId}/${product.id}/${product.image}`
     : '/no-image400.jpg';
 
-  const handleAction = useCallback((e: React.MouseEvent, action: () => void) => {
-    e.preventDefault();
-    action();
-  }, []);
-
   const handleAddToCart = useCallback((e: React.MouseEvent) => {
-    handleAction(e, () => addToCart(product.id));
-  }, [addToCart, handleAction, product.id]);
+    if (isOutOfStock) return;
+    e.preventDefault();
+    
+    try {
+      store.addToCart(product.id, 1);
+    } catch (error) {
+      console.error('Failed to add to cart:', error);
+    }
+  }, [store, product.id, isOutOfStock]);
 
   const handleToggleFavorite = useCallback((e: React.MouseEvent) => {
-    handleAction(e, () => toggleFavorite(product.id));
-  }, [toggleFavorite, handleAction, product.id]);
+    e.preventDefault();
+    store.toggleFavorite(product.id);
+  }, [store, product.id]);
 
   return (
     <Link href={`/product/${product.id}`} className="group">
-      <div className="h-full flex flex-col bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-transform duration-200 hover:scale-[1.02]">
-        <div className="relative w-full pt-[100%]">
+      <div className={`h-full flex flex-col bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-transform duration-200 hover:scale-[1.02] ${isOutOfStock ? 'opacity-75 grayscale-[30%]' : ''}`}>
+        <div className="relative w-full pt-[75%]">
           <Image
             src={imageUrl}
             alt={product.name}
             fill
-            className="object-cover absolute top-0 left-0"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className={`object-cover absolute top-0 left-0 ${isOutOfStock ? 'opacity-90' : ''}`}
+            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
             priority={isPriority}
             loading={isPriority ? undefined : 'lazy'}
-            quality={75}
+            quality={80}
           />
           <div className="absolute top-2 right-2 flex gap-2">
             <button
@@ -59,15 +65,20 @@ const ProductCard = memo(({ product, isPriority = false }: { product: Product; i
               className={`p-2 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm transition-colors ${
                 isFavorite ? 'text-red-500' : 'text-gray-500 hover:text-red-500'
               }`}
-              aria-label={isFavorite ? t('remove_from_favorites') : t('add_to_favorites')}
+              aria-label={isFavorite ? t('products.actions.removeFromFavorites') : t('products.actions.addToFavorites')}
             >
               <Heart className="w-5 h-5" fill={isFavorite ? "currentColor" : "none"} />
             </button>
             <button
               onClick={handleAddToCart}
-              className="p-2 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-500 hover:text-primary-500 transition-colors"
-              aria-label={t('add_to_cart')}
-              disabled={product.stock <= 0}
+              className={`p-2 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm transition-colors ${
+                isOutOfStock 
+                  ? 'text-gray-400 cursor-not-allowed opacity-60' 
+                  : 'text-gray-500 hover:text-primary-500'
+              }`}
+              aria-label={t('products.actions.addToCart')}
+              disabled={isOutOfStock}
+              title={isOutOfStock ? t('stockStatus.outOfStock') : t('products.actions.addToCart')}
             >
               <ShoppingCart className="w-5 h-5" />
               {cartQuantity > 0 && (
@@ -79,7 +90,7 @@ const ProductCard = memo(({ product, isPriority = false }: { product: Product; i
           </div>
         </div>
 
-        <div className="p-4 flex flex-col flex-grow">
+        <div className="p-5 flex flex-col flex-grow">
           <h2 className="text-lg font-semibold line-clamp-1 text-gray-900 dark:text-gray-100">
             {product.name}
           </h2>
@@ -91,8 +102,8 @@ const ProductCard = memo(({ product, isPriority = false }: { product: Product; i
               price={product.price}
               className="text-xl text-primary-600 dark:text-primary-400"
             />
-            <div className="text-sm text-gray-500 mt-1">
-              {product.stock > 0 ? `${product.stock} ${t('in_stock')}` : t('out_of_stock')}
+            <div className={`text-sm ${isOutOfStock ? 'text-red-500 font-medium' : 'text-gray-500 dark:text-gray-400'}`}>
+              {product.stock > 0 ? `${product.stock} ${t('stockStatus.inStock')}` : t('stockStatus.outOfStock')}
             </div>
           </div>
         </div>

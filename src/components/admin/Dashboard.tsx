@@ -1,11 +1,11 @@
 'use client';
 
-import { useTranslation } from 'next-i18next';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 import Link from 'next/link';
 import { Users, Package, FolderTree, MessageSquare, Database } from 'lucide-react';
 
 export default function AdminDashboard() {
-  const { t } = useTranslation(['common', 'admin']);
+  const { t } = useLanguage();
 
   const adminCards = [
     {

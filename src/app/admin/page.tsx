@@ -1,20 +1,21 @@
 'use client';
 
-import { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import { UserRole } from '@/types/auth';
-import { Users, Package, Folder, Star, Upload } from 'lucide-react';
+import { Package, Users, Folder, Star, Upload } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
-import type { TranslationKey } from '@/lib/i18n/translations';
-import { toast } from 'react-hot-toast';
+import toast from 'react-hot-toast';
+import { useSession } from 'next-auth/react';
+import { Loader } from 'lucide-react';
 
 interface DashboardCard {
   title: string;
   description: string;
   href: string;
-  icon: React.ElementType;
+  icon: React.FC<{ className?: string }>;
   color: string;
 }
 
@@ -22,63 +23,67 @@ export default function AdminDashboard() {
   const router = useRouter();
   const { t } = useLanguage();
   const { user, isAuthenticated, isLoading, isInitialized } = useAuth();
+  const { data: session } = useSession();
+
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (isInitialized && !isLoading) {
-      if (!isAuthenticated) {
-        toast.error(t('access_denied'));
-        router.push('/login');
-        return;
-      }
-      
-      if (!user || (user.role !== UserRole.ADMIN && user.role !== UserRole.SUPER_ADMIN)) {
-        toast.error(t('access_denied_message'));
-        router.push('/');
-        return;
-      }
+    if (!session) {
+      // Not authenticated
+      router.push('/login');
+    } else if (session?.user?.role !== 'admin') {
+      // Authenticated but not an admin
+      router.push('/');
+    } else {
+      // Is admin, stop loading
+      setLoading(false);
     }
-  }, [isInitialized, isLoading, isAuthenticated, user, router, t]);
+  }, [session, router]);
 
-  if (isLoading || !isInitialized) {
+  if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-[50vh]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-gray-100"></div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Loader className="animate-spin h-8 w-8 mx-auto text-primary" />
+          <p className="mt-2 text-gray-600">{t('loading') || 'Loading...'}</p>
+        </div>
       </div>
     );
   }
 
   const dashboardCards: DashboardCard[] = [
     {
-      title: t('manage_users'),
-      description: t('admin_users_description'),
+      title: t('manage_users') || 'Manage Users',
+      description: t('admin_users_description') || 'Manage user accounts, roles, and permissions',
       href: '/admin/users',
       icon: Users,
       color: 'bg-blue-500'
     },
     {
-      title: t('manage_products'),
-      description: t('admin_products_description'),
+      title: t('manage_products') || 'Manage Products',
+      description: t('admin_products_description') || 'Add, edit, and manage product listings',
       href: '/admin/products',
       icon: Package,
       color: 'bg-green-500'
     },
     {
-      title: t('manage_categories'),
-      description: t('admin_categories_description'),
+      title: t('manage_categories') || 'Manage Categories',
+      description: t('admin_categories_description') || 'Organize and structure product categories',
       href: '/admin/categories',
       icon: Folder,
       color: 'bg-yellow-500'
     },
     {
-      title: t('monitor_reviews'),
-      description: t('admin_reviews_description'),
+      title: t('monitor_reviews') || 'Monitor Reviews',
+      description: t('admin_reviews_description') || 'Monitor and moderate product reviews',
       href: '/admin/reviews',
       icon: Star,
       color: 'bg-purple-500'
     },
     {
-      title: t('bulk_operations'),
-      description: t('admin_bulk_description'),
+      title: t('bulk_operations') || 'Bulk Operations',
+      description: t('admin_bulk_description') || 'Import/export data and perform bulk operations',
       href: '/admin/bulk',
       icon: Upload,
       color: 'bg-red-500'
@@ -88,7 +93,7 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold dark:text-white">{t('admin_dashboard')}</h1>
+        <h1 className="text-2xl font-bold dark:text-white">{t('admin_dashboard') || 'Admin Dashboard'}</h1>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

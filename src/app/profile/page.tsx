@@ -5,10 +5,12 @@ import { pb } from '@/lib/db';
 import Image from 'next/image';
 import { User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export default function ProfilePage() {
   const router = useRouter();
   const { user, refreshUser } = useAuth();
+  const { t } = useLanguage();
   const [isUploading, setIsUploading] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
@@ -68,11 +70,15 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-2xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-8">Profilio nustatymai</h1>
+      <h1 className="text-2xl font-bold mb-8 text-gray-900 dark:text-white">
+        {t('profile.settings')}
+      </h1>
       
       {/* Avatar Section */}
-      <div className="mb-8">
-        <h2 className="text-lg font-semibold mb-4">Profilio nuotrauka</h2>
+      <div className="mb-10 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+        <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
+          {t('profile.photo')}
+        </h2>
         <div className="flex items-center gap-6">
           <div className="relative w-24 h-24">
             {user.avatar ? (
@@ -83,15 +89,15 @@ export default function ProfilePage() {
                 className="rounded-full object-cover"
               />
             ) : (
-              <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center">
-                <User className="h-12 w-12 text-gray-400" />
+              <div className="w-24 h-24 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                <User className="h-12 w-12 text-gray-400 dark:text-gray-300" />
               </div>
             )}
           </div>
           <div className="flex flex-col gap-2">
             <label className="cursor-pointer">
-              <span className="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-md">
-                {isUploading ? 'Įkeliama...' : 'Pakeisti nuotrauką'}
+              <span className="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-4 py-2 rounded-md text-gray-700 dark:text-gray-200">
+                {isUploading ? t('profile.uploading') : t('profile.changePhoto')}
               </span>
               <input
                 type="file"
@@ -109,30 +115,32 @@ export default function ProfilePage() {
       </div>
 
       {/* Password Change Section */}
-      <div>
-        <h2 className="text-lg font-semibold mb-4">Pakeisti slaptažodį</h2>
+      <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+        <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
+          {t('profile.changePassword')}
+        </h2>
         <form onSubmit={handlePasswordChange} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Dabartinis slaptažodis
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t('profile.currentPassword')}
             </label>
             <input
               type="password"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
-              className="w-full px-3 py-2 border rounded-md"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               disabled={isUpdating}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Naujas slaptažodis
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t('profile.newPassword')}
             </label>
             <input
               type="password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="w-full px-3 py-2 border rounded-md"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               disabled={isUpdating}
             />
           </div>
@@ -144,7 +152,7 @@ export default function ProfilePage() {
             className="bg-primary-600 text-white px-4 py-2 rounded-md hover:bg-primary-700 disabled:opacity-50"
             disabled={isUpdating}
           >
-            {isUpdating ? 'Atnaujinama...' : 'Atnaujinti slaptažodį'}
+            {isUpdating ? t('profile.updating') : t('profile.updatePassword')}
           </button>
         </form>
       </div>

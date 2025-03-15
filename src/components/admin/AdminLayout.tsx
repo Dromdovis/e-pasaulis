@@ -25,17 +25,17 @@ interface AdminLayoutProps {
 
 const menuItems: Array<{
   href: string;
-  label: TranslationKey;
+  label: string;
   icon: React.ElementType;
 }> = [
-  { href: '/admin', label: 'dashboard', icon: Home },
-  { href: '/admin/users', label: 'users', icon: Users },
-  { href: '/admin/products', label: 'products', icon: Package },
-  { href: '/admin/categories', label: 'categories', icon: Categories },
-  { href: '/admin/favorites', label: 'favorites', icon: Heart },
-  { href: '/admin/orders', label: 'orders', icon: ShoppingCart },
-  { href: '/admin/reviews', label: 'reviews', icon: Star },
-  { href: '/admin/settings', label: 'settings', icon: Settings },
+  { href: '/admin', label: 'Dashboard', icon: Home },
+  { href: '/admin/users', label: 'Users', icon: Users },
+  { href: '/admin/products', label: 'Products', icon: Package },
+  { href: '/admin/categories', label: 'Categories', icon: Categories },
+  { href: '/admin/favorites', label: 'Favorites', icon: Heart },
+  { href: '/admin/orders', label: 'Orders', icon: ShoppingCart },
+  { href: '/admin/reviews', label: 'Reviews', icon: Star },
+  { href: '/admin/settings', label: 'Settings', icon: Settings },
 ];
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
@@ -119,7 +119,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   }`}
                 >
                   <Icon className="mr-3 h-5 w-5" />
-                  {t(item.label)}
+                  {item.label}
                 </Link>
               );
             })}

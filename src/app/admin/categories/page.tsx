@@ -11,7 +11,7 @@ import DataTable from '@/components/admin/DataTable';
 
 export default function CategoriesPage() {
   const router = useRouter();
-  const { } = useLanguage();
+  const { t } = useLanguage();
   const { user, isAuthenticated, isLoading, isInitialized } = useAuth();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);

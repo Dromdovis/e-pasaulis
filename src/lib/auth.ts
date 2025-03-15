@@ -17,6 +17,7 @@ import type { AuthModel, AuthState, LoginData } from '@/types/auth';
 import { UserRole } from '@/types/auth';
 import { persist } from 'zustand/middleware';
 import { BaseModel } from 'pocketbase';
+import { initiateGoogleLogin, initiateGoogleRegistration } from './auth/googleAuth';
 
 interface PBUser extends BaseModel {
   id: string;
@@ -33,10 +34,21 @@ interface PBUser extends BaseModel {
   updated: string;
 }
 
+// Secure auth timeout configuration - 5 minutes in milliseconds
+const AUTH_TIMEOUT_MS = 5 * 60 * 1000;
+let authTimeoutId: NodeJS.Timeout | null = null;
+
+/**
+ * Checks if code is running in a browser environment
+ */
+function isBrowser(): boolean {
+  return typeof window !== 'undefined';
+}
+
 /**
  * Initial authentication state
  */
-const getInitialState = (): Omit<AuthState, 'initialize' | 'login' | 'logout' | 'register' | 'refreshUser' | 'setIntendedPath'> => ({
+const getInitialState = (): Omit<AuthState, 'initialize' | 'login' | 'logout' | 'register' | 'refreshUser' | 'setIntendedPath' | 'loginWithGoogle' | 'registerWithGoogle'> => ({
   isAuthenticated: false,
   isLoading: false,
   user: null,
@@ -86,6 +98,132 @@ const convertToAuthModel = (user: PBUser): AuthModel => {
   };
 };
 
+// Secure storage helpers for auth timeout management
+function getAuthTimeout(): number | null {
+  if (!isBrowser()) return null;
+  
+  try {
+    const timeoutData = sessionStorage.getItem('auth_expiry');
+    if (!timeoutData) return null;
+    
+    const expiryTime = parseInt(timeoutData, 10);
+    if (isNaN(expiryTime)) return null;
+    
+    // If the expiry time has passed, return null
+    if (expiryTime < Date.now()) {
+      sessionStorage.removeItem('auth_expiry');
+      return null;
+    }
+    
+    return expiryTime;
+  } catch (error) {
+    console.error('Error reading auth timeout:', error);
+    return null;
+  }
+}
+
+function setAuthTimeout(): void {
+  if (!isBrowser()) return;
+  
+  try {
+    // Set expiry time to 5 minutes from now
+    const expiryTime = Date.now() + AUTH_TIMEOUT_MS;
+    sessionStorage.setItem('auth_expiry', expiryTime.toString());
+  } catch (error) {
+    console.error('Error setting auth timeout:', error);
+  }
+}
+
+function clearAuthTimeout(): void {
+  if (!isBrowser()) return;
+  
+  try {
+    sessionStorage.removeItem('auth_expiry');
+    if (authTimeoutId) {
+      clearTimeout(authTimeoutId);
+      authTimeoutId = null;
+    }
+  } catch (error) {
+    console.error('Error clearing auth timeout:', error);
+  }
+}
+
+function scheduledLogout(store: any): void {
+  authTimeoutId = setTimeout(() => {
+    if (pb.authStore.isValid) {
+      console.log('Auth timeout reached, logging out');
+      pb.authStore.clear();
+      store.setState({ 
+        ...getInitialState(),
+        isInitialized: true 
+      });
+    }
+  }, AUTH_TIMEOUT_MS);
+}
+
+// Modified storage helpers that don't store sensitive auth tokens
+function getFromStorage(name: string): any {
+  if (!isBrowser()) return null;
+  
+  try {
+    // For auth state, check if we're within the timeout window
+    if (name === 'auth-storage') {
+      const expiryTime = getAuthTimeout();
+      if (!expiryTime) return null;
+    }
+    
+    // Get from sessionStorage
+    const str = sessionStorage.getItem(name);
+    if (str) return JSON.parse(str);
+    
+    return null;
+  } catch (error) {
+    console.error('Error retrieving state from storage:', error);
+    return null;
+  }
+}
+
+function setToStorage(name: string, value: any): void {
+  if (!isBrowser()) return;
+  
+  try {
+    // Store non-sensitive data only
+    if (name === 'auth-storage') {
+      // When storing auth state, set/reset the timeout
+      setAuthTimeout();
+      
+      // Filter out sensitive data
+      const safeValue = {
+        ...value,
+        // Don't store the actual token or sensitive data
+        token: value.token ? true : false // Just store a boolean indicating token existence
+      };
+      
+      const valueStr = JSON.stringify(safeValue);
+      sessionStorage.setItem(name, valueStr);
+    } else {
+      // For non-auth storage, store normally
+      const valueStr = JSON.stringify(value);
+      sessionStorage.setItem(name, valueStr);
+    }
+  } catch (error) {
+    console.error('Error saving state to storage:', error);
+  }
+}
+
+function removeFromStorage(name: string): void {
+  if (!isBrowser()) return;
+  
+  try {
+    sessionStorage.removeItem(name);
+    if (name === 'auth-storage') {
+      clearAuthTimeout();
+    }
+  } catch (error) {
+    console.error('Error removing state from storage:', error);
+  }
+}
+
 /**
  * Global authentication store using Zustand
  * Implements Observer pattern for state management
@@ -99,45 +237,41 @@ export const useAuth = create<AuthState>()(
       
       initialize: async () => {
         if (get().isInitialized) {
+          console.log('Auth already initialized, skipping');
           return;
         }
 
+        console.log('Initializing auth state...');
         try {
           set({ isLoading: true });
-          const model = pb.authStore.model as AuthModel | null;
           
-          if (model?.id) {
-            try {
-              const options = { requestKey: null };
-              const user = await pb.collection('users').getOne<PBUser>(model.id, options);
-              
-              const authUser = convertToAuthModel(user);
-              const isValid = pb.authStore.isValid && !!authUser.role;
-              const isAdmin = authUser.role === UserRole.ADMIN || authUser.role === UserRole.SUPER_ADMIN;
-
-              set({
-                isAuthenticated: isValid,
-                user: authUser,
-                isAdmin,
-                isLoading: false,
-                isInitialized: true,
-                error: null
-              });
-              return;
-            } catch (error) {
-              pb.authStore.clear();
-            }
+          // Check if we have a valid PocketBase auth session
+          if (pb.authStore.isValid && pb.authStore.model) {
+            const user = convertToAuthModel(pb.authStore.model as PBUser);
+            const isAdmin = user.role === UserRole.ADMIN || user.role === UserRole.SUPER_ADMIN;
+            
+            set({
+              isAuthenticated: true,
+              user,
+              isAdmin,
+              isLoading: false,
+              isInitialized: true,
+              error: null
+            });
+          } else {
+            set({
+              ...getInitialState(),
+              isInitialized: true,
+              isLoading: false
+            });
           }
-
-          set({
-            ...getInitialState(),
-            isInitialized: true
-          });
         } catch (error) {
-          pb.authStore.clear();
+          console.error('Error initializing auth:', error);
           set({
             ...getInitialState(),
-            isInitialized: true
+            isInitialized: true,
+            isLoading: false,
+            error: 'Failed to initialize authentication'
           });
         }
       },
@@ -154,6 +288,15 @@ export const useAuth = create<AuthState>()(
           const authUser = convertToAuthModel(user);
           const isAdmin = authUser.role === UserRole.ADMIN || authUser.role === UserRole.SUPER_ADMIN;
           
+          // Set timeout for auto-logout
+          setAuthTimeout();
+          
+          // Schedule logout timer
+          if (authTimeoutId) {
+            clearTimeout(authTimeoutId);
+          }
+          scheduledLogout(get());
+          
           set({ 
             isAuthenticated: true, 
             user: authUser, 
@@ -163,14 +306,30 @@ export const useAuth = create<AuthState>()(
             error: null
           });
         } catch (error) {
-          console.error('Login error:', error);
-          set({ isLoading: false });
+          // Don't log authentication errors (status 400) to console
+          const isAuthError = error instanceof Error && 
+            (error.toString().includes('400') || error.toString().includes('Invalid login')) || 
+            (error && typeof error === 'object' && 'status' in error && error.status === 400);
+          
+          if (!isAuthError) {
+            console.error('Login error:', error);
+          }
+          
+          set({ 
+            isLoading: false,
+            error: 'auth.invalidCredentials'
+          });
           throw error;
         }
       },
 
       logout: async () => {
         pb.authStore.clear();
+        clearAuthTimeout();
+        if (authTimeoutId) {
+          clearTimeout(authTimeoutId);
+          authTimeoutId = null;
+        }
         set({ 
           ...getInitialState(),
           isInitialized: true 
@@ -193,6 +352,15 @@ export const useAuth = create<AuthState>()(
           
           const user = await pb.collection('users').getOne<PBUser>(record.id);
           const authUser = convertToAuthModel(user);
+          
+          // Set timeout for auto-logout
+          setAuthTimeout();
+          
+          // Schedule logout timer
+          if (authTimeoutId) {
+            clearTimeout(authTimeoutId);
+          }
+          scheduledLogout(get());
           
           set({ 
             isAuthenticated: true, 
@@ -232,54 +400,121 @@ export const useAuth = create<AuthState>()(
           set({ isLoading: false });
           throw error;
         }
+      },
+
+      loginWithGoogle: async () => {
+        try {
+          set({ isLoading: true, error: null });
+          await initiateGoogleLogin();
+        } catch (error) {
+          console.error('Google login error:', error);
+          set({ 
+            isLoading: false,
+            error: 'Failed to login with Google'
+          });
+          throw error;
+        }
+      },
+      
+      registerWithGoogle: async () => {
+        try {
+          set({ isLoading: true });
+          initiateGoogleRegistration();
+          // The redirect will happen, and the callback page will handle the response
+        } catch (error) {
+          console.error('Google registration error:', error);
+          set({ isLoading: false });
+          throw error;
+        }
       }
     }),
     {
       name: 'auth-storage',
       partialize: (state: AuthState) => ({
         isAuthenticated: state.isAuthenticated,
-        user: state.user,
         isAdmin: state.isAdmin,
-        isInitialized: state.isInitialized
-      })
+        isInitialized: state.isInitialized,
+        user: state.user ? {
+          id: state.user.id,
+          email: state.user.email,
+          name: state.user.name,
+          role: state.user.role
+        } : null
+      }),
+      storage: {
+        getItem: getFromStorage,
+        setItem: setToStorage,
+        removeItem: removeFromStorage,
+      },
     }
   )
 );
 
-// Set up auth state change listener
+/**
+ * Activity tracking to reset the auth timeout
+ */
 if (typeof window !== 'undefined') {
-  pb.authStore.onChange(async () => {
-    const { isInitialized } = useAuth.getState();
-    if (!isInitialized) return;
+  // Reset timeout on any user activity
+  const resetTimeout = () => {
+    if (pb.authStore.isValid) {
+      setAuthTimeout();
+      // Reset the scheduled logout
+      if (authTimeoutId) {
+        clearTimeout(authTimeoutId);
+      }
+      scheduledLogout(useAuth.getState());
+    }
+  };
 
-    try {
-      const model = pb.authStore.model as AuthModel | null;
-      if (model?.id) {
-        // Fetch fresh user data to ensure role is up to date
-        const user = await pb.collection('users').getOne<PBUser>(model.id);
-        
-        const authUser = convertToAuthModel(user);
-        const isValid = pb.authStore.isValid && !!authUser.role;
-        const isAdmin = authUser.role === UserRole.ADMIN || authUser.role === UserRole.SUPER_ADMIN;
+  // Add event listeners for user activity
+  window.addEventListener('mousedown', resetTimeout);
+  window.addEventListener('keydown', resetTimeout);
+  window.addEventListener('touchstart', resetTimeout);
+  window.addEventListener('scroll', resetTimeout, { passive: true });
 
+  // Reset on tab/window focus
+  window.addEventListener('focus', resetTimeout);
+
+  // Set up auth state change listener
+  pb.authStore.onChange((token, model) => {
+    console.log('Auth store changed:', {
+      isValid: pb.authStore.isValid,
+      model: model ? 'exists' : 'null',
+      token: token ? 'Token exists' : 'No token'
+    });
+
+    if (pb.authStore.isValid && model) {
+      try {
+        // Convert PocketBase user model to our AuthModel
+        const user = convertToAuthModel(model as PBUser);
+        const isAdmin = user.role === UserRole.ADMIN || user.role === UserRole.SUPER_ADMIN;
+
+        // Update auth state
         useAuth.setState({
-          isAuthenticated: isValid,
-          user: authUser,
-          isAdmin
+          isAuthenticated: true,
+          user,
+          isAdmin,
+          isLoading: false,
+          error: null
         });
-      } else {
+      } catch (error) {
+        console.error('Error processing user data:', error);
         useAuth.setState({
           isAuthenticated: false,
           user: null,
-          isAdmin: false
+          isAdmin: false,
+          isLoading: false,
+          error: 'Failed to process user data'
         });
       }
-    } catch (error) {
-      pb.authStore.clear();
+    } else {
+      // Clear auth state when no valid auth
       useAuth.setState({
         isAuthenticated: false,
         user: null,
-        isAdmin: false
+        isAdmin: false,
+        isLoading: false,
+        error: null
       });
     }
   });
@@ -322,8 +557,18 @@ export class AuthService {
         isLoading: false, 
         isAdmin 
       });
+      
+      // Reset auth timeout
+      setAuthTimeout();
+      
+      // Reset the scheduled logout
+      if (authTimeoutId) {
+        clearTimeout(authTimeoutId);
+      }
+      scheduledLogout(useAuth.getState());
+      
       return true;
-    } catch (error) {
+    } catch {
       useAuth.getState().logout();
       return false;
     }
@@ -407,9 +652,20 @@ export async function validateAuthState() {
     }
 
     await pb.collection('users').getOne(userId);
+    
+    // Reset auth timeout
+    setAuthTimeout();
+    
+    // Reset the scheduled logout
+    if (authTimeoutId) {
+      clearTimeout(authTimeoutId);
+    }
+    scheduledLogout(useAuth.getState());
+    
     return true;
-  } catch (error) {
+  } catch {
     pb.authStore.clear();
+    clearAuthTimeout();
     return false;
   }
 } 

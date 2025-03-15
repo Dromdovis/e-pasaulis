@@ -10,9 +10,11 @@ export interface UseProductsOptions {
   sortBy?: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'newest';
   inStockOnly?: boolean;
   query?: string;
+  enabled?: boolean;
+  specifications?: Record<string, string[]>;
 }
 
-interface ProductsResponse {
+export interface ProductsResponse {
   items: Product[];
   totalItems: number;
   page: number;
@@ -20,7 +22,7 @@ interface ProductsResponse {
 }
 
 export function useProducts(options: UseProductsOptions = {}) {
-  const { categoryId, priceMin, priceMax, sortBy = 'newest', inStockOnly, query } = options;
+  const { categoryId, priceMin, priceMax, sortBy = 'newest', inStockOnly, query, enabled = true } = options;
 
   return useInfiniteQuery<ProductsResponse, ClientResponseError, ProductsResponse, [string, UseProductsOptions], number>({
     queryKey: ['products', options],
@@ -95,6 +97,7 @@ export function useProducts(options: UseProductsOptions = {}) {
     },
     getPreviousPageParam: (firstPage) => {
       return firstPage.page > 1 ? firstPage.page - 1 : undefined;
-    }
+    },
+    enabled
   });
 } 

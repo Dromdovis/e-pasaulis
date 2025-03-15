@@ -3,14 +3,16 @@
 import { useState, useEffect, useRef } from 'react';
 import { Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useTranslation } from 'next-i18next';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { useProductCount } from '@/lib/hooks/useProductCount';
 
 export function SearchBar() {
-  const { t } = useTranslation('common');
+  const { t } = useLanguage();
   const router = useRouter();
   const [query, setQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { data: productCount = 0 } = useProductCount();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,6 +33,11 @@ export function SearchBar() {
     return () => document.removeEventListener('keydown', handleKeyPress);
   }, [isFocused]);
 
+  // Create a custom placeholder that includes the product count
+  const searchPlaceholder = productCount > 0 
+    ? `Search ${productCount} products...`
+    : `Search products...`;
+
   return (
     <form onSubmit={handleSearch} className="w-full">
       <div className="relative">
@@ -41,9 +48,9 @@ export function SearchBar() {
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          placeholder={t('search.placeholder')}
+          placeholder={searchPlaceholder}
           className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400"
-          aria-label={t('navigation.search')}
+          aria-label="Search products"
         />
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <Search className="h-5 w-5 text-gray-400" aria-hidden="true" />

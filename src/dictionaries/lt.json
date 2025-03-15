@@ -1,22 +1,79 @@
 {
-  "common": {
-    "language": {
-      "en": "Anglų",
-      "lt": "Lietuvių",
-      "select": "Pasirinkti kalbą"
-    },
-    "navigation": {
-      "home": "Pradžia",
-      "products": "Produktai",
-      "about": "Apie",
-      "contact": "Kontaktai",
-      "cart": "Krepšelis",
-      "favorites": "Mėgstami",
-      "profile": "Profilis",
-      "admin": "Administravimas",
-      "login": "Prisijungti",
-      "register": "Registruotis",
-      "logout": "Atsijungti"
-    }
-  }
+  "language_english": "Anglų",
+  "language_lithuanian": "Lietuvių",
+  "language_russian": "Rusų",
+  "language_select": "Pasirinkite kalbą",
+  
+  "nav_home": "Pradžia",
+  "nav_products": "Produktai",
+  "nav_about": "Apie mus",
+  "nav_contact": "Kontaktai",
+  "nav_cart": "Krepšelis",
+  "nav_favorites": "Mėgstamiausi",
+  "nav_profile": "Profilis",
+  "nav_admin": "Administratoriaus skydelis",
+  "nav_login": "Prisijungti",
+  "nav_register": "Registruotis",
+  "nav_logout": "Atsijungti",
+  "nav_settings": "Nustatymai",
+  
+  "auth": {
+    "register": "Registruotis",
+    "login": "Prisijungti",
+    "logout": "Atsijungti",
+    "forgotPassword": "Pamiršote slaptažodį?",
+    "resetPassword": "Atstatyti slaptažodį",
+    "changePassword": "Keisti slaptažodį",
+    "registerWithGoogle": "Registruotis su Google",
+    "loginWithGoogle": "Prisijungti su Google",
+    "loggingIn": "Jungiamasi...",
+    "registering": "Registruojama...",
+    "alreadyHaveAccount": "Jau turite paskyrą?",
+    "dontHaveAccount": "Neturite paskyros?",
+    "invalidCredentials": "Neteisingas el. paštas arba slaptažodis"
+  },
+  
+  "search_placeholder": "Ieškoti visų produktų...",
+  "search_results": "Paieškos rezultatai",
+  "search_count": "Ieškoti tarp {{count}} produktų",
+  "search_no_results": "Produktų nerasta",
+  "search_filter": "Filtruoti",
+  
+  "footer_about": "Apie mus",
+  "footer_description": "E-Pasaulis yra jūsų patikima elektronikos prekių parduotuvė, siūlanti platų aukštos kokybės produktų asortimentą konkurencingomis kainomis.",
+  "footer_links": "Greitos nuorodos",
+  "footer_service": "Klientų aptarnavimas",
+  "footer_contact": "Susisiekite su mumis",
+  "footer_faq": "DUK",
+  "footer_returns": "Grąžinimai",
+  "footer_support": "Pagalba",
+  "footer_phone": "Telefonas",
+  "footer_email": "El. paštas",
+  "footer_address": "Adresas",
+  "footer_rights": "Visos teisės saugomos.",
+  
+  "product_specs": "Specifikacijos",
+  "product_filter_specs": "Filtruoti pagal specifikacijas",
+  "product_apply_filter": "Taikyti filtrą",
+  "product_reset_filter": "Atstatyti filtrą",
+  "product_in_stock": "Yra sandėlyje",
+  "product_out_of_stock": "Nėra sandėlyje",
+  "product_price": "Kaina",
+  "product_sort": "Rūšiuoti pagal",
+  "product_newest": "Naujausius",
+  "product_price_low": "Kaina: nuo mažiausios",
+  "product_price_high": "Kaina: nuo didžiausios",
+  "product_name_asc": "Pavadinimas: A-Ž",
+  "product_name_desc": "Pavadinimas: Ž-A",
+  
+  "theme_select": "Pasirinkti temą",
+  "theme_light": "Šviesi",
+  "theme_dark": "Tamsi",
+  "theme_system": "Sistema",
+  "theme_switch_light": "Perjungti į šviesią temą",
+  "theme_switch_dark": "Perjungti į tamsią temą",
+  
+  "show": "Rodyti",
+  "hide": "Slėpti",
+  "try_again": "Bandyti dar kartą"
 } 

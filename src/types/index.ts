@@ -3,8 +3,10 @@ export interface Category {
   id: string;
   name_en: string;
   name_lt: string;
+  name_ru: string;
   description_en: string;
   description_lt: string;
+  description_ru: string;
   slug: string;
   created: string;
   updated: string;
@@ -47,10 +49,10 @@ export interface StoreState {
   cart: CartItem[];
   favorites: string[];
   isInitialized: boolean;
-  addToCart: (productId: string) => void;
-  removeFromCart: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
-  toggleFavorite: (productId: string) => void;
+  addToCart: (productId: string) => Promise<void>;
+  removeFromCart: (productId: string) => Promise<void>;
+  updateQuantity: (productId: string, quantity: number) => Promise<void>;
+  toggleFavorite: (productId: string) => Promise<void>;
   syncWithServer: () => Promise<void>;
   clearLocalData: () => void;
 }

@@ -1,5 +1,4 @@
 import { useState, useCallback } from 'react';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 type NotificationType = 'success' | 'error' | 'info' | 'warning';
 
@@ -12,7 +11,10 @@ interface Notification {
 
 export function useNotification() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const { t } = useLanguage();
+
+  const dismiss = useCallback((id: string) => {
+    setNotifications((prev) => prev.filter((notification) => notification.id !== id));
+  }, []);
 
   const show = useCallback((
     type: NotificationType,
@@ -36,11 +38,7 @@ export function useNotification() {
     }
 
     return id;
-  }, []);
-
-  const dismiss = useCallback((id: string) => {
-    setNotifications((prev) => prev.filter((notification) => notification.id !== id));
-  }, []);
+  }, [dismiss]);
 
   const success = useCallback((message: string, duration?: number) => {
     return show('success', message, duration);

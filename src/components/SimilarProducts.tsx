@@ -32,8 +32,8 @@ export function SimilarProducts({ currentProductId, categoryId }: SimilarProduct
         if (response?.items) {
           setProducts(response.items);
         }
-      } catch (error: any) {
-        if (!error?.isAbort) {
+      } catch (error: unknown) {
+        if (error && typeof error === 'object' && 'isAbort' in error && !(error as { isAbort: boolean }).isAbort) {
           console.error('Error fetching similar products:', error);
         }
       } finally {

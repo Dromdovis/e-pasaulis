@@ -3,17 +3,17 @@
 import Link from 'next/link';
 import { Heart } from 'lucide-react';
 import { useStore } from '@/lib/store';
-import { useTranslation } from 'next-i18next';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export function FavoritesButton() {
-  const { t } = useTranslation('common');
+  const { t } = useLanguage();
   const favorites = useStore((state) => state.favorites);
 
   return (
     <Link 
       href="/favorites" 
       className="relative text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
-      aria-label={t('navigation.favorites')}
+      aria-label={t('favorites')}
     >
       <Heart className="w-6 h-6" />
       {favorites.length > 0 && (

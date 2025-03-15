@@ -13,7 +13,7 @@ import Image from 'next/image';
 
 export default function AdminProductsPage() {
   const router = useRouter();
-  const { } = useLanguage();
+  const { t } = useLanguage();
   const { user, isAuthenticated, isLoading, isInitialized } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
