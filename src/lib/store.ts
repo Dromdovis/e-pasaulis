@@ -202,6 +202,15 @@ export const useStore = create<StoreState>()(
         }
 
         try {
+          // Add requestKey: null to disable auto-cancellation for this request
+          const result = await pb.collection('carts').getFirstListItem(
+            `user.id = "${pb.authStore.model?.id}"`,
+            { 
+              expand: 'user',
+              requestKey: null // Add this to disable auto-cancellation
+            }
+          );
+
           // Get cart and favorites from server with unique request keys to prevent auto cancellation
           const [cartData, favoritesData] = await Promise.all([
             pb.collection('carts').getFirstListItem<CartRecord>(
@@ -239,8 +248,24 @@ export const useStore = create<StoreState>()(
 
           set({ isInitialized: true, isServerSynced: true });
         } catch (error) {
-          console.error('Failed to sync with server:', error);
-          set({ isServerSynced: true }); // Mark as synced even on error to prevent infinite retries
+          // Check if it's an auto-cancellation error (status code 0)
+          const isAutoCancelError = error && 
+            typeof error === 'object' && 
+            'status' in error && 
+            error.status === 0 && 
+            'message' in error &&
+            typeof error.message === 'string' &&
+            error.message.includes('autocancelled');
+          
+          if (isAutoCancelError) {
+            // For auto-cancellation just log and continue, consider it as successful sync
+            console.log('Request auto-cancelled but continuing - this is normal during auth flow');
+            set({ isInitialized: true, isServerSynced: true });
+          } else {
+            // For other errors, log them
+            console.error('Failed to sync with server:', error);
+            set({ isServerSynced: true }); // Mark as synced even on error to prevent infinite retries
+          }
         }
       },
 

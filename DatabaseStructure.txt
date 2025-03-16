@@ -1,19 +1,21 @@
 users collection{
-id (text),
-password (password),
-tokenKey (text),
-email (email),
+id (text)(nonempty),
+password (password)(nonempty)(hidden),
+tokenKey (text)(nonempty)(hidden),
+email (email)(nonempty),
 emailVisibility (bool),
 verified (bool),
-name (text),
+name (text)(nonempty),
 avatar (file image),
-role (select: user,admin,super_admin),
+role (select: user,admin,super_admin)(nonempty),
 created (date),
 updated (date)
+}Unique constrains and indexes{
+  unique: tokenKey, email
 }apiRules(
   list/search:@request.auth.role = 'admin' || @request.auth.role = 'super_admin'
   view:@request.auth.role = 'admin' || @request.auth.role = 'super_admin'
-  create:''
+  create:
   update:@request.auth.id = id || @request.auth.role = 'admin' || @request.auth.role = 'super_admin'
   delete:@request.auth.role = 'super_admin' || (@request.auth.role = 'admin' && @collection.users.role != 'admin' && @collection.users.role != 'super_admin')
 )

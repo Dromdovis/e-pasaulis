@@ -7,8 +7,8 @@ import Link from 'next/link';
 import { Eye, EyeOff } from 'lucide-react';
 import { useStore } from '@/lib/store';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
-import { useAuth } from '@/lib/auth';
 import { Button } from '@/components/ui/Button';
+import { useAuth } from '@/lib/auth';
 
 // Add interface for form data
 interface FormData {
@@ -164,12 +164,6 @@ export default function Register() {
           data.password
         );
 
-        // Update auth store state
-        useAuth.getState().login({
-          email: data.email,
-          password: data.password
-        });
-
         // Clear saved form data after successful registration
         localStorage.removeItem('registerFormData');
         
@@ -195,10 +189,32 @@ export default function Register() {
     setLoading(true);
     try {
       await registerWithGoogle();
-      // The redirect will happen in the registerWithGoogle method
+      
+      // Add redirect after successful Google authentication
+      // Wait a moment to ensure auth state is updated
+      setTimeout(() => {
+        if (pb.authStore.isValid) {
+          window.location.href = '/';
+        }
+      }, 500);
     } catch (error) {
+      // Handle the special auto-cancellation case
+      if (error instanceof Error && error.message === 'auth_flow_interrupted') {
+        console.log('Auth flow was interrupted, but this may be normal during authentication');
+        setLoading(false);
+        // Don't show error to the user as this is likely just part of the auth flow
+        
+        // Check if we still got authenticated despite the "error"
+        setTimeout(() => {
+          if (pb.authStore.isValid) {
+            window.location.href = '/';
+          }
+        }, 500);
+        return;
+      }
+      
       console.error('Google registration error:', error);
-      setErrorMessage('Failed to register with Google');
+      setErrorMessage(t('failed_to_register_with_google') || 'Failed to register with Google');
       setLoading(false);
     }
   };
@@ -265,6 +281,7 @@ export default function Register() {
               {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
           </div>
+
           <div className="relative mt-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-300"></div>
@@ -276,8 +293,9 @@ export default function Register() {
             </div>
           </div>
 
-          <Link
-            href="/login"
+          <button
+            type="button"
+            onClick={handleGoogleRegister}
             className="w-full flex justify-center items-center bg-white border border-gray-300 text-gray-700 p-2 rounded hover:bg-gray-50 mt-2"
           >
             <svg
@@ -305,7 +323,7 @@ export default function Register() {
               />
             </svg>
             {t('continue_with_google') || 'Continue with Google'}
-          </Link>
+          </button>
 
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? 
@@ -313,9 +331,12 @@ export default function Register() {
               (t('register') || 'Register')
             }
           </Button>
-          <div className="text-center text-sm text-gray-600">
-            {t('already_have_account') || 'Already have an account?'}{' '}
-            <Link href="/login" className="text-blue-600 hover:text-blue-800">
+          
+          <div className="text-sm text-center mt-4">
+            <span className="text-gray-600">
+              {t('already_have_account') || 'Already have an account?'}{' '}
+            </span>
+            <Link href="/login" className="text-blue-600 hover:underline">
               {t('login') || 'Login'}
             </Link>
           </div>

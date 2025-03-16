@@ -419,7 +419,7 @@ export const useAuth = create<AuthState>()(
       registerWithGoogle: async () => {
         try {
           set({ isLoading: true });
-          initiateGoogleRegistration();
+          await initiateGoogleRegistration();
           // The redirect will happen, and the callback page will handle the response
         } catch (error) {
           console.error('Google registration error:', error);

@@ -57,10 +57,10 @@ export interface AuthState {
   intendedPath: string | null;
   initialize: () => Promise<void>;
   login: (data: LoginData) => Promise<void>;
-  loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
-  registerWithGoogle: () => Promise<void>;
   refreshUser: () => Promise<void>;
   setIntendedPath: (path: string | null) => void;
+  loginWithGoogle: () => Promise<void>;
+  registerWithGoogle: () => Promise<void>;
 } 

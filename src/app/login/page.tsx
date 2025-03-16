@@ -6,6 +6,7 @@ import { useLanguage } from '@/lib/i18n/LanguageContext';
 import Link from 'next/link';
 import { UserRole } from '@/types/auth';
 import { Eye, EyeOff } from 'lucide-react';
+import { pb } from '@/lib/db';
 
 export default function LoginPage() {
   const { t } = useLanguage();
@@ -60,8 +61,29 @@ export default function LoginPage() {
     setError('');
     try {
       await loginWithGoogle();
-      // The redirect will happen in the loginWithGoogle method
+      
+      // Add redirect after successful Google authentication
+      // Wait a moment to ensure auth state is updated
+      setTimeout(() => {
+        if (pb.authStore.isValid) {
+          window.location.href = intendedPath || '/';
+        }
+      }, 500);
     } catch (error) {
+      // Handle the special auto-cancellation case
+      if (error instanceof Error && error.message === 'auth_flow_interrupted') {
+        console.log('Auth flow was interrupted, but this may be normal during authentication');
+        // Don't show error to the user as this is likely just part of the auth flow
+        
+        // Check if we still got authenticated despite the "error"
+        setTimeout(() => {
+          if (pb.authStore.isValid) {
+            window.location.href = intendedPath || '/';
+          }
+        }, 500);
+        return;
+      }
+      
       console.error('Google login error:', error);
       setError(t('google_login_failed') || 'Failed to login with Google');
     }
