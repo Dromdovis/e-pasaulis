@@ -187,35 +187,37 @@ export default function BulkOperationsPage() {
   };
 
   // Tabs content components to keep the main component cleaner
-  const UsersTabContent = () => (
-    <div className="space-y-4">
-      <div className="grid gap-4">
-        <label className="block">
-          <span className="text-gray-700 dark:text-gray-300">CSV File</span>
-          <input
-            type="file"
-            accept=".csv"
-            onChange={handleFileChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          />
-        </label>
-      </div>
-
-      {csvData && (
-        <div className="overflow-auto max-h-96 border rounded-md p-4">
-          <pre className="text-sm">{csvData}</pre>
+  function UsersTabContent() {
+    return (
+      <div className="space-y-4">
+        <div className="grid gap-4">
+          <label className="block">
+            <span className="text-gray-700 dark:text-gray-300">CSV File</span>
+            <input
+              type="file"
+              accept=".csv"
+              onChange={handleFileChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            />
+          </label>
         </div>
-      )}
 
-      <Button 
-        onClick={handleSaveUsers} 
-        disabled={!fileSelected || loading}
-        className="w-full"
-      >
-        {loading ? (t('loading') || 'Loading...') : (t('save') || 'Save')}
-      </Button>
-    </div>
-  );
+        {csvData && (
+          <div className="overflow-auto max-h-96 border rounded-md p-4">
+            <pre className="text-sm">{csvData}</pre>
+          </div>
+        )}
+
+        <Button 
+          onClick={handleSaveUsers} 
+          disabled={!fileSelected || loading}
+          className="w-full"
+        >
+          {loading ? t('admin_loading') : t('admin_save_button')}
+        </Button>
+      </div>
+    );
+  }
 
   // Products tab with our specialized component
   const ProductsTabContent = () => (
@@ -225,45 +227,84 @@ export default function BulkOperationsPage() {
     />
   );
 
-  // Products tab with our specialized component
-  const ExportTabContent = () => (
-    <div className="space-y-4">
-      <div className="rounded-lg border p-4">
-        <h3 className="text-lg font-medium mb-2">Products Export</h3>
-        <p className="text-gray-600 dark:text-gray-400 mb-4">
-          Export your product catalog in CSV format. This file can be used for backups or to make bulk edits.
-        </p>
-        <Button onClick={() => alert("Export functionality would go here")}>
-          Export Products
-        </Button>
+  // Export tab with options for different exports
+  function ExportTabContent() {
+    return (
+      <div className="space-y-4">
+        <div className="rounded-lg border p-4">
+          <h3 className="text-lg font-medium mb-2">{t('admin_export_products')}</h3>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
+            {t('export_products_description')}
+          </p>
+          <div className="flex flex-col space-y-2">
+            <div className="flex items-center space-x-2">
+              <select 
+                className="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                defaultValue="csv"
+              >
+                <option value="csv">{t('export_format_csv')}</option>
+                <option value="excel">{t('export_format_excel')}</option>
+                <option value="json">{t('export_format_json')}</option>
+              </select>
+              <Button onClick={() => alert("Export functionality would go here")}>
+                {t('export_button')}
+              </Button>
+            </div>
+          </div>
+        </div>
+        
+        <div className="rounded-lg border p-4">
+          <h3 className="text-lg font-medium mb-2">{t('admin_export_users')}</h3>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
+            {t('export_users_description')}
+          </p>
+          <div className="flex flex-col space-y-2">
+            <div className="flex items-center space-x-2">
+              <select 
+                className="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                defaultValue="csv"
+              >
+                <option value="csv">{t('export_format_csv')}</option>
+                <option value="excel">{t('export_format_excel')}</option>
+                <option value="json">{t('export_format_json')}</option>
+              </select>
+              <Button onClick={() => alert("Export functionality would go here")}>
+                {t('export_button')}
+              </Button>
+            </div>
+          </div>
+        </div>
+        
+        <div className="rounded-lg border p-4">
+          <h3 className="text-lg font-medium mb-2">{t('admin_export_orders')}</h3>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
+            {t('export_orders_description')}
+          </p>
+          <div className="flex flex-col space-y-2">
+            <div className="flex items-center space-x-2">
+              <select 
+                className="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                defaultValue="csv"
+              >
+                <option value="csv">{t('export_format_csv')}</option>
+                <option value="excel">{t('export_format_excel')}</option>
+                <option value="json">{t('export_format_json')}</option>
+                <option value="pdf">{t('export_format_pdf')}</option>
+              </select>
+              <Button onClick={() => alert("Export functionality would go here")}>
+                {t('export_button')}
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
-      
-      <div className="rounded-lg border p-4">
-        <h3 className="text-lg font-medium mb-2">Users Export</h3>
-        <p className="text-gray-600 dark:text-gray-400 mb-4">
-          Export your user database in CSV format. This excludes sensitive information like passwords.
-        </p>
-        <Button onClick={() => alert("Export functionality would go here")}>
-          Export Users
-        </Button>
-      </div>
-      
-      <div className="rounded-lg border p-4">
-        <h3 className="text-lg font-medium mb-2">Orders Export</h3>
-        <p className="text-gray-600 dark:text-gray-400 mb-4">
-          Export orders data for accounting, fulfillment, or analysis purposes.
-        </p>
-        <Button onClick={() => alert("Export functionality would go here")}>
-          Export Orders
-        </Button>
-      </div>
-    </div>
-  );
+    );
+  }
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">{t('bulk_operations') || 'Bulk Operations'}</h1>
+        <h1 className="text-2xl font-bold">{t('admin_bulk_title')}</h1>
       </div>
 
       {error && (
@@ -288,34 +329,34 @@ export default function BulkOperationsPage() {
 
       <Tabs defaultValue="users" value={activeTab} onValueChange={handleTabChange}>
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="users">Users Import</TabsTrigger>
-          <TabsTrigger value="products">Products Import</TabsTrigger>
-          <TabsTrigger value="export">Export</TabsTrigger>
+          <TabsTrigger value="users">{t('admin_import_users')}</TabsTrigger>
+          <TabsTrigger value="products">{t('admin_import_products')}</TabsTrigger>
+          <TabsTrigger value="export">{t('export')}</TabsTrigger>
         </TabsList>
         <TabsContent value="users" className="p-4 rounded-md border mt-2">
           <h2 className="text-xl font-semibold mb-2">
-            {t('users') || 'Users'}
+            {t('admin_users_title')}
           </h2>
           <p className="text-gray-600 dark:text-gray-400 mb-4">
-            {t('users_description') || 'Import multiple user accounts at once using a CSV file.'}
+            {t('admin_users_description')}
           </p>
           <UsersTabContent />
         </TabsContent>
         <TabsContent value="products" className="p-4 rounded-md border mt-2">
           <h2 className="text-xl font-semibold mb-2">
-            {t('products') || 'Products'}
+            {t('admin_products_title')}
           </h2>
           <p className="text-gray-600 dark:text-gray-400 mb-4">
-            {t('products_description') || 'Import or edit multiple products at once.'}
+            {t('admin_products_description')}
           </p>
           <ProductsTabContent />
         </TabsContent>
         <TabsContent value="export" className="p-4 rounded-md border mt-2">
           <h2 className="text-xl font-semibold mb-2">
-            {t('products') || 'Products'}
+            {t('admin_export_title')}
           </h2>
           <p className="text-gray-600 dark:text-gray-400 mb-4">
-            {t('products_description') || 'Export your data in CSV format for backups or external processing.'}
+            {t('admin_export_description')}
           </p>
           <ExportTabContent />
         </TabsContent>

@@ -232,7 +232,7 @@ export default function ProductDetails({ productId }: { productId: string }) {
 
       {/* Specifications Section */}
       <div className="mt-12">
-        <h2 className="text-2xl font-bold mb-6">{t('productSpecifications')}</h2>
+        <h2 className="text-2xl font-bold mb-6">{t('product_specifications')}</h2>
         <div className="bg-white rounded-lg shadow-sm p-6">
           <table className="w-full">
             <tbody>

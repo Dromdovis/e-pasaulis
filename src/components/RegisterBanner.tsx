@@ -39,8 +39,8 @@ export function RegisterBanner() {
 
         <Percent className="h-12 w-12 mb-2 text-white" />
         
-        <h3 className="font-bold text-xl mb-1">{t('register.specialOffer')}</h3>
-        <p className="text-center mb-3 text-sm">{t('register.discountDescription')}</p>
+        <h3 className="font-bold text-xl mb-1">{t('register_special_offer')}</h3>
+        <p className="text-center mb-3 text-sm">{t('register_discount_description')}</p>
         
         <div className="bg-white text-primary-700 font-bold text-2xl py-1 px-4 rounded-full mb-3 flex items-center">
           <Tag size={16} className="mr-1" />
@@ -51,12 +51,12 @@ export function RegisterBanner() {
           href="/register" 
           className="bg-white text-primary-700 hover:bg-gray-100 font-medium py-2 px-4 rounded-full flex items-center transition-colors w-full justify-center"
         >
-          {t('register.signUpNow')}
+          {t('register_sign_up_now')}
           <ChevronRight size={16} className="ml-1" />
         </Link>
         
         <p className="text-xs mt-3 text-gray-100 text-center">
-          {t('register.newCustomersOnly')}
+          {t('register_new_customers_only')}
         </p>
       </div>
     </div>

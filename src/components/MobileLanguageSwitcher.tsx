@@ -17,7 +17,7 @@ const languageNames: Record<Locale, string> = {
 };
 
 export default function MobileLanguageSwitcher() {
-  const { language, changeLanguage } = useLanguage();
+  const { language, changeLanguage, t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
 
@@ -54,7 +54,7 @@ export default function MobileLanguageSwitcher() {
       >
         <div className="flex items-center">
           <Globe className="w-5 h-5 mr-2" />
-          <span className="text-sm font-medium">Language: {languageNames[language]}</span>
+          <span className="text-sm font-medium">Language: {t(`language_${language}`)}</span>
         </div>
         {isOpen ? (
           <ChevronUp className="w-4 h-4" />
@@ -75,7 +75,7 @@ export default function MobileLanguageSwitcher() {
                   : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'
               }`}
             >
-              {languageNames[locale]}
+              {t(`language_${locale}`)}
             </button>
           ))}
         </div>

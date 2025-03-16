@@ -95,13 +95,13 @@ export default function CartPage() {
       <div className="flex items-center mb-8">
         <Link href="/" className="text-blue-600 hover:underline flex items-center mr-2">
           <ArrowLeft size={16} className="mr-1" />
-          <span>{t('navigation.home')}</span>
+          <span>{t('home')}</span>
         </Link>
         <span className="mx-2 text-gray-400">/</span>
-        <span className="text-gray-700 dark:text-gray-300">{t('navigation.cart')}</span>
+        <span className="text-gray-700 dark:text-gray-300">{t('cart')}</span>
       </div>
 
-      <h1 className="text-3xl font-bold mb-8 dark:text-white">{t('navigation.cart')}</h1>
+      <h1 className="text-3xl font-bold mb-8 dark:text-white">{t('cart')}</h1>
 
       {loading ? (
         <div className="flex justify-center items-center h-48">
@@ -110,14 +110,14 @@ export default function CartPage() {
       ) : products.length === 0 ? (
         <div className="text-center py-12">
           <div className="text-4xl mb-4">🛒</div>
-          <h2 className="text-2xl font-semibold mb-4 dark:text-white">{t('cart.empty')}</h2>
-          <p className="text-gray-500 dark:text-gray-400 mb-8">{t('cart.addItemsToCart')}</p>
+          <h2 className="text-2xl font-semibold mb-4 dark:text-white">{t('cart_empty')}</h2>
+          <p className="text-gray-500 dark:text-gray-400 mb-8">{t('cart_add_items')}</p>
           <Link
             href="/"
             className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             <ArrowLeft size={20} className="mr-2" />
-            {t('products.actions.continueShopping')}
+            {t('continue_shopping')}
           </Link>
         </div>
       ) : (

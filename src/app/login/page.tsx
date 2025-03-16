@@ -112,14 +112,14 @@ export default function LoginPage() {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-gray-100">
-            {t('login') || 'Login'}
+            {t('login_title')}
           </h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
               <label htmlFor="email" className="sr-only">
-                {t('email') || 'Email'}
+                {t('email')}
               </label>
               <input
                 id="email"
@@ -130,12 +130,12 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 rounded-t-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm bg-white dark:bg-gray-800"
-                placeholder={t('email') || 'Email'}
+                placeholder={t('login_email_placeholder')}
               />
             </div>
             <div className="relative">
               <label htmlFor="password" className="sr-only">
-                {t('password') || 'Password'}
+                {t('password')}
               </label>
               <input
                 id="password"
@@ -146,14 +146,14 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 rounded-b-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm bg-white dark:bg-gray-800 pr-10"
-                placeholder={t('password') || 'Password'}
+                placeholder={t('login_password_placeholder')}
               />
               <div className="absolute inset-y-0 right-0 flex items-center pr-3 z-10">
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="text-gray-400 hover:text-gray-500 focus:outline-none"
-                  aria-label={showPassword ? (t('hide_password') || 'Hide Password') : (t('show_password') || 'Show Password')}
+                  aria-label={showPassword ? t('hide_password') : t('show_password')}
                 >
                   {showPassword ? (
                     <EyeOff className="h-5 w-5" />
@@ -175,7 +175,7 @@ export default function LoginPage() {
               disabled={isLoading}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? (t('logging_in') || 'Logging in...') : (t('login') || 'Login')}
+              {isLoading ? t('logging_in') : t('login_button')}
             </button>
           </div>
 
@@ -185,7 +185,7 @@ export default function LoginPage() {
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="px-2 bg-gray-50 dark:bg-gray-900 text-gray-500">
-                {t('continue_with_google') || 'Continue with Google'}
+                {t('continue_with_google')}
               </span>
             </div>
           </div>
@@ -221,19 +221,19 @@ export default function LoginPage() {
                   d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"
                 />
               </svg>
-              {t('continue_with_google') || 'Continue with Google'}
+              {t('login_with_google')}
             </button>
           </div>
 
           <div className="text-sm text-center">
             <span className="text-gray-600 dark:text-gray-400">
-              {t('dont_have_account') || "Don't have an account?"}{' '}
+              {t('dont_have_account')}{' '}
             </span>
             <Link
               href="/register"
               className="font-medium text-primary-600 hover:text-primary-500"
             >
-              {t('register') || 'Register'}
+              {t('register')}
             </Link>
           </div>
         </form>

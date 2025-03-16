@@ -61,7 +61,14 @@ export default [
         // Node
         process: 'readonly',
         // React
-        React: 'readonly'
+        React: 'readonly',
+        // Form data
+        FormData: 'readonly',
+        File: 'readonly',
+        Blob: 'readonly',
+        // Others
+        URLSearchParams: 'readonly',
+        URL: 'readonly'
       }
     },
     plugins: {
@@ -92,15 +99,25 @@ export default [
   },
   {
     // Browser and Node environment settings
+    files: ['**/*.{js,mjs}'], // Add rules specifically for JS files
     languageOptions: {
       globals: {
         // Browser
         window: 'readonly',
         document: 'readonly',
+        console: 'readonly',
+        fetch: 'readonly',
         // Node
         process: 'readonly',
         // ES6
         Promise: 'readonly',
+        // Form data
+        FormData: 'readonly',
+        File: 'readonly',
+        Blob: 'readonly',
+        // Others
+        URLSearchParams: 'readonly',
+        URL: 'readonly'
       },
       parserOptions: {
         ecmaVersion: 'latest',

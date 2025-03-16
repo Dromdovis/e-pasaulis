@@ -8,7 +8,6 @@ import { Package, Users, Folder, Star, Upload } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import toast from 'react-hot-toast';
-import { useSession } from 'next-auth/react';
 import { Loader } from 'lucide-react';
 
 interface DashboardCard {
@@ -22,31 +21,32 @@ interface DashboardCard {
 export default function AdminDashboard() {
   const router = useRouter();
   const { t } = useLanguage();
-  const { user, isAuthenticated, isLoading, isInitialized } = useAuth();
-  const { data: session } = useSession();
+  const { user, isAuthenticated, isLoading, isInitialized, isAdmin } = useAuth();
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!session) {
-      // Not authenticated
-      router.push('/login');
-    } else if (session?.user?.role !== 'admin') {
-      // Authenticated but not an admin
-      router.push('/');
-    } else {
-      // Is admin, stop loading
-      setLoading(false);
+    if (isInitialized) {
+      if (!isAuthenticated) {
+        // Not authenticated
+        router.push('/login');
+      } else if (!isAdmin) {
+        // Authenticated but not an admin
+        router.push('/');
+      } else {
+        // Is authenticated and is admin
+        setLoading(false);
+      }
     }
-  }, [session, router]);
+  }, [isInitialized, isAuthenticated, isAdmin, router]);
 
-  if (loading) {
+  if (!isInitialized || isLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <Loader className="animate-spin h-8 w-8 mx-auto text-primary" />
-          <p className="mt-2 text-gray-600">{t('loading') || 'Loading...'}</p>
+          <p className="mt-2 text-gray-600">{t('loading')}</p>
         </div>
       </div>
     );
@@ -54,36 +54,36 @@ export default function AdminDashboard() {
 
   const dashboardCards: DashboardCard[] = [
     {
-      title: t('manage_users') || 'Manage Users',
-      description: t('admin_users_description') || 'Manage user accounts, roles, and permissions',
+      title: t('admin_users_management'),
+      description: t('admin_users_description'),
       href: '/admin/users',
       icon: Users,
       color: 'bg-blue-500'
     },
     {
-      title: t('manage_products') || 'Manage Products',
-      description: t('admin_products_description') || 'Add, edit, and manage product listings',
+      title: t('admin_products_management'),
+      description: t('admin_products_description'),
       href: '/admin/products',
       icon: Package,
       color: 'bg-green-500'
     },
     {
-      title: t('manage_categories') || 'Manage Categories',
-      description: t('admin_categories_description') || 'Organize and structure product categories',
+      title: t('admin_categories_management'),
+      description: t('admin_categories_description'),
       href: '/admin/categories',
       icon: Folder,
       color: 'bg-yellow-500'
     },
     {
-      title: t('monitor_reviews') || 'Monitor Reviews',
-      description: t('admin_reviews_description') || 'Monitor and moderate product reviews',
+      title: t('admin_reviews_management'),
+      description: t('admin_reviews_description'),
       href: '/admin/reviews',
       icon: Star,
       color: 'bg-purple-500'
     },
     {
-      title: t('bulk_operations') || 'Bulk Operations',
-      description: t('admin_bulk_description') || 'Import/export data and perform bulk operations',
+      title: t('admin_bulk_management'),
+      description: t('admin_bulk_description'),
       href: '/admin/bulk',
       icon: Upload,
       color: 'bg-red-500'
@@ -93,7 +93,7 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold dark:text-white">{t('admin_dashboard') || 'Admin Dashboard'}</h1>
+        <h1 className="text-2xl font-bold dark:text-white">{t('admin_dashboard')}</h1>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

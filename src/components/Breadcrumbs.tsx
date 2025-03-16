@@ -9,7 +9,7 @@ import { useLanguage } from '@/lib/i18n/LanguageContext';
 import type { TranslationKey } from '@/lib/i18n/translations';
 
 export default function Breadcrumbs({ className = '' }: { className?: string }) {
-  const { t, isInitialized } = useLanguage();
+  const { t, isInitialized, language } = useLanguage();
   const pathname = usePathname();
   const paths = pathname.split('/').filter(Boolean);
   const [productName, setProductName] = useState<string>('');
@@ -38,12 +38,29 @@ export default function Breadcrumbs({ className = '' }: { className?: string }) 
   }, [paths]);
 
   const getPageName = (path: string): string => {
+    // Extended mapping of routes to translation keys
     const pageNames: Record<string, TranslationKey> = {
       'profile': 'profile',
       'admin': 'admin_panel',
       'users': 'users',
       'products': 'products',
-      // Add more pages as needed
+      'categories': 'categories',
+      'reviews': 'reviews',
+      'bulk': 'bulk_operations',
+      'settings': 'settings',
+      'about': 'about',
+      'faq': 'faq',
+      'privacy': 'privacy_page_title',
+      'terms': 'terms_page_title',
+      'contact': 'contact',
+      'shipping': 'shipping_page_title',
+      'returns': 'returns_page_title',
+      'support': 'support_page_title',
+      'login': 'login',
+      'register': 'register',
+      'cart': 'cart',
+      'favorites': 'favorites',
+      'search': 'search'
     };
     
     const translationKey = pageNames[path];
@@ -70,21 +87,21 @@ export default function Breadcrumbs({ className = '' }: { className?: string }) 
               <>
                 <Link 
                   href="/admin" 
-                  className="text-sm text-gray-900 font-medium hover:text-primary-600"
+                  className="text-sm text-gray-900 dark:text-white font-medium hover:text-primary-600 dark:hover:text-primary-400"
                 >
                   {t('admin_panel')}
                 </Link>
                 {paths[1] && (
                   <>
                     <ChevronRight className="h-4 w-4 mx-2 text-gray-400" />
-                    <span className="text-sm text-gray-900 font-medium">
+                    <span className="text-sm text-gray-900 dark:text-white font-medium">
                       {getPageName(paths[1])}
                     </span>
                   </>
                 )}
               </>
             ) : (
-              <span className="text-sm text-gray-900 font-medium">
+              <span className="text-sm text-gray-900 dark:text-white font-medium">
                 {paths[0] === 'product' && productName 
                   ? productName 
                   : getPageName(paths[0])}

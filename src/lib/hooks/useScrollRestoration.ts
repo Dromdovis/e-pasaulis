@@ -45,25 +45,40 @@ export function useScrollRestoration(key: string) {
         // Initial delay to allow content to render
         setTimeout(restoreScroll, 100);
         
-        // Cleanup stored position
-        sessionStorage.removeItem(`scroll_${key}`);
+        // Don't remove the stored position until we've successfully restored
+        // This ensures we can try again if the page refreshes before restoration completes
+        if (Math.abs(window.scrollY - targetScroll) <= 10) {
+          sessionStorage.removeItem(`scroll_${key}`);
+        }
       } else {
         setIsRestoring(false);
       }
 
+      // Save scroll position before page unload or navigation
       const handleBeforeUnload = () => {
         scrollPositionRef.current = window.scrollY;
         try {
-          sessionStorage.setItem(`scroll_${key}`, scrollPositionRef.current.toString());
+          if (scrollPositionRef.current > 0) {
+            sessionStorage.setItem(`scroll_${key}`, scrollPositionRef.current.toString());
+          }
         } catch (error) {
           console.error('Failed to save scroll position:', error);
         }
       };
 
+      // Save scroll position when user navigates away
+      const handleVisibilityChange = () => {
+        if (document.visibilityState === 'hidden') {
+          handleBeforeUnload();
+        }
+      };
+
       window.addEventListener('beforeunload', handleBeforeUnload);
+      window.addEventListener('visibilitychange', handleVisibilityChange);
       
       return () => {
         window.removeEventListener('beforeunload', handleBeforeUnload);
+        window.removeEventListener('visibilitychange', handleVisibilityChange);
       };
     } catch (error) {
       console.error('Error in scroll restoration:', error);

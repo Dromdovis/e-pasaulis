@@ -15,7 +15,7 @@ async function downloadImageAsFile(url) {
   }
 }
 
-export const load = async ({ url, locals, cookies }) => {
+export const load = async ({ url, locals }) => {
   const code = url.searchParams.get('code');
   const state = url.searchParams.get('state');
   const error = url.searchParams.get('error');

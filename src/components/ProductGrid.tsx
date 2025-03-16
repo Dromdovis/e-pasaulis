@@ -269,7 +269,7 @@ export default function ProductGrid({
       {useSpecificationFilter && Object.keys(availableSpecs).length > 0 && (
         <div className="mb-6 p-4 border rounded-lg bg-white dark:bg-gray-800 shadow-sm">
           <div className="flex justify-between items-center mb-2">
-            <h3 className="font-medium">{t('product_filter_specs')}</h3>
+            <h3 className="font-medium">{t('filter_specifications')}</h3>
             <button 
               className="text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
               onClick={() => setShowSpecFilters(!showSpecFilters)}
@@ -309,13 +309,13 @@ export default function ProductGrid({
                   onClick={resetSpecFilters}
                   className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                 >
-                  {t('product_reset_filter')}
+                  {t('filter_reset')}
                 </button>
                 <button
                   onClick={() => setShowSpecFilters(false)}
                   className="text-sm bg-primary-600 hover:bg-primary-700 text-white py-1 px-3 rounded"
                 >
-                  {t('product_apply_filter')}
+                  {t('filter_apply')}
                 </button>
               </div>
             </div>

@@ -1,55 +1,60 @@
 'use client';
 import Link from 'next/link';
-import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from 'react-icons/fa';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { Facebook, Instagram, Twitter } from 'lucide-react';
 
-const Footer = () => {
+export default function Footer() {
   const { t } = useLanguage();
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 mt-12">
-      <div className="max-w-7xl mx-auto pt-12 pb-8 px-4 sm:px-6 lg:px-8">
+    <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 mt-auto">
+      <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* About section */}
+          {/* About Us */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              {t('footer.aboutUs')}
-            </h3>
-            <p className="text-gray-600 dark:text-gray-300 mb-4">
-              {t('footer.aboutDescription')}
-            </p>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('footer_about_us')}</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">{t('footer_about_description')}</p>
+            <div className="flex space-x-4">
+              <a href="#" className="text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">
+                <Facebook className="h-5 w-5" />
+              </a>
+              <a href="#" className="text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">
+                <Twitter className="h-5 w-5" />
+              </a>
+              <a href="#" className="text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">
+                <Instagram className="h-5 w-5" />
+              </a>
+            </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              {t('footer.quickLinks')}
-            </h3>
-            <ul className="space-y-3">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('footer_quick_links')}</h3>
+            <ul className="space-y-2">
               <li>
-                <Link href="/about" className="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
-                  {t('about')}
+                <Link href="/about" className="text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">
+                  {t('footer_about')}
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
-                  {t('navigation.shop')}
+                <Link href="/contact" className="text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">
+                  {t('footer_contact')}
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
-                  {t('footer.faq')}
+                <Link href="/shipping" className="text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">
+                  {t('footer_shipping')}
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
-                  {t('footer.privacy')}
+                <Link href="/terms" className="text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">
+                  {t('footer_terms')}
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
-                  {t('footer.terms')}
+                <Link href="/privacy" className="text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">
+                  {t('footer_privacy')}
                 </Link>
               </li>
             </ul>
@@ -57,80 +62,47 @@ const Footer = () => {
 
           {/* Customer Service */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              {t('footer.customerService')}
-            </h3>
-            <ul className="space-y-3">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('footer_customer_service')}</h3>
+            <ul className="space-y-2">
               <li>
-                <Link href="#" className="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
-                  {t('footer.contact')}
+                <Link href="/faq" className="text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">
+                  {t('footer_faq')}
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
-                  {t('footer.shipping')}
+                <Link href="/returns" className="text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">
+                  {t('footer_returns')}
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
-                  {t('footer.returns')}
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
-                  {t('footer.support')}
+                <Link href="/support" className="text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">
+                  {t('footer_support')}
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Contact */}
+          {/* Contact Us */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              {t('footer.contactUs')}
-            </h3>
-            <address className="not-italic">
-              <p className="text-gray-600 dark:text-gray-300 mb-2">
-                <span className="font-medium">{t('footer.email')}:</span> info@e-pasaulis.lt
-              </p>
-              <p className="text-gray-600 dark:text-gray-300 mb-2">
-                <span className="font-medium">{t('footer.phone')}:</span> +370 600 00000
-              </p>
-              <p className="text-gray-600 dark:text-gray-300">
-                <span className="font-medium">{t('footer.address')}:</span> Vilnius, Lithuania
-              </p>
-            </address>
-            {/* Social Media */}
-            <div className="mt-4">
-              <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-2">
-                {t('footer.socialMedia')}
-              </h4>
-              <div className="flex space-x-4">
-                <a href="#" className="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
-                  <FaFacebook className="w-5 h-5" />
-                </a>
-                <a href="#" className="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
-                  <FaTwitter className="w-5 h-5" />
-                </a>
-                <a href="#" className="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
-                  <FaInstagram className="w-5 h-5" />
-                </a>
-                <a href="#" className="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
-                  <FaLinkedin className="w-5 h-5" />
-                </a>
-              </div>
-            </div>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('footer_contact_us')}</h3>
+            <ul className="space-y-2">
+              <li className="text-gray-600 dark:text-gray-400">
+                <span className="font-medium text-gray-700 dark:text-gray-300">{t('footer_email')}:</span> info@e-pasaulis.lt
+              </li>
+              <li className="text-gray-600 dark:text-gray-400">
+                <span className="font-medium text-gray-700 dark:text-gray-300">{t('footer_phone')}:</span> +370 600 00000
+              </li>
+              <li className="text-gray-600 dark:text-gray-400">
+                <span className="font-medium text-gray-700 dark:text-gray-300">{t('footer_address')}:</span> Vilnius, Lithuania
+              </li>
+            </ul>
           </div>
         </div>
 
-        <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-800">
-          <p className="text-center text-gray-500 dark:text-gray-400">
-            {t('footer.copyright', { year: currentYear })}
-          </p>
+        <div className="border-t border-gray-200 dark:border-gray-800 mt-12 pt-8 text-center text-gray-500 dark:text-gray-400">
+          <p>© {currentYear} E-Pasaulis. {t('footer_copyright')}</p>
         </div>
       </div>
     </footer>
   );
-};
-
-export default Footer; 
+} 

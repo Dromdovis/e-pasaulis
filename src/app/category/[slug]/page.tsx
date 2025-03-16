@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState, useEffect } from 'react';
+import { Suspense, useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import CategorySidebar from '@/components/CategorySidebar';
 import ProductGrid from '@/components/ProductGrid';
@@ -24,6 +24,7 @@ export default function CategoryPage() {
   const [inStockOnly, setInStockOnly] = useState(false);
   const [sortBy, setSortBy] = useState<'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'newest'>('newest');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
 
@@ -81,13 +82,27 @@ export default function CategoryPage() {
     setSelectedPriceRange(undefined);
   };
 
-  const handleSort = (sortOption: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'newest') => {
-    setSortBy(sortOption);
-  };
-
+  // Handle specification filter
   const handleSpecificationFilter = (filtered: Product[]) => {
     setFilteredProducts(filtered);
   };
+
+  // Memoize filter handlers to avoid recreating functions on every render
+  const handlePriceChangeCallback = useCallback((range: { min: number; max: number }) => {
+    setSelectedPriceRange(range);
+  }, []);
+
+  const handleAvailabilityChangeCallback = useCallback((inStock: boolean) => {
+    setInStockOnly(inStock);
+  }, []);
+
+  const handleSortCallback = useCallback((sortOption: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'newest') => {
+    setSortBy(sortOption);
+  }, []);
+
+  const handleSpecificationFilterCallback = useCallback((filtered: Product[]) => {
+    setFilteredProducts(filtered);
+  }, []);
 
   // Render
   if (isRestoring) {
@@ -136,6 +151,45 @@ export default function CategoryPage() {
             </div>
           )}
 
+          {/* Mobile Filters Button */}
+          <button
+            className="lg:hidden w-full mt-4 mb-4 px-4 py-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm flex items-center justify-between"
+            onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+          >
+            <span className="font-medium">Filtrai</span>
+            <ChevronDown className="h-5 w-5" />
+          </button>
+
+          {/* Mobile Filters */}
+          {mobileFiltersOpen && (
+            <div className="mobile-menu lg:hidden mb-4" onClick={() => setMobileFiltersOpen(false)}>
+              <div className="mobile-menu-content" onClick={e => e.stopPropagation()}>
+                <div className="mobile-menu-header">
+                  <h2 className="text-lg font-semibold">Filtrai</h2>
+                  <button onClick={() => setMobileFiltersOpen(false)}>
+                    <X className="h-6 w-6" />
+                  </button>
+                </div>
+                <div className="mobile-menu-body">
+                  <ProductSort onSort={handleSortCallback} />
+                  <ProductFilters
+                    maxPrice={1000}
+                    onPriceChange={handlePriceChangeCallback}
+                    onAvailabilityChange={handleAvailabilityChangeCallback}
+                  />
+                  {category && (
+                    <div className="mt-4">
+                      <SpecificationsFilterPanel
+                        products={allProducts}
+                        onFilter={handleSpecificationFilterCallback}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Desktop Categories */}
           <div className="hidden lg:block sticky top-4">
             <CategorySidebar
@@ -149,15 +203,6 @@ export default function CategoryPage() {
                 }
               }}
             />
-            
-            {category && (
-              <div className="mt-8">
-                <SpecificationsFilterPanel
-                  products={allProducts}
-                  onFilter={handleSpecificationFilter}
-                />
-              </div>
-            )}
           </div>
         </aside>
 
@@ -197,13 +242,25 @@ export default function CategoryPage() {
 
             {/* Right Sidebar - Filters & Sort */}
             <aside className="w-full lg:w-64 flex-shrink-0 order-first lg:order-last">
-              <div className="sticky top-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 space-y-4">
-                <ProductSort onSort={handleSort} />
-                <ProductFilters
-                  maxPrice={1000}
-                  onPriceChange={setSelectedPriceRange}
-                  onAvailabilityChange={setInStockOnly}
-                />
+              <div className="sticky top-4 space-y-4">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 space-y-4">
+                  <ProductSort onSort={handleSortCallback} />
+                  <ProductFilters
+                    maxPrice={1000}
+                    onPriceChange={handlePriceChangeCallback}
+                    onAvailabilityChange={handleAvailabilityChangeCallback}
+                  />
+                </div>
+                
+                {/* Specifications Filter Panel - Moved here from left sidebar */}
+                {category && (
+                  <div className="mt-4">
+                    <SpecificationsFilterPanel
+                      products={allProducts}
+                      onFilter={handleSpecificationFilterCallback}
+                    />
+                  </div>
+                )}
               </div>
             </aside>
           </div>

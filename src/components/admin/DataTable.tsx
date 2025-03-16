@@ -87,6 +87,9 @@ export default function DataTable<T extends { id: string }>({
     currentPage * itemsPerPage
   );
 
+  // Create custom search placeholder with item count
+  const searchPlaceholder = t('search_among_items', { count: data.length });
+
   return (
     <div className="bg-white rounded-lg shadow overflow-hidden">
       {/* Search bar */}
@@ -98,7 +101,7 @@ export default function DataTable<T extends { id: string }>({
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder={t('search_placeholder') || 'Search...'}
+              placeholder={searchPlaceholder}
               className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
@@ -148,46 +151,57 @@ export default function DataTable<T extends { id: string }>({
               ))}
               {(onEdit || onDelete) && (
                 <th scope="col" className="relative px-6 py-3">
-                  <span className="sr-only">Actions</span>
+                  <span className="sr-only">{t('actions')}</span>
                 </th>
               )}
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {paginatedData.map((item) => (
-              <tr key={item.id}>
-                {columns.map((column) => (
-                  <td
-                    key={String(column.key)}
-                    className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
-                  >
-                    {column.render
-                      ? column.render(item[column.key], item)
-                      : String(item[column.key] || '')}
-                  </td>
-                ))}
-                {(onEdit || onDelete) && (
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                    {onEdit && (
-                      <button
-                        onClick={() => onEdit(item)}
-                        className="text-primary-600 hover:text-primary-900"
-                      >
-                        Edit
-                      </button>
-                    )}
-                    {onDelete && (
-                      <button
-                        onClick={() => onDelete(item)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        Delete
-                      </button>
-                    )}
-                  </td>
-                )}
+            {paginatedData.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={columns.length + (onEdit || onDelete ? 1 : 0)}
+                  className="px-6 py-4 text-center text-sm text-gray-500"
+                >
+                  {searchTerm ? t('search_no_results') : t('no_data')}
+                </td>
               </tr>
-            ))}
+            ) : (
+              paginatedData.map((item) => (
+                <tr key={item.id} className="hover:bg-gray-50">
+                  {columns.map((column) => (
+                    <td
+                      key={String(column.key)}
+                      className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                    >
+                      {column.render
+                        ? column.render(item[column.key], item)
+                        : String(item[column.key] || '')}
+                    </td>
+                  ))}
+                  {(onEdit || onDelete) && (
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                      {onEdit && (
+                        <button
+                          onClick={() => onEdit(item)}
+                          className="text-primary-600 hover:text-primary-900"
+                        >
+                          {t('edit')}
+                        </button>
+                      )}
+                      {onDelete && (
+                        <button
+                          onClick={() => onDelete(item)}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          {t('delete')}
+                        </button>
+                      )}
+                    </td>
+                  )}
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
@@ -201,7 +215,7 @@ export default function DataTable<T extends { id: string }>({
               disabled={currentPage === 1}
               className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
             >
-              Previous
+              {t('previous')}
             </button>
             <button
               onClick={() =>
@@ -210,22 +224,22 @@ export default function DataTable<T extends { id: string }>({
               disabled={currentPage === totalPages}
               className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
             >
-              Next
+              {t('next')}
             </button>
           </div>
           <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
               <p className="text-sm text-gray-700">
-                Showing{' '}
+                {t('showing')} {' '}
                 <span className="font-medium">
                   {(currentPage - 1) * itemsPerPage + 1}
                 </span>{' '}
-                to{' '}
+                {t('to')}{' '}
                 <span className="font-medium">
                   {Math.min(currentPage * itemsPerPage, filteredAndSortedData.length)}
                 </span>{' '}
-                of <span className="font-medium">{filteredAndSortedData.length}</span>{' '}
-                results
+                {t('of')} <span className="font-medium">{filteredAndSortedData.length}</span>{' '}
+                {t('results')}
               </p>
             </div>
             <div>

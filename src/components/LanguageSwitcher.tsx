@@ -18,7 +18,7 @@ const languageNames: Record<Locale, string> = {
 
 export default function LanguageSwitcher() {
   const [isOpen, setIsOpen] = useState(false);
-  const { language, changeLanguage } = useLanguage();
+  const { language, changeLanguage, t } = useLanguage();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isHydrated, setIsHydrated] = useState(false);
 
@@ -71,7 +71,7 @@ export default function LanguageSwitcher() {
         aria-haspopup="true"
       >
         <Globe className="w-5 h-5" />
-        <span className="text-sm font-medium hidden sm:inline">{languageNames[currentLang]}</span>
+        <span className="text-sm font-medium hidden sm:inline">{t(`language_${currentLang}`)}</span>
         <ChevronDown className="w-4 h-4" />
       </button>
 
@@ -87,7 +87,7 @@ export default function LanguageSwitcher() {
                   : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'
               }`}
             >
-              {languageNames[locale]}
+              {t(`language_${locale}`)}
             </button>
           ))}
         </div>

@@ -163,7 +163,7 @@ export default function Navbar({ mobileMenuOpen, onMobileMenuClose, onMobileMenu
     setUserMenuOpen(false);
   };
 
-  const handleLanguageChange = (newLang: 'en' | 'lt') => {
+  const handleLanguageChange = (newLang: 'en' | 'lt' | 'ru') => {
     changeLanguage(newLang);
     setLangMenuOpen(false);
   };

@@ -34,28 +34,28 @@ export default function SettingsPage() {
 
   const handleLanguageChange = (newLang: string) => {
     changeLanguage(newLang as 'en' | 'lt' | 'ru');
-    showToast(t('settings.languageChanged'), 'success');
+    showToast(t('settings_language_changed'), 'success');
   };
 
   const handleThemeChange = (newTheme: 'light' | 'dark' | 'system') => {
     setTheme(newTheme);
-    showToast(t('settings.themeChanged'), 'success');
+    showToast(t('settings_theme_changed'), 'success');
   };
 
   return (
     <div className="max-w-2xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-8 text-gray-900 dark:text-white">
-        {t('settings.title')}
+        {t('settings_title')}
       </h1>
 
       {/* Theme Settings */}
       <div className="mb-10 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
         <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
-          {t('settings.appearance')}
+          {t('settings_appearance')}
         </h2>
         <div className="space-y-4">
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-            {t('settings.themeDescription')}
+            {t('settings_theme_description')}
           </p>
           
           <div className="grid grid-cols-3 gap-3">
@@ -77,7 +77,7 @@ export default function SettingsPage() {
                   ? 'text-primary-700 dark:text-primary-300' 
                   : 'text-gray-700 dark:text-gray-300'
               }`}>
-                {t('settings.light')}
+                {t('settings_light')}
               </span>
               {theme === 'light' && (
                 <Check className="h-4 w-4 text-primary-500 absolute top-2 right-2" />
@@ -102,7 +102,7 @@ export default function SettingsPage() {
                   ? 'text-primary-700 dark:text-primary-300' 
                   : 'text-gray-700 dark:text-gray-300'
               }`}>
-                {t('settings.dark')}
+                {t('settings_dark')}
               </span>
               {theme === 'dark' && (
                 <Check className="h-4 w-4 text-primary-500 absolute top-2 right-2" />
@@ -130,7 +130,7 @@ export default function SettingsPage() {
                   ? 'text-primary-700 dark:text-primary-300' 
                   : 'text-gray-700 dark:text-gray-300'
               }`}>
-                {t('settings.system')}
+                {t('settings_system')}
               </span>
               {theme === 'system' && (
                 <Check className="h-4 w-4 text-primary-500 absolute top-2 right-2" />
@@ -143,11 +143,11 @@ export default function SettingsPage() {
       {/* Language Settings */}
       <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
         <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
-          {t('settings.language')}
+          {t('settings_language')}
         </h2>
         <div className="space-y-4">
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-            {t('settings.languageDescription')}
+            {t('settings_language_description')}
           </p>
           
           <div className="grid grid-cols-3 gap-3">

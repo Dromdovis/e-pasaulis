@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 - Page Not Found | E-pasaulis</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background-color: #1e293b;
+      color: white;
+    }
+    
+    .container {
+      width: 100%;
+      min-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 16px;
+    }
+    
+    .content {
+      text-align: center;
+      max-width: 28rem;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      font-size: 48px;
+      font-weight: bold;
+      color: #0ea5e9;
+      margin-bottom: 16px;
+    }
+    
+    p {
+      color: #d1d5db;
+      margin-bottom: 32px;
+    }
+    
+    .home-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 16px;
+      background-color: #0ea5e9;
+      color: white;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: background-color 0.2s;
+    }
+    
+    .home-button:hover {
+      background-color: #0284c7;
+    }
+    
+    .arrow {
+      margin-right: 8px;
+    }
+    
+    /* Language buttons */
+    .language-switcher {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+    
+    .language-button {
+      background: transparent;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      padding: 4px 8px;
+      color: #d1d5db;
+      cursor: pointer;
+    }
+    
+    .language-button:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="content">
+      <h1>404</h1>
+      
+      <!-- English text (default) -->
+      <p id="message-en">This page doesn't exist yet, thanks for understanding. - ePasaulis</p>
+      
+      <!-- Russian text (hidden by default) -->
+      <p id="message-ru" style="display: none;">Эта страница еще не существует, спасибо за понимание. - ePasaulis</p>
+      
+      <!-- Lithuanian text (hidden by default) -->
+      <p id="message-lt" style="display: none;">Šis puslapis dar neegzistuoja, ačiū už supratimą. - ePasaulis</p>
+      
+      <a href="/" class="home-button">
+        <span class="arrow">←</span>
+        <span id="button-text">Back to Home</span>
+      </a>
+      
+      <div class="language-switcher">
+        <button onclick="switchLanguage('en')" class="language-button">EN</button>
+        <button onclick="switchLanguage('ru')" class="language-button">RU</button>
+        <button onclick="switchLanguage('lt')" class="language-button">LT</button>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Get the stored language or use English as default
+    let currentLanguage = 'en';
+    try {
+      const storedLanguage = localStorage.getItem('language');
+      if (storedLanguage) {
+        currentLanguage = storedLanguage;
+        switchLanguage(currentLanguage);
+      }
+    } catch (e) {
+      console.error('Error accessing localStorage:', e);
+    }
+    
+    // Function to switch language
+    function switchLanguage(lang) {
+      // Hide all messages
+      document.getElementById('message-en').style.display = 'none';
+      document.getElementById('message-ru').style.display = 'none';
+      document.getElementById('message-lt').style.display = 'none';
+      
+      // Show selected language message
+      document.getElementById(`message-${lang}`).style.display = 'block';
+      
+      // Update button text
+      const buttonText = document.getElementById('button-text');
+      if (lang === 'ru') {
+        buttonText.textContent = 'Вернуться на главную';
+      } else if (lang === 'lt') {
+        buttonText.textContent = 'Grįžti į pagrindinį';
+      } else {
+        buttonText.textContent = 'Back to Home';
+      }
+      
+      // Store language preference
+      try {
+        localStorage.setItem('language', lang);
+      } catch (e) {
+        console.error('Error storing language preference:', e);
+      }
+    }
+    
+    // Apply the current language
+    switchLanguage(currentLanguage);
+  </script>
+</body>
+</html> 

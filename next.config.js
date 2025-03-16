@@ -6,6 +6,9 @@ const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Explicitly disable built-in Next.js 404 handling to use our custom one
+  // This forces Next.js to use custom 404 page
+  trailingSlash: false,
   images: {
     remotePatterns: [
       {

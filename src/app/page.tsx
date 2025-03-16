@@ -5,8 +5,8 @@ import { Suspense, useState, useEffect } from 'react';
 import CategorySidebar from '@/components/CategorySidebar';
 import ProductGrid from '@/components/ProductGrid';
 import { ProductFilters } from '@/components/ProductFilters';
-import FilterTags from '@/components/FilterTags';
 import SpecificationsFilterPanel from '@/components/SpecificationsFilterPanel';
+import SelectedFilters, { SelectedFilter } from '@/components/SelectedFilters';
 import type { Category, Product } from '@/types';
 import { pb } from '@/lib/db';
 import { useQuery } from '@tanstack/react-query';
@@ -24,6 +24,7 @@ export default function HomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [selectedFilters, setSelectedFilters] = useState<SelectedFilter[]>([]);
 
   // 2. Other hooks after useState
   const { data: categories = [] } = useQuery({
@@ -57,6 +58,45 @@ export default function HomePage() {
     }
   }, [productsData]);
 
+  // Add price filter to selected filters when it changes
+  useEffect(() => {
+    if (!selectedPriceRange) {
+      // Remove price filter if price range is cleared
+      setSelectedFilters(prev => prev.filter(f => f.type !== 'price'));
+      return;
+    }
+    
+    // Update price filter
+    setSelectedFilters(prev => {
+      const withoutPrice = prev.filter(f => f.type !== 'price');
+      return [...withoutPrice, {
+        id: 'price-range',
+        type: 'price',
+        name: 'price_range',
+        value: `${selectedPriceRange.min} - ${selectedPriceRange.max}`
+      }];
+    });
+  }, [selectedPriceRange]);
+
+  // Add in-stock filter to selected filters when it changes
+  useEffect(() => {
+    // Update in-stock filter
+    setSelectedFilters(prev => {
+      const withoutStock = prev.filter(f => f.type !== 'stock');
+      
+      if (!inStockOnly) {
+        return withoutStock;
+      }
+      
+      return [...withoutStock, {
+        id: 'in-stock',
+        type: 'stock',
+        name: 'filter_in_stock_only',
+        value: ''
+      }];
+    });
+  }, [inStockOnly]);
+
   // 3. useScrollRestoration after other hooks
   const { isRestoring } = useScrollRestoration('home_page');
 
@@ -64,14 +104,29 @@ export default function HomePage() {
   const handleCategorySelect = async (categoryId: string) => {
     const category = categories.find(c => c.id === categoryId);
     setSelectedCategory(category);
+    
+    // Add category to filters
+    if (category) {
+      setSelectedFilters(prev => [
+        ...prev.filter(f => f.type !== 'category'),
+        {
+          id: `category-${categoryId}`,
+          type: 'category',
+          name: 'categories',
+          value: category.name_en
+        }
+      ]);
+    }
   };
 
   const handleRemoveCategory = () => {
     setSelectedCategory(undefined);
+    setSelectedFilters(prev => prev.filter(f => f.type !== 'category'));
   };
 
   const handleRemovePriceRange = () => {
     setSelectedPriceRange(undefined);
+    setSelectedFilters(prev => prev.filter(f => f.type !== 'price'));
   };
 
   const handleSort = (sortOption: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'newest') => {
@@ -80,6 +135,67 @@ export default function HomePage() {
 
   const handleSpecificationFilter = (filtered: Product[]) => {
     setFilteredProducts(filtered);
+  };
+  
+  const handleSpecFiltersChange = (filters: SelectedFilter[]) => {
+    // Merge spec filters with other filters
+    const nonSpecFilters = selectedFilters.filter(f => 
+      f.type !== 'specification' && 
+      f.type !== 'category'
+    );
+    
+    setSelectedFilters([...nonSpecFilters, ...filters]);
+  };
+  
+  const handleRemoveFilter = (filter: SelectedFilter) => {
+    // Remove the filter from the selectedFilters state
+    setSelectedFilters(prev => prev.filter(f => f.id !== filter.id));
+    
+    // Handle removing different types of filters
+    switch (filter.type) {
+      case 'category':
+        handleRemoveCategory();
+        break;
+      case 'price':
+        handleRemovePriceRange();
+        break;
+      case 'stock':
+        setInStockOnly(false);
+        break;
+      case 'specification':
+        // Extract spec name and value from the filter
+        const specId = filter.id.split('-');
+        if (specId.length >= 3) {
+          const specName = specId[1];
+          const specValue = filter.value;
+          
+          // Find the SpecificationsFilterPanel and call its removeSpecificationFilter method
+          // This would be better handled via a context or ref, but for now we'll simulate
+          // rerendering the component with updated selections
+          const updatedFilters = selectedFilters.filter(f => f.id !== filter.id);
+          setSelectedFilters(updatedFilters);
+          
+          // Force a rerender of the product grid with the filtered products
+          const specFilteredProducts = allProducts.filter(product => {
+            // Skip products that don't have the spec or don't match the removed value
+            if (!product.specifications || !product.specifications[specName]) {
+              return true;
+            }
+            return product.specifications[specName] !== specValue;
+          });
+          
+          setFilteredProducts(specFilteredProducts);
+        }
+        break;
+    }
+  };
+  
+  const handleClearAllFilters = () => {
+    setSelectedCategory(undefined);
+    setSelectedPriceRange(undefined);
+    setInStockOnly(false);
+    setSelectedFilters([]);
+    setFilteredProducts(allProducts);
   };
 
   // Render
@@ -140,6 +256,8 @@ export default function HomePage() {
                 <SpecificationsFilterPanel
                   products={allProducts}
                   onFilter={handleSpecificationFilter}
+                  onFiltersChange={handleSpecFiltersChange}
+                  activeCategory={selectedCategory.name_en}
                 />
               </div>
             )}
@@ -148,11 +266,11 @@ export default function HomePage() {
 
         {/* Main Content Area */}
         <div className="flex-1 min-w-0">
-          <FilterTags
-            selectedCategory={selectedCategory}
-            selectedPriceRange={selectedPriceRange}
-            onRemoveCategory={handleRemoveCategory}
-            onRemovePriceRange={handleRemovePriceRange}
+          {/* Selected Filters Display */}
+          <SelectedFilters 
+            filters={selectedFilters}
+            onRemoveFilter={handleRemoveFilter}
+            onClearAll={handleClearAllFilters}
           />
 
           {/* Product Grid and Right Sidebar Container */}

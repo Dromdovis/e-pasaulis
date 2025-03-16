@@ -9,7 +9,8 @@ export const actions = {
     try {
       await locals.pb?.collection('users').authWithPassword(email, password);
       throw redirect(303, '/');
-    } catch (error) {
+    } catch (_) { // eslint-disable-line no-unused-vars
+      // Catch any error and return an invalid credentials message
       return {
         error: 'Invalid credentials'
       };

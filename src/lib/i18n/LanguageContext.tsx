@@ -17,7 +17,7 @@ interface LanguageContextType {
   isLoaded: boolean;
 }
 
-const translationMap: Record<string, TranslationKeys> = {
+const translationMap: Record<Language, TranslationKeys> = {
   en,
   lt,
   ru
@@ -42,46 +42,66 @@ function getNestedTranslation(obj: any, path: string): string | undefined {
   return typeof current === 'string' ? current : undefined;
 }
 
-// Add a new loading placeholder function
+// Get a loading placeholder for keys
 function getLoadingPlaceholder(key: string): string {
-  // For navigation items, return empty string to avoid flickering
-  if (key.startsWith('navigation.')) {
-    return '';
-  }
-  
-  // Return a generic loading message for other keys
-  return '';
+  return key.split('_').pop() || key;
 }
 
+/**
+ * Hook to use language context
+ */
+export function useLanguage() {
+  const context = useContext(LanguageContext);
+  if (!context) {
+    throw new Error('useLanguage must be used within a LanguageProvider');
+  }
+  return context;
+}
+
+/**
+ * Provider component for language context
+ */
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>('en'); // Default to English
+  const [isLoaded, setIsLoaded] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
 
-  // Initialize language from cookie after mount
+  // Initialize language from cookie or browser
   useEffect(() => {
+    const initializeLanguage = async () => {
+      try {
+        // Check if we have a language cookie
+        const cookieLanguage = Cookies.get('NEXT_LOCALE') as Language;
+        
+        // If we have a valid cookie language, use it
+        if (cookieLanguage && ['en', 'lt', 'ru'].includes(cookieLanguage)) {
+          setLanguageState(cookieLanguage);
+        } else {
+          // Set English as default
+          setLanguageState('en');
+        }
+        
+        setIsLoaded(true);
+        setIsInitialized(true);
+      } catch (error) {
+        console.error('Error initializing language:', error);
+        setLanguageState('en'); // Default to English on error
+        setIsLoaded(true);
+        setIsInitialized(true);
+      }
+    };
+
+    initializeLanguage();
+    
+    // Mark as hydrated on client
     setIsHydrated(true);
-    const cookieLang = Cookies.get('NEXT_LOCALE') || 'en';
-    if (cookieLang === 'en' || cookieLang === 'lt' || cookieLang === 'ru') {
-      setLanguageState(cookieLang as Language);
-    }
-    
-    setIsInitialized(true);
-    setIsLoaded(true);
-    
-    // Update html lang attribute
-    document.documentElement.lang = cookieLang as Language;
   }, []);
 
-  // Set language handler
+  // Change language
   const setLanguage = useCallback((newLang: Language) => {
     setLanguageState(newLang);
-    
-    // Update cookie
     Cookies.set('NEXT_LOCALE', newLang, { path: '/' });
-    
-    // Update html lang attribute
     document.documentElement.lang = newLang;
   }, []);
 
@@ -147,11 +167,8 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     }
     
     // Get a sensible default based on the key
-    if (key.startsWith('navigation.')) {
-      return key.split('.').pop() || key;
-    }
-    
-    return String(key);
+    const keyParts = key.split('_');
+    return keyParts[keyParts.length - 1] || key;
   }, [language, isLoaded]);
 
   // Show minimal content while initializing
@@ -175,12 +192,4 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       {children}
     </LanguageContext.Provider>
   );
-}
-
-export function useLanguage() {
-  const context = useContext(LanguageContext);
-  if (!context) {
-    throw new Error('useLanguage must be used within a LanguageProvider');
-  }
-  return context;
 } 

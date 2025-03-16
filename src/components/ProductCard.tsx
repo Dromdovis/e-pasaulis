@@ -45,6 +45,26 @@ const ProductCard = memo(({ product, isPriority = false }: { product: Product; i
     store.toggleFavorite(product.id);
   }, [store, product.id]);
 
+  // Format the stock information in a human-readable way
+  const formatStockInfo = () => {
+    if (isOutOfStock) {
+      return t('stock_status_out_of_stock');
+    }
+    
+    // If stock is 1, show singular form
+    if (product.stock === 1) {
+      return t('stock_status_last_item');
+    }
+    
+    // If stock is low (less than 5), show special message
+    if (product.stock < 5) {
+      return t('stock_status_low_stock', { count: product.stock });
+    }
+    
+    // Otherwise show normal message
+    return t('stock_status_in_stock', { count: product.stock });
+  };
+
   return (
     <Link href={`/product/${product.id}`} className="group">
       <div className={`h-full flex flex-col bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-transform duration-200 hover:scale-[1.02] ${isOutOfStock ? 'opacity-75 grayscale-[30%]' : ''}`}>
@@ -59,13 +79,13 @@ const ProductCard = memo(({ product, isPriority = false }: { product: Product; i
             loading={isPriority ? undefined : 'lazy'}
             quality={80}
           />
-          <div className="absolute top-2 right-2 flex gap-2">
+          <div className="absolute top-0 right-0 p-2 flex flex-col space-y-2">
             <button
               onClick={handleToggleFavorite}
               className={`p-2 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm transition-colors ${
                 isFavorite ? 'text-red-500' : 'text-gray-500 hover:text-red-500'
               }`}
-              aria-label={isFavorite ? t('products.actions.removeFromFavorites') : t('products.actions.addToFavorites')}
+              aria-label={isFavorite ? t('products_actions_remove_from_favorites') : t('products_actions_add_to_favorites')}
             >
               <Heart className="w-5 h-5" fill={isFavorite ? "currentColor" : "none"} />
             </button>
@@ -76,9 +96,9 @@ const ProductCard = memo(({ product, isPriority = false }: { product: Product; i
                   ? 'text-gray-400 cursor-not-allowed opacity-60' 
                   : 'text-gray-500 hover:text-primary-500'
               }`}
-              aria-label={t('products.actions.addToCart')}
+              aria-label={t('products_actions_add_to_cart')}
               disabled={isOutOfStock}
-              title={isOutOfStock ? t('stockStatus.outOfStock') : t('products.actions.addToCart')}
+              title={isOutOfStock ? t('stock_status_out_of_stock') : t('products_actions_add_to_cart')}
             >
               <ShoppingCart className="w-5 h-5" />
               {cartQuantity > 0 && (
@@ -90,7 +110,7 @@ const ProductCard = memo(({ product, isPriority = false }: { product: Product; i
           </div>
         </div>
 
-        <div className="p-5 flex flex-col flex-grow">
+        <div className="p-4 flex flex-col flex-grow">
           <h2 className="text-lg font-semibold line-clamp-1 text-gray-900 dark:text-gray-100">
             {product.name}
           </h2>
@@ -103,7 +123,7 @@ const ProductCard = memo(({ product, isPriority = false }: { product: Product; i
               className="text-xl text-primary-600 dark:text-primary-400"
             />
             <div className={`text-sm ${isOutOfStock ? 'text-red-500 font-medium' : 'text-gray-500 dark:text-gray-400'}`}>
-              {product.stock > 0 ? `${product.stock} ${t('stockStatus.inStock')}` : t('stockStatus.outOfStock')}
+              {formatStockInfo()}
             </div>
           </div>
         </div>

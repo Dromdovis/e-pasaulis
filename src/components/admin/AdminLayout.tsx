@@ -25,17 +25,17 @@ interface AdminLayoutProps {
 
 const menuItems: Array<{
   href: string;
-  label: string;
+  labelKey: string;
   icon: React.ElementType;
 }> = [
-  { href: '/admin', label: 'Dashboard', icon: Home },
-  { href: '/admin/users', label: 'Users', icon: Users },
-  { href: '/admin/products', label: 'Products', icon: Package },
-  { href: '/admin/categories', label: 'Categories', icon: Categories },
-  { href: '/admin/favorites', label: 'Favorites', icon: Heart },
-  { href: '/admin/orders', label: 'Orders', icon: ShoppingCart },
-  { href: '/admin/reviews', label: 'Reviews', icon: Star },
-  { href: '/admin/settings', label: 'Settings', icon: Settings },
+  { href: '/admin', labelKey: 'dashboard', icon: Home },
+  { href: '/admin/users', labelKey: 'admin_users_title', icon: Users },
+  { href: '/admin/products', labelKey: 'admin_products_title', icon: Package },
+  { href: '/admin/categories', labelKey: 'admin_categories_title', icon: Categories },
+  { href: '/admin/favorites', labelKey: 'favorites', icon: Heart },
+  { href: '/admin/orders', labelKey: 'orders', icon: ShoppingCart },
+  { href: '/admin/reviews', labelKey: 'admin_reviews_title', icon: Star },
+  { href: '/admin/settings', labelKey: 'admin_settings_title', icon: Settings },
 ];
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
@@ -86,14 +86,18 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     );
   }
 
+  // Handle logout
   const handleLogout = async () => {
-    await logout();
-    router.push('/login');
+    try {
+      await logout();
+      router.push('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Sidebar */}
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
       <div className="fixed inset-y-0 left-0 w-64 bg-white shadow-lg">
         <div className="flex flex-col h-full">
           {/* Logo */}
@@ -119,7 +123,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   }`}
                 >
                   <Icon className="mr-3 h-5 w-5" />
-                  {item.label}
+                  {t(item.labelKey)}
                 </Link>
               );
             })}

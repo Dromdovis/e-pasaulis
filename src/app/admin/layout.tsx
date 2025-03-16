@@ -126,7 +126,7 @@ export default function AdminLayout({
               </Link>
               <span className="mx-2 text-gray-300 dark:text-gray-600">|</span>
               <Link href="/admin" className="text-xl font-bold text-gray-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400">
-                {t('Admin Panel')}
+                {t('admin_panel_title')}
               </Link>
             </div>
             <div className="flex items-center">

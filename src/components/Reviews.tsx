@@ -36,10 +36,10 @@ export function Reviews({ productId }: ReviewsProps) {
   const [reviewToDelete, setReviewToDelete] = useState<string | null>(null);
 
   const sortOptions: { value: ReviewSortOption; label: string }[] = [
-    { value: 'newest', label: t('reviewSortNewest') },
-    { value: 'oldest', label: t('reviewSortOldest') },
-    { value: 'highest', label: t('reviewSortHighest') },
-    { value: 'lowest', label: t('reviewSortLowest') },
+    { value: 'newest', label: t('review_sort_newest') },
+    { value: 'oldest', label: t('review_sort_oldest') },
+    { value: 'highest', label: t('review_sort_highest') },
+    { value: 'lowest', label: t('review_sort_lowest') },
   ];
 
   const getSortQuery = useCallback((option: ReviewSortOption) => {
@@ -86,7 +86,7 @@ export function Reviews({ productId }: ReviewsProps) {
     } catch (err) {
       if (err instanceof ClientResponseError) {
         console.error('Error loading reviews:', err);
-        setErrorMessage(t('errorLoadingReviews'));
+        setErrorMessage(t('error_loading_reviews'));
       }
     } finally {
       setIsLoading(false);
@@ -102,7 +102,7 @@ export function Reviews({ productId }: ReviewsProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isAuthenticated || !user?.id) {
-      showToast(t('loginToReview'), 'warning');
+      showToast(t('login_to_review'), 'warning');
       return;
     }
 
@@ -114,7 +114,7 @@ export function Reviews({ productId }: ReviewsProps) {
           user_id: user.id,
           product_id: productId
         });
-        showToast(t('reviewUpdated'), 'success');
+        showToast(t('review_updated'), 'success');
       } else {
         await pb.collection('reviews').create({
           rating,
@@ -122,7 +122,7 @@ export function Reviews({ productId }: ReviewsProps) {
           user_id: user.id,
           product_id: productId
         });
-        showToast(t('reviewSubmitted'), 'success');
+        showToast(t('review_submitted'), 'success');
       }
       
       setRating(5);
@@ -132,7 +132,7 @@ export function Reviews({ productId }: ReviewsProps) {
     } catch (error) {
       if (error instanceof ClientResponseError) {
         console.error('Error submitting review:', error);
-        showToast(t('errorSubmittingReview'), 'error');
+        showToast(t('error_submitting_review'), 'error');
       }
     }
   };
@@ -207,7 +207,7 @@ export function Reviews({ productId }: ReviewsProps) {
             onChange={(e) => setComment(e.target.value)}
             className="w-full p-2 border rounded-lg mb-4"
             rows={4}
-            placeholder={t('writeReview')}
+            placeholder={t('write_review')}
             required
           />
           <button
@@ -221,14 +221,14 @@ export function Reviews({ productId }: ReviewsProps) {
             type="submit"
             className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700"
           >
-            {editingReview ? t('updateReview') : t('submitReview')}
+            {editingReview ? t('update_review') : t('submit_review')}
           </button>
         </form>
       )}
 
       <div className="space-y-4">
         {reviews.length === 0 ? (
-          <p className="text-center text-gray-500 py-8">{t('noReviews')}</p>
+          <p className="text-center text-gray-500 py-8">{t('no_reviews')}</p>
         ) : (
           reviews.map((review) => (
             <div key={review.id} className="bg-white p-6 rounded-lg shadow-sm">
