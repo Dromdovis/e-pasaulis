@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "bun --bun next dev",
-    "build": "bun --bun next build",
-    "start": "bun --bun next start",
+    "build": "next build",
+    "start": "next start",
     "lint": "bun --bun next lint --quiet || true",
     "lint:strict": "bun --bun next lint",
     "populate": "bun src/scripts/populate-db.js",

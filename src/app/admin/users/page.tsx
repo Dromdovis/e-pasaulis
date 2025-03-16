@@ -18,7 +18,10 @@ export default function AdminUsersPage() {
   const [activeFilters, setActiveFilters] = useState<{
     role?: UserRole;
     verified?: boolean;
-  }>({});
+  }>({
+    role: UserRole.USER,
+    verified: true
+  });
 
   // Filter users based on active filters
   const filteredUsers = users.filter(user => {
@@ -181,14 +184,14 @@ export default function AdminUsersPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white p-4 rounded-lg shadow">
+      <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
         <div className="flex items-center gap-4 mb-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Role</label>
             <select
               value={activeFilters.role || ''}
               onChange={(e) => handleFilterChange('role', e.target.value ? e.target.value as UserRole : undefined)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500"
             >
               <option value="">All Roles</option>
               <option value={UserRole.USER}>User</option>
@@ -197,14 +200,14 @@ export default function AdminUsersPage() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Verified</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Verified</label>
             <select
               value={activeFilters.verified === undefined ? '' : activeFilters.verified.toString()}
               onChange={(e) => {
                 const value = e.target.value;
                 handleFilterChange('verified', value === '' ? undefined : value === 'true');
               }}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500"
             >
               <option value="">All</option>
               <option value="true">Verified</option>

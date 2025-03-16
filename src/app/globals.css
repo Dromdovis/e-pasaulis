@@ -67,6 +67,22 @@
   a {
     @apply text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300;
   }
+  /* Fix for dropdowns to ensure proper text color based on the theme */
+  select {
+    @apply text-gray-900 dark:text-white font-medium;
+  }
+  /* Fix for dropdown options */
+  option {
+    @apply text-gray-900 bg-white dark:text-white dark:bg-gray-800;
+  }
+  /* Ensure placeholder text is visible */
+  select:not([value=""]):not(:focus) {
+    @apply font-medium;
+  }
+  /* Style placeholder text */
+  select.placeholder-shown {
+    @apply text-gray-900 dark:text-white;
+  }
 }
 
 /* Professional UI styles */

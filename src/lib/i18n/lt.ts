@@ -177,10 +177,11 @@ export const lt: TranslationKeys = {
   footer_faq: 'DUK',
   footer_returns: 'Grąžinimai',
   footer_support: 'Pagalba',
-  footer_terms: 'Naudojimo sąlygos',
+  footer_terms: 'Sąlygos ir taisyklės',
   footer_privacy: 'Privatumo politika',
   footer_contact: 'Kontaktai',
   footer_shipping: 'Pristatymas',
+  footer_about: 'Apie mus',
 
   // Additional translations
   sort_by: 'Rūšiuoti pagal',

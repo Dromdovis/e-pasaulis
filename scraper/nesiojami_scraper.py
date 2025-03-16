@@ -1,4 +1,4 @@
-from typing import Optional, Dict, Any, List, cast
+from typing import Optional, Dict, Any, List
 from playwright.async_api import async_playwright, Page, ElementHandle, Browser, BrowserContext
 from datetime import datetime
 import logging
@@ -13,7 +13,7 @@ from aiohttp import ClientTimeout
 import tempfile
 from pathlib import Path
 import io
-import argparse
+from urllib.parse import urljoin
 
 # Try to import requests, provide helpful error if not installed
 try:
@@ -31,38 +31,24 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-class NesiojamiScraper:
-    def __init__(self, category_type="laptops"):
-        """
-        Initialize the scraper.
+class SkytechScraper:
+    def __init__(self):
+        """Initialize the scraper for desktop computers from skytech.lt"""
+        self.base_url = "https://www.skytech.lt"
+        self.category_url = f"{self.base_url}/staliniai-kompiuteriai-firminiai-kompiuteriai-branded-c-86_32_564.html"
         
-        Args:
-            category_type (str): Type of products to scrape. Options: 'laptops', 'consoles'
-        """
-        self.base_url: str = "https://nesiojami.lt"
-        self.category_type = category_type
+        # Set category names
+        self.category_name_lt = "Staliniai kompiuteriai"
+        self.category_name_en = "Desktop Computers"
+        self.category_type = "desktops"
         
-        # Set the appropriate URL based on category type
-        if category_type == "laptops":
-            self.category_url = f"{self.base_url}/produkto-kategorija/nesiojami-kompiuteriai/"
-            self.category_name_lt = "Nešiojami kompiuteriai"
-            self.category_name_en = "Laptops"
-        elif category_type == "consoles":
-            self.category_url = f"{self.base_url}/produkto-kategorija/zaidimu-konsoles/"
-            self.category_name_lt = "Žaidimų konsolės"
-            self.category_name_en = "Gaming Consoles"
-        else:
-            # Default to laptops if invalid category type
-            logger.warning(f"Invalid category type: {category_type}. Defaulting to laptops.")
-            self.category_url = f"{self.base_url}/produkto-kategorija/nesiojami-kompiuteriai/"
-            self.category_name_lt = "Nešiojami kompiuteriai"
-            self.category_name_en = "Laptops"
-            self.category_type = "laptops"
+        # Number of products per page (for pagination)
+        self.products_per_page = 100
             
-        self.page: Optional[Page] = None
-        self.browser: Optional[Browser] = None
-        self.context: Optional[BrowserContext] = None
-        self.products_data: List[Dict[str, Any]] = []
+        self.page = None
+        self.browser = None
+        self.context = None
+        self.products_data = []
         
         # Use a temporary directory for images
         self.temp_dir = tempfile.TemporaryDirectory()
@@ -242,238 +228,6 @@ class NesiojamiScraper:
         except Exception as e:
             logger.error(f"Error getting/creating category: {str(e)}")
             raise
-
-    async def download_and_save_image(self, image_url: str, product_name: str) -> Optional[str]:
-        """Download image and save it locally."""
-        try:
-            headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
-                'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
-                'Accept-Encoding': 'gzip, deflate, br',
-                'Connection': 'keep-alive',
-            }
-            
-            async with aiohttp.ClientSession() as session:
-                async with session.get(image_url, headers=headers) as response:
-                    if response.status == 200:
-                        # Verify content type
-                        content_type = response.headers.get('content-type', '')
-                        if not content_type.startswith('image/'):
-                            logger.error(f"Invalid content type for {product_name} image: {content_type}")
-                            return None
-                            
-                        # Determine file extension based on content type
-                        ext = content_type.split('/')[-1].lower()
-                        if ext == 'jpeg':
-                            ext = 'jpg'
-                        elif ext not in ['jpg', 'png', 'webp']:
-                            ext = 'webp'  # Default to webp
-                        
-                        # Generate a safe filename
-                        safe_name = self.generate_slug(product_name)
-                        filename = f"{safe_name}.{ext}"
-                        file_path = os.path.join(self.images_dir, filename)
-                        
-                        # Save the image to the local directory
-                        image_data = await response.read()
-                        with open(file_path, 'wb') as f:
-                            f.write(image_data)
-                            
-                        logger.info(f"Successfully downloaded image for {product_name} to {file_path}")
-                        return file_path
-                    else:
-                        logger.error(f"Failed to download image for {product_name}. Status: {response.status}")
-                        return None
-        except Exception as e:
-            logger.error(f"Error downloading image for {product_name}: {e}")
-            return None
-
-    async def upload_product_image(self, product_id: str, image_path: str) -> bool:
-        """Upload product image to PocketBase."""
-        try:
-            if not os.path.exists(image_path):
-                logger.error(f"Image file not found: {image_path}")
-                return False
-
-            filename = os.path.basename(image_path)
-            file_ext = os.path.splitext(filename)[1].lower()[1:]  # Remove the dot
-            mime_type = f"image/{file_ext}"
-
-            # Create a tuple for each file field (filename, file object, content type)
-            with open(image_path, 'rb') as f:
-                file_data = f.read()
-                
-                # Create form data for both image fields
-                form = {
-                    'image': (filename, file_data, mime_type),
-                    'images[]': [(filename, file_data, mime_type)]  # Note the [] for array fields
-                }
-                
-                # Update the product with the image
-                self.pb_client.collection('products').update(product_id, {}, form)
-                logger.info(f"Successfully uploaded image for product {product_id}")
-                return True
-                
-        except Exception as e:
-            logger.error(f"Error uploading image for product {product_id}: {e}")
-            return False
-
-    async def stream_image_to_pocketbase(self, product_id: str, image_url: str, product_name: str) -> bool:
-        """Stream an image directly from source URL to PocketBase without saving locally."""
-        try:
-            headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
-                'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
-                'Accept-Encoding': 'gzip, deflate, br',
-                'Connection': 'keep-alive',
-            }
-            
-            async with aiohttp.ClientSession() as session:
-                async with session.get(image_url, headers=headers) as response:
-                    if response.status == 200:
-                        # Verify content type
-                        content_type = response.headers.get('content-type', '')
-                        if not content_type.startswith('image/'):
-                            logger.error(f"Invalid content type for {product_name} image: {content_type}")
-                            return False
-                            
-                        # Determine file extension based on content type
-                        ext = content_type.split('/')[-1].lower()
-                        if ext == 'jpeg':
-                            ext = 'jpg'
-                        elif ext not in ['jpg', 'png', 'webp']:
-                            ext = 'webp'  # Default to webp
-                        
-                        # Generate a safe filename
-                        safe_name = self.generate_slug(product_name)
-                        filename = f"{safe_name}.{ext}"
-                        
-                        # Read image data into memory
-                        image_data = await response.read()
-                        
-                        # Prepare form data for PocketBase
-                        mime_type = f"image/{ext}"
-                        form = {
-                            'image': (filename, image_data, mime_type),
-                            'images[]': [(filename, image_data, mime_type)]
-                        }
-                        
-                        # Update the product with the image
-                        self.pb_client.collection('products').update(product_id, {}, form)
-                        logger.info(f"Successfully streamed image for product {product_id}")
-                        return True
-                    else:
-                        logger.error(f"Failed to stream image for {product_name}. Status: {response.status}")
-                        return False
-        except Exception as e:
-            logger.error(f"Error streaming image for {product_name}: {e}")
-            return False
-
-    async def get_product_images(self, product_url: str) -> List[str]:
-        """Get all product images from the product detail page."""
-        image_urls = []
-        product_page = None
-        
-        if not self.context:
-            logger.error("Browser context not initialized")
-            return image_urls
-        
-        try:
-            # Open new page for product details
-            product_page = await self.context.new_page()
-            if not product_page:
-                logger.error("Failed to create new page")
-                return image_urls
-
-            # Cast product_page to Page type to satisfy type checker
-            page = cast(Page, product_page)
-            
-            # Set timeout for the page
-            page.set_default_timeout(30000)  # 30 second timeout for product pages
-            
-            # Navigate with retry logic
-            max_retries = 3
-            for attempt in range(max_retries):
-                try:
-                    await page.goto(
-                        product_url,
-                        wait_until='domcontentloaded',  # Less strict wait condition
-                        timeout=30000
-                    )
-                    break
-                except Exception as e:
-                    if attempt == max_retries - 1:
-                        raise
-                    logger.warning(f"Retry {attempt + 1}/{max_retries} loading {product_url}: {e}")
-                    await asyncio.sleep(2)
-            
-            # Wait for the product gallery to load
-            try:
-                await page.wait_for_selector('.woocommerce-product-gallery__wrapper', timeout=10000)
-            except Exception as e:
-                logger.warning(f"Gallery selector not found: {e}")
-                # Try to get at least the main image as a fallback
-                main_img = await page.query_selector('img.wp-post-image')
-                if main_img:
-                    img_url = await main_img.get_attribute('src')
-                    if img_url:
-                        # Clean up the URL if needed
-                        img_url = re.sub(r'-\d+x\d+\.', '.', img_url)
-                        # Ensure absolute URL
-                        if not img_url.startswith(('http://', 'https://')):
-                            img_url = f"{self.base_url.rstrip('/')}/{img_url.lstrip('/')}"
-                        image_urls.append(img_url)
-                return image_urls
-            
-            # First try the main gallery images
-            gallery_items = await page.query_selector_all('.woocommerce-product-gallery__wrapper .woocommerce-product-gallery__image')
-            if gallery_items:
-                for item in gallery_items:
-                    # Try to get the full-size image URL
-                    img_elem = await item.query_selector('img')
-                    if img_elem:
-                        # Try different attributes for the full-size image
-                        img_url = await img_elem.get_attribute('data-large_image')
-                        if not img_url:
-                            img_url = await img_elem.get_attribute('data-src')
-                        if not img_url:
-                            img_url = await img_elem.get_attribute('src')
-                        
-                        if img_url:
-                            # Clean up the URL if needed
-                            img_url = re.sub(r'-\d+x\d+\.', '.', img_url)
-                            # Ensure absolute URL
-                            if not img_url.startswith(('http://', 'https://')):
-                                img_url = f"{self.base_url.rstrip('/')}/{img_url.lstrip('/')}"
-                            # Add to our list if not already present
-                            if img_url not in image_urls:
-                                image_urls.append(img_url)
-            else:
-                # Alternative approach for sites with different gallery structure
-                img_elems = await page.query_selector_all('.woocommerce-product-gallery img')
-                for img_elem in img_elems:
-                    img_url = await img_elem.get_attribute('data-large_image') or await img_elem.get_attribute('data-src') or await img_elem.get_attribute('src')
-                    if img_url:
-                        # Clean up the URL
-                        img_url = re.sub(r'-\d+x\d+\.', '.', img_url)
-                        if not img_url.startswith(('http://', 'https://')):
-                            img_url = f"{self.base_url.rstrip('/')}/{img_url.lstrip('/')}"
-                        if img_url not in image_urls:
-                            image_urls.append(img_url)
-            
-            logger.info(f"Found {len(image_urls)} product images")
-            return image_urls
-
-        except Exception as e:
-            logger.error(f"Error getting product images: {e}")
-            return image_urls
-        finally:
-            if product_page:
-                try:
-                    await product_page.close()
-                except Exception as e:
-                    logger.warning(f"Error closing product page: {e}")
-                    # Don't propagate page closing errors
 
     async def stream_all_images_to_pocketbase(self, product_id: str, image_urls: List[str], product_name: str) -> bool:
         """Stream multiple images to PocketBase, setting the first as the thumbnail and uploading each additional image separately."""
@@ -666,65 +420,130 @@ class NesiojamiScraper:
             return False
 
     async def extract_product_data(self, product_element: ElementHandle) -> Optional[Dict[str, Any]]:
-        """Extract basic product data from the product card."""
+        """Extract product data from a product row."""
         try:
-            # Get product link and image
-            product_link_elem = await product_element.query_selector('a.woocommerce-LoopProduct-link')
-            if not product_link_elem:
-                logger.warning("Could not find product link element")
+            # Get product link (which contains the name and URL)
+            name_cell = await product_element.query_selector('td.name a')
+            if not name_cell:
+                logger.warning("Could not find product name element")
                 return None
-
+                
             # Get product URL
-            product_url = await product_link_elem.get_attribute('href')
+            product_url = await name_cell.get_attribute('href')
             if not product_url:
                 logger.warning("Could not find product URL")
                 return None
+                
+            # Make the URL absolute
+            product_url = urljoin(self.base_url, product_url)
             
             # Get product name
-            name_elem = await product_element.query_selector('h2.woocommerce-loop-product__title')
-            name = await name_elem.text_content() if name_elem else None
-            if not name:
+            name_text = await name_cell.text_content()
+            if not name_text:
+                logger.warning("Could not find product name text")
                 return None
+                
+            # Split the name into model and product name
+            model = ""
+            name = name_text.strip()
+            
+            # Try to extract model from the name
+            if "MODELIS:" in name:
+                parts = name.split("MODELIS:", 1)
+                if len(parts) > 1:
+                    model = parts[1].strip().split(" ", 1)[0].strip()
+                    if len(parts[1].split(" ", 1)) > 1:
+                        name = parts[1].split(" ", 1)[1].strip()
+            
+            # Get product image
+            img_element = await product_element.query_selector('td.image img')
+            image_url = ""
+            if img_element:
+                image_src = await img_element.get_attribute('src')
+                if image_src:
+                    image_url = urljoin(self.base_url, image_src)
+            
+            # Get product price
+            price_element = await product_element.query_selector('td strong')
+            price_text = await price_element.text_content() if price_element else "0"
+            
+            try:
+                # Parse price, removing the currency symbol and converting to float
+                price = float(price_text.replace('€', '').replace(' ', '').replace(',', '.').strip())
+            except (ValueError, AttributeError):
+                logger.warning(f"Error parsing price: {price_text}")
+                price = 0.0
+                
+            # Get stock information
+            stock_element = await product_element.query_selector('td.kiekis')
+            stock_text = await stock_element.text_content() if stock_element else "0"
+            
+            # Parse stock information
+            stock = 0
+            if stock_text:
+                if '5+' in stock_text:
+                    stock = 5  # Set to 5 for "5+" stock
+                elif stock_element:
+                    class_attr = await stock_element.get_attribute('class')
+                    if class_attr and 'date' in class_attr:
+                        # This is a date, not a stock number
+                        stock = 0
+                    else:
+                        # Try to extract a number
+                        try:
+                            stock_match = re.search(r'\d+', stock_text)
+                            if stock_match:
+                                stock = int(stock_match.group(0))
+                        except (ValueError, AttributeError):
+                            logger.warning(f"Error parsing stock: {stock_text}")
+                            stock = 0
+                else:
+                    # Try to extract a number
+                    try:
+                        stock_match = re.search(r'\d+', stock_text)
+                        if stock_match:
+                            stock = int(stock_match.group(0))
+                    except (ValueError, AttributeError):
+                        logger.warning(f"Error parsing stock: {stock_text}")
+                        stock = 0
+            
+            # Get detailed specifications from the product page
+            specs = await self.get_product_specifications(product_url)
+            
+            # Try to extract model from specifications if not found in name
+            if not model and 'Modelis' in specs:
+                model = specs['Modelis']
+            
+            # Get full-size product images from the product page
+            image_urls = await self.get_product_images(product_url)
+            
+            # If no image URLs were found from the detail page, use the thumbnail
+            if not image_urls and image_url:
+                image_urls = [image_url]
                 
             # Generate slug
             slug = self.generate_slug(name)
             
-            # Get product price with better error handling
-            try:
-                price_elem = await product_element.query_selector('span.woocommerce-Price-amount bdi')
-                price_text = await price_elem.text_content() if price_elem else "0"
-                # Clean up price text and convert to float - add null check
-                if price_text:
-                    price = float(price_text.replace('€', '').replace(',', '.').strip())
-                else:
-                    price = 0.0
-            except (ValueError, AttributeError) as e:
-                logger.warning(f"Error parsing price: {e}")
-                price = 0.0
-
-            # Get detailed specifications
-            specs = await self.get_product_specifications(product_url)
-            
-            # Get all product images - this is a new step to get multiple images
-            image_urls = await self.get_product_images(product_url)
-
             # Get category ID
             category_id = await self.get_category_id()
-
+            
+            # Create the product data dictionary
             product_data = {
                 'name': name.strip(),
+                'model': model.strip(),
                 'slug': slug,
                 'price': price,
                 'url': product_url,
-                'image_urls': image_urls,  # Now we store all image URLs
+                'image_urls': image_urls, 
                 'specifications': specs,
-                'source': 'nesiojami',
-                'category': category_id,  # Category relation
+                'stock': stock,
+                'source': 'skytech',
+                'category': category_id,
                 'created': datetime.now().isoformat(),
                 'updated': datetime.now().isoformat()
             }
 
-            logger.info(f"Extracted product: {product_data['name']} with {len(image_urls)} images")
+            logger.info(f"Extracted product: {product_data['name']} with {len(image_urls)} images, Price: {price}€, Stock: {stock}, Specs: {len(specs)}")
             return product_data
 
         except Exception as e:
@@ -741,25 +560,22 @@ class NesiojamiScraper:
             return specs
             
         try:
-            # Open new page for product details and ensure it's properly typed
+            # Open new page for product details
             product_page = await self.context.new_page()
             if not product_page:
                 logger.error("Failed to create new page")
                 return specs
 
-            # Cast product_page to Page type to satisfy type checker
-            page = cast(Page, product_page)
-                
             # Set timeout for the page
-            page.set_default_timeout(30000)  # 30 second timeout for product pages
+            product_page.set_default_timeout(30000)  # 30 second timeout for product pages
             
             # Navigate with retry logic
             max_retries = 3
             for attempt in range(max_retries):
                 try:
-                    await page.goto(
+                    await product_page.goto(
                         product_url,
-                        wait_until='domcontentloaded',  # Less strict wait condition
+                        wait_until='domcontentloaded',
                         timeout=30000
                     )
                     break
@@ -769,35 +585,158 @@ class NesiojamiScraper:
                     logger.warning(f"Retry {attempt + 1}/{max_retries} loading {product_url}: {e}")
                     await asyncio.sleep(2)
             
-            # Wait for specifications tab content
-            spec_div = await page.wait_for_selector(
-                'div.woocommerce-Tabs-panel--additional_information',
-                timeout=10000
-            )
+            # Try different approaches to extract specifications
             
-            if not spec_div:
-                logger.warning(f"No specifications found for {product_url}")
-                return specs
-
-            # Get all attribute divs
-            attributes = await page.query_selector_all('div.shop_attributes div.attribute')
+            # 1. Look for product info in the main product information section
+            product_info = await product_page.query_selector('div.productInfoMain')
+            if product_info:
+                # Extract product name and model
+                model_elem = await product_info.query_selector('div.model')
+                if model_elem:
+                    model_text = await model_elem.text_content()
+                    if model_text:
+                        model_parts = model_text.split(':')
+                        if len(model_parts) > 1:
+                            specs['Modelis'] = model_parts[1].strip()
+                
+                # Extract price and currency
+                price_elem = await product_info.query_selector('span.productPrice')
+                if price_elem:
+                    price_text = await price_elem.text_content()
+                    if price_text:
+                        specs['Kaina'] = price_text.strip()
+                
+                # Extract manufacturer
+                brand_elem = await product_info.query_selector('div.brand a')
+                if brand_elem:
+                    brand_text = await brand_elem.text_content()
+                    if brand_text:
+                        specs['Gamintojas'] = brand_text.strip()
             
-            for attr in attributes:
+            # 2. Look for specifications in standard tables with class 'produktas'
+            spec_tables = await product_page.query_selector_all('table.produktas')
+            for table in spec_tables:
+                rows = await table.query_selector_all('tr')
+                for row in rows:
+                    try:
+                        # Get columns in the row
+                        cells = await row.query_selector_all('td')
+                        if len(cells) >= 2:
+                            key_cell = cells[0]
+                            value_cell = cells[1]
+                            
+                            key = await key_cell.text_content()
+                            value = await value_cell.text_content()
+                            
+                            if key and value:
+                                key = key.strip().rstrip(':')
+                                value = value.strip()
+                                specs[key] = value
+                    except Exception as e:
+                        logger.error(f"Error extracting specification row: {e}")
+                        continue
+            
+            # 3. Look for specifications in the description tab
+            # First check if we need to click the description tab to load content
+            description_tab = await product_page.query_selector('#tab_description')
+            if description_tab:
                 try:
-                    # Get label and value
-                    label_elem = await attr.query_selector('div.label')
-                    value_elem = await attr.query_selector('div.value')
-                    
-                    if label_elem and value_elem:
-                        label = await label_elem.text_content()
-                        value = await value_elem.text_content()
-                        
-                        if label and value:
-                            specs[label.strip()] = value.strip()
+                    # Check if tab is not active and needs to be clicked
+                    tab_class = await description_tab.get_attribute('class')
+                    if tab_class and 'selected' not in tab_class:
+                        await description_tab.click()
+                        await asyncio.sleep(1)  # Wait for tab content to load
                 except Exception as e:
-                    logger.error(f"Error extracting specification: {e}")
-                    continue
-
+                    logger.warning(f"Error activating description tab: {e}")
+            
+            # Now look for specifications in the description content
+            detailed_specs = await product_page.query_selector('#tab-description, div.tab-container, div.description-text')
+            if detailed_specs:
+                # Look for structured specs as key-value pairs
+                spec_divs = await detailed_specs.query_selector_all('div.description-text, p, li')
+                
+                for div in spec_divs:
+                    try:
+                        # Check for content with strong tags (key-value format)
+                        strong_element = await div.query_selector('strong, b')
+                        if strong_element:
+                            key = await strong_element.text_content()
+                            # Get the text after the strong element
+                            div_text = await div.text_content()
+                            if key and div_text:
+                                value = div_text.replace(key, '').strip().strip(':').strip('-').strip()
+                                
+                                if value:
+                                    key = key.strip().rstrip(':').rstrip('-').strip()
+                                    specs[key] = value
+                        else:
+                            # Try to split text by ':' or '-' for simple key-value pairs
+                            text = await div.text_content()
+                            if text and ':' in text:
+                                parts = text.split(':', 1)
+                                if len(parts) == 2 and parts[0].strip() and parts[1].strip():
+                                    key = parts[0].strip()
+                                    value = parts[1].strip()
+                                    specs[key] = value
+                    except Exception as e:
+                        logger.error(f"Error extracting detailed specification: {e}")
+                        continue
+                
+                # If we couldn't extract structured data, at least save the full description
+                if not specs and detailed_specs:
+                    full_text = await detailed_specs.text_content()
+                    if full_text:
+                        specs['Aprašymas'] = full_text.strip()
+            
+            # 4. Extract technical parameters table if available
+            tech_table = await product_page.query_selector('table.technical-parameters')
+            if tech_table:
+                rows = await tech_table.query_selector_all('tr')
+                for row in rows:
+                    try:
+                        cells = await row.query_selector_all('td')
+                        if len(cells) >= 2:
+                            key_cell = cells[0]
+                            value_cell = cells[1]
+                            
+                            key = await key_cell.text_content()
+                            value = await value_cell.text_content()
+                            
+                            if key and value:
+                                key = key.strip().rstrip(':')
+                                value = value.strip()
+                                specs[key] = value
+                    except Exception as e:
+                        logger.error(f"Error extracting technical parameter: {e}")
+                        continue
+            
+            # 5. Extract product features if available
+            features = await product_page.query_selector('div.productFeatures')
+            if features:
+                feature_items = await features.query_selector_all('li')
+                if feature_items and len(feature_items) > 0:
+                    feature_texts = []
+                    for item in feature_items:
+                        feature_text = await item.text_content()
+                        if feature_text:
+                            feature_texts.append(feature_text.strip())
+                    
+                    if feature_texts:
+                        specs['Ypatybės'] = ', '.join(feature_texts)
+            
+            # 6. If we still don't have enough specs, try to parse from page title and meta description
+            if len(specs) < 3:
+                title = await product_page.title()
+                if title:
+                    specs['Pilnas pavadinimas'] = title.strip()
+                
+                meta_desc = await product_page.query_selector('meta[name="description"]')
+                if meta_desc:
+                    content = await meta_desc.get_attribute('content')
+                    if content:
+                        specs['Meta aprašymas'] = content.strip()
+            
+            logger.info(f"Extracted {len(specs)} specifications")
             return specs
 
         except Exception as e:
@@ -809,7 +748,120 @@ class NesiojamiScraper:
                     await product_page.close()
                 except Exception as e:
                     logger.warning(f"Error closing product page: {e}")
-                    # Don't raise an exception if we can't close the page
+
+    async def get_product_images(self, product_url: str) -> List[str]:
+        """Get all product images from the product detail page."""
+        image_urls = []
+        product_page = None
+        
+        if not self.context:
+            logger.error("Browser context not initialized")
+            return image_urls
+        
+        try:
+            # Open new page for product details
+            product_page = await self.context.new_page()
+            if not product_page:
+                logger.error("Failed to create new page")
+                return image_urls
+            
+            # Navigate with retry logic
+            await product_page.goto(product_url, wait_until='domcontentloaded')
+            
+            # Wait for the main product image to load
+            await asyncio.sleep(2)  # Wait for images to load
+            
+            # Try to get high-resolution images
+            
+            # Method 1: Get the main image from zoom link (highest quality)
+            main_zoom_link = await product_page.query_selector('a#zoom1')
+            if main_zoom_link:
+                href = await main_zoom_link.get_attribute('href')
+                if href:
+                    # This is usually the highest quality image
+                    full_img_url = urljoin(self.base_url, href)
+                    image_urls.append(full_img_url)
+                    logger.info(f"Found high-res main image: {full_img_url}")
+            
+            # Method 2: If zoom link didn't work, try the regular image but transform to large version
+            if not image_urls:
+                main_image = await product_page.query_selector('a#zoom1 img')
+                if main_image:
+                    src = await main_image.get_attribute('src')
+                    if src is not None:
+                        # Convert to large image URL by changing path patterns
+                        # Try multiple transformations to get the highest quality
+                        large_src = src
+                        # Replace /thumb/ with /large/
+                        large_src = large_src.replace('/thumb/', '/large/')
+                        # Replace /xsmall/ with /large/
+                        large_src = large_src.replace('/xsmall/', '/large/')
+                        # Replace /medium/ with /large/
+                        large_src = large_src.replace('/medium/', '/large/')
+                        # Some sites use popup for the large version
+                        large_src = large_src.replace('_thumb.', '_popup.')
+                        
+                        # Also try to use the original image by removing size indicators
+                        original_src = re.sub(r'_(thumb|small|medium|popup)\.', '.', src)
+                        
+                        # Add both versions - the system will try the first one first
+                        image_url = urljoin(self.base_url, large_src)
+                        image_urls.append(image_url)
+                        
+                        # Add original version if it's different
+                        if original_src != src:
+                            original_url = urljoin(self.base_url, original_src)
+                            if original_url not in image_urls:
+                                image_urls.append(original_url)
+            
+            # Method 3: Try to find additional images in the gallery
+            gallery_links = await product_page.query_selector_all('div.additionalImages a, div.imageGallery a')
+            for link in gallery_links:
+                href = await link.get_attribute('href')
+                if href:
+                    # This is usually a high-quality image
+                    full_img_url = urljoin(self.base_url, href)
+                    if full_img_url not in image_urls:
+                        image_urls.append(full_img_url)
+            
+            # Method 4: Look for hidden high-res images in the page
+            hidden_imgs = await product_page.query_selector_all('div[style*="display:none"] a[href*="images/"], div.hidden a[href*="images/"]')
+            for img_link in hidden_imgs:
+                href = await img_link.get_attribute('href')
+                if href and href not in image_urls:
+                    full_img_url = urljoin(self.base_url, href)
+                    image_urls.append(full_img_url)
+            
+            # Method 5: Check for JSON data that might contain image URLs
+            try:
+                json_script = await product_page.query_selector('script[type="application/ld+json"]')
+                if json_script:
+                    json_content = await json_script.text_content()
+                    if json_content:
+                        json_data = json.loads(json_content)
+                        if 'image' in json_data:
+                            image_data = json_data['image']
+                            if isinstance(image_data, list):
+                                for img_url in image_data:
+                                    if img_url and img_url not in image_urls:
+                                        image_urls.append(img_url)
+                            elif isinstance(image_data, str) and image_data not in image_urls:
+                                image_urls.append(image_data)
+            except Exception as e:
+                logger.warning(f"Error extracting images from JSON: {e}")
+            
+            logger.info(f"Found {len(image_urls)} product images")
+            return image_urls
+
+        except Exception as e:
+            logger.error(f"Error getting product images: {e}")
+            return image_urls
+        finally:
+            if product_page:
+                try:
+                    await product_page.close()
+                except Exception as e:
+                    logger.warning(f"Error closing product page: {e}")
 
     async def save_to_pocketbase(self, product_data: Dict[str, Any]) -> None:
         """Save a product to PocketBase."""
@@ -817,7 +869,7 @@ class NesiojamiScraper:
             # Check if product already exists by URL
             existing_products = self.pb_client.collection('products').get_list(
                 query_params={
-                    'filter': f'url = "{product_data["url"]}" && source = "nesiojami"'
+                    'filter': f'url = "{product_data["url"]}" && source = "skytech"'
                 }
             )
 
@@ -825,11 +877,44 @@ class NesiojamiScraper:
             specs = product_data['specifications']
             description_parts = []
             
-            # Add key specs to description if available
-            key_specs = ['Procesorius', 'Operatyvioji atmintis', 'Kietasis diskas', 'Ekranas', 'Operacinė sistema']
-            for spec in key_specs:
+            # Define priority key specs to include in description
+            priority_specs = [
+                'Procesorius', 'Processor', 'CPU', 
+                'Operatyvioji atmintis', 'RAM', 'Memory',
+                'Kietasis diskas', 'Storage', 'SSD', 'HDD',
+                'Ekranas', 'Display', 'Screen',
+                'Vaizdo plokštė', 'Graphics', 'GPU',
+                'Operacinė sistema', 'OS', 'Operating System',
+                'Modelis', 'Model', 'Part Number'
+            ]
+            
+            # First add priority specs to description
+            for spec in priority_specs:
                 if spec in specs:
                     description_parts.append(f"{spec}: {specs[spec]}")
+            
+            # Then add any available description fields
+            description_fields = ['Aprašymas', 'Meta aprašymas', 'Pilnas pavadinimas']
+            for field in description_fields:
+                if field in specs and specs[field] and len(description_parts) < 5:
+                    description_parts.append(f"{specs[field]}")
+            
+            # If we still don't have enough description, add other specs
+            if len(description_parts) < 5:
+                for key, value in specs.items():
+                    if key not in priority_specs and key not in description_fields:
+                        description_parts.append(f"{key}: {value}")
+                        if len(description_parts) >= 5:
+                            break
+            
+            # Limit description length
+            description = '\n'.join(description_parts)
+            if len(description) > 2000:
+                description = description[:1997] + "..."
+            
+            # If description is still empty, use product name
+            if not description:
+                description = f"{product_data['name']} - Skytech.lt" 
 
             # Prepare the base form data
             form_data = {
@@ -841,11 +926,15 @@ class NesiojamiScraper:
                 'specifications': json.dumps(product_data['specifications']),
                 'source': product_data['source'],
                 'category': product_data['category'],
-                'description': '\n'.join(description_parts) if description_parts else "No description available",
-                'stock': 0,
+                'description': description,
+                'stock': product_data['stock'],
                 'productType': 'physical',
                 'updated': datetime.now().isoformat()
             }
+            
+            # Add model if available
+            if product_data.get('model') and product_data['model'].strip():
+                form_data['model'] = product_data['model']
 
             # If this is a new record, add created timestamp
             if not existing_products.items:
@@ -888,20 +977,46 @@ class NesiojamiScraper:
         try:
             # Generate filename if not provided
             if filename is None:
-                filename = f'nesiojami_{self.category_type}_products.json'
+                filename = f'skytech_desktop_products.json'
                 
             # Ensure we're saving to the correct directory
             file_path = os.path.join(os.getcwd(), filename)
             with open(file_path, 'w', encoding='utf-8') as f:
                 json.dump(self.products_data, f, ensure_ascii=False, indent=2)
-            logger.info(f"Saved {len(self.products_data)} {self.category_type} products to {file_path} (backup)")
+            logger.info(f"Saved {len(self.products_data)} desktop products to {file_path} (backup)")
         except Exception as e:
             logger.error(f"Error saving to JSON backup: {e}")
 
-    async def scrape_products(self) -> None:
-        """Main scraping function for all product types."""
+    async def _get_total_pages(self) -> int:
+        """Get the total number of pages from the pagination."""
         try:
-            logger.info(f"Starting {self.category_type} scraper...")
+            # Find the pagination links
+            pagination_links = []
+            if self.page:
+                pagination_links = await self.page.query_selector_all('tr td:has(a[href*="page="]) a')
+            
+            if not pagination_links or len(pagination_links) == 0:
+                return 1  # Only one page
+                
+            # Get the last pagination link that has a page number
+            max_page = 1
+            for link in pagination_links:
+                href = await link.get_attribute('href')
+                if href:
+                    match = re.search(r'page=(\d+)', href)
+                    if match:
+                        page_num = int(match.group(1))
+                        max_page = max(max_page, page_num)
+            
+            return max_page
+        except Exception as e:
+            logger.error(f"Error getting total pages: {e}")
+            return 1  # Default to 1 page if there's an error
+
+    async def scrape_products(self) -> None:
+        """Main scraping function for desktop computers from skytech.lt."""
+        try:
+            logger.info("Starting desktop computer scraper for skytech.lt...")
             await self.init_browser()
             
             if not self.page:
@@ -914,10 +1029,10 @@ class NesiojamiScraper:
                 try:
                     await self.page.goto(
                         self.category_url,
-                        wait_until='domcontentloaded',  # Less strict wait condition
+                        wait_until='domcontentloaded',
                         timeout=60000  # Increased timeout
                     )
-                    logger.info(f"Successfully loaded the {self.category_type} page")
+                    logger.info("Successfully loaded the desktop computers page")
                     break
                 except Exception as e:
                     if attempt == max_retries - 1:
@@ -926,42 +1041,31 @@ class NesiojamiScraper:
                     logger.warning(f"Retry {attempt + 1}/{max_retries} loading main page: {e}")
                     await asyncio.sleep(2)
 
-            logger.info(f"Navigated to {self.category_type} page")
-
-            # Add a small delay to let dynamic content load
-            await asyncio.sleep(5)
+            # Get total number of pages
+            total_pages = await self._get_total_pages()
+            logger.info(f"Found {total_pages} pages to process")
 
             page_num = 1
-            while True:
+            while page_num <= total_pages:
                 try:
-                    logger.info(f"Processing page {page_num}")
+                    logger.info(f"Processing page {page_num} of {total_pages}")
                     
-                    # Wait for product grid with retry
-                    products_loaded = False
-                    for _ in range(3):
-                        try:
-                            await self.page.wait_for_selector('ul.products', timeout=10000)
-                            products_loaded = True
-                            break
-                        except Exception:
-                            await asyncio.sleep(2)
+                    # Wait for product table to load
+                    await self.page.wait_for_selector('table.productListing tr.productListing', timeout=10000)
                     
-                    if not products_loaded:
-                        logger.error("Could not load products grid")
-                        break
+                    # Get all product rows (skip the header row)
+                    product_rows = await self.page.query_selector_all('table.productListing tr.productListing')
                     
-                    # Get all products on current page
-                    products = await self.page.query_selector_all('li.product')
-                    if not products:
-                        logger.info("No more products found")
+                    if not product_rows:
+                        logger.info("No products found on this page")
                         break
 
-                    logger.info(f"Found {len(products)} products on page {page_num}")
+                    logger.info(f"Found {len(product_rows)} products on page {page_num}")
 
-                    # Process each product
-                    for product in products:
+                    # Process each product row
+                    for product_row in product_rows:
                         try:
-                            product_data = await self.extract_product_data(product)
+                            product_data = await self.extract_product_data(product_row)
                             if product_data:
                                 # Save to both memory and PocketBase
                                 self.products_data.append(product_data)
@@ -970,12 +1074,15 @@ class NesiojamiScraper:
                             logger.error(f"Error processing product: {e}")
                             continue
 
-                    # Check for next page
-                    next_button = await self.page.query_selector('a.next')
-                    if next_button:
-                        await next_button.click()
-                        await asyncio.sleep(2)  # Wait for page transition
-                        await self.page.wait_for_load_state('domcontentloaded')
+                    # Move to the next page if there are more pages
+                    if page_num < total_pages:
+                        # Construct the URL for the next page
+                        next_page_url = f"{self.category_url.split('?')[0]}?grp=0&sort=5d&pagesize={self.products_per_page}&page={page_num + 1}"
+                        
+                        logger.info(f"Navigating to next page: {next_page_url}")
+                        await self.page.goto(next_page_url, wait_until='domcontentloaded')
+                        await asyncio.sleep(2)  # Wait for page to load
+                        
                         page_num += 1
                     else:
                         logger.info("No more pages to process")
@@ -1000,22 +1107,10 @@ class NesiojamiScraper:
                 await self.close_browser()
             except Exception as e:
                 logger.warning(f"Error during browser cleanup: {e}")
-                # Don't let cleanup errors affect the overall process
 
 async def main() -> None:
-    # Parse command-line arguments for category type
-    parser = argparse.ArgumentParser(description='Scrape products from nesiojami.lt')
-    parser.add_argument(
-        '--category', 
-        type=str, 
-        default='laptops', 
-        choices=['laptops', 'consoles'],
-        help='Category to scrape: laptops or consoles'
-    )
-    args = parser.parse_args()
-    
-    # Initialize scraper with specified category
-    scraper = NesiojamiScraper(category_type=args.category)
+    """Main function to start the scraping process."""
+    scraper = SkytechScraper()
     await scraper.scrape_products()
 
 if __name__ == "__main__":

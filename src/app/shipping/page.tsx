@@ -8,7 +8,7 @@ export default function ShippingPage() {
   // Function to properly display business days in Lithuanian
   const getBusinessDaysText = (text: string) => {
     if (language === 'lt') {
-      return text.replace('business days', 'darbo dienos').replace('business day', 'darbo diena');
+      return text.replace('business days', 'darbo dienas').replace('business day', 'darbo dieną');
     }
     return text;
   };

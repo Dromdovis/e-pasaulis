@@ -180,6 +180,7 @@ export const en: TranslationKeys = {
   footer_privacy: 'Privacy Policy',
   footer_contact: 'Contact',
   footer_shipping: 'Shipping',
+  footer_about: 'About',
 
   // Additional translations
   sort_by: 'Sort by',

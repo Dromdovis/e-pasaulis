@@ -17,9 +17,16 @@ const nextConfig = {
         port: '8090',
         pathname: '/**',
       },
+      // Add your production Pocketbase URL
+      {
+        protocol: 'https', // Use HTTPS in production
+        hostname: 'your-pocketbase-domain.com', // Replace with your actual domain
+        port: '',
+        pathname: '/**',
+      },
     ],
     unoptimized: true,
-    domains: ['localhost'],
+    domains: ['localhost', 'your-pocketbase-domain.com'], // Add your production domain
   },
   typescript: {
     ignoreBuildErrors: true,

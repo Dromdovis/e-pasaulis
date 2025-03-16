@@ -182,6 +182,7 @@ export type TranslationKeys = {
   footer_privacy: string;
   footer_contact: string;
   footer_shipping: string;
+  footer_about: string;
 
   // Additional translations
   sort_by: string;

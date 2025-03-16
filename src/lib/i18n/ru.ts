@@ -184,6 +184,7 @@ export const ru: TranslationKeys = {
   footer_privacy: 'Политика конфиденциальности',
   footer_contact: 'Контакты',
   footer_shipping: 'Доставка',
+  footer_about: 'О нас',
 
   // Additional translations
   sort_by: 'Сортировать по',
