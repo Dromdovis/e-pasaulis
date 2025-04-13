@@ -10,4 +10,8 @@ export interface Product extends BaseModel {
   images: string[];
   created: string;
   updated: string;
+  specifications: Record<string, string | number | boolean>;
+  stock?: number;
+  getType?: () => string;
+  validateSpecs?: () => boolean;
 } 

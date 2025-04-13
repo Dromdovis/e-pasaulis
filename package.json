@@ -2,7 +2,6 @@
   "name": "e-pasaulis",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
   "scripts": {
     "dev": "bun --bun next dev",
     "build": "next build",
@@ -10,7 +9,10 @@
     "lint": "bun --bun next lint --quiet || true",
     "lint:strict": "bun --bun next lint",
     "populate": "bun src/scripts/populate-db.js",
-    "backup-db": "backup-db.bat"
+    "backup-db": "backup-db.bat",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -61,6 +63,8 @@
     "@next/eslint-plugin-next": "15.2.1",
     "@tailwindcss/forms": "^0.5.10",
     "@tailwindcss/typography": "^0.5.16",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@types/jest": "^29.5.14",
     "@types/node": "^22.13.9",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
@@ -69,10 +73,13 @@
     "autoprefixer": "10.4.16",
     "eslint": "^9.21.0",
     "eslint-config-next": "15.2.1",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "node-polyfill-webpack-plugin": "^4.1.0",
     "postcss": "8.4.31",
     "postcss-import": "15.1.0",
     "tailwindcss": "3.3.0",
+    "ts-jest": "^29.2.6",
     "typescript": "~5.7.0"
   }
 }

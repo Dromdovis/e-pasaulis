@@ -349,6 +349,17 @@ export type TranslationKeys = {
   products_actions_buy_now: string;
   products_actions_add_to_favorites: string;
   products_actions_remove_from_favorites: string;
+  products_actions_continue_shopping: string;
+  
+  // Cart specific
+  cart_total: string;
+  cart_checkout: string;
+  cart_empty: string;
+  
+  // Direct stock status keys
+  stockStatus_inStock: string;
+  stockStatus_outOfStock: string;
+  stockStatus_lowStock: string;
 
   // Language selector
   select_language: string;
@@ -527,6 +538,67 @@ export type TranslationKeys = {
   comment: string;
   created: string;
   unknown_user: string;
+
+  // Checkout specific
+  checkout_title: string;
+  checkout_step_review: string;
+  checkout_step_details: string;
+  checkout_step_payment: string;
+  checkout_step_confirmation: string;
+  checkout_order_summary: string;
+  checkout_subtotal: string;
+  checkout_shipping: string;
+  checkout_discount: string;
+  checkout_coupon: string;
+  checkout_tax: string;
+  checkout_total: string;
+  checkout_items: string;
+  checkout_apply_coupon: string;
+  checkout_coupon_code: string;
+  checkout_invalid_coupon: string;
+  checkout_valid_coupon: string;
+  checkout_continue: string;
+  checkout_back: string;
+  checkout_pay_now: string;
+  checkout_place_order: string;
+  
+  // Shipping details
+  checkout_shipping_address: string;
+  checkout_billing_address: string;
+  checkout_same_as_shipping: string;
+  checkout_full_name: string;
+  checkout_company: string;
+  checkout_street_address: string;
+  checkout_apt_suite: string;
+  checkout_city: string;
+  checkout_country: string;
+  checkout_state: string;
+  checkout_postal_code: string;
+  checkout_phone: string;
+  checkout_shipping_method: string;
+  checkout_standard_shipping: string;
+  checkout_express_shipping: string;
+  
+  // Payment details
+  checkout_payment_method: string;
+  checkout_card_number: string;
+  checkout_card_holder: string;
+  checkout_expiration_date: string;
+  checkout_cvv: string;
+  checkout_save_payment_info: string;
+  checkout_paypal: string;
+  checkout_credit_card: string;
+  checkout_bank_transfer: string;
+  
+  // Order confirmation
+  checkout_order_complete: string;
+  checkout_order_number: string;
+  checkout_order_date: string;
+  checkout_order_details: string;
+  checkout_thank_you: string;
+  checkout_confirmation_message: string;
+  checkout_track_order: string;
+  checkout_continue_shopping: string;
 };
 
 // Define the translations object with language-specific values

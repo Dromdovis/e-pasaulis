@@ -75,5 +75,31 @@
   
   "show": "Rodyti",
   "hide": "Slėpti",
-  "try_again": "Bandyti dar kartą"
+  "try_again": "Bandyti dar kartą",
+
+  "cart": {
+    "total": "Krepšelio suma",
+    "checkout": "Apmokėti",
+    "empty": "Jūsų krepšelis tuščias",
+    "add": "Pridėti į krepšelį",
+    "remove": "Pašalinti iš krepšelio",
+    "update": "Atnaujinti krepšelį"
+  },
+  
+  "products": {
+    "actions": {
+      "continueShopping": "Tęsti apsipirkimą",
+      "addToCart": "Į krepšelį",
+      "addToFavorites": "Į mėgstamiausius",
+      "removeFromFavorites": "Pašalinti iš mėgstamiausių"
+    }
+  },
+  
+  "stock": {
+    "Status": {
+      "inStock": "Prekių likutis",
+      "outOfStock": "Išparduota",
+      "lowStock": "Liko mažai"
+    }
+  }
 } 

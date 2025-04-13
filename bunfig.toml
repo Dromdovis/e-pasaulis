@@ -1,0 +1,13 @@
+[test]
+# Configure test coverage threshold to 70%
+coverageThreshold = 70
+
+# Test file patterns
+testMatch = ["**/__tests__/**/*.test.ts?(x)"]
+
+# Additional configurations
+setup = "./bun-setup.ts"
+
+[install]
+# Package manager compatibility
+registry = "https://registry.npmjs.org" 

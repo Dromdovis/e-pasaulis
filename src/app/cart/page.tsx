@@ -139,7 +139,7 @@ export default function CartPage() {
                 <div className="flex-grow">
                   <h3 className="font-medium dark:text-white">{product.name}</h3>
                   <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    {product.stock > 0 ? `${product.stock} ${t('stockStatus.inStock')}` : t('stockStatus.outOfStock')}
+                    {product.stock > 0 ? `${product.stock} ${t('stockStatus_inStock')}` : t('stockStatus_outOfStock')}
                   </div>
                 </div>
 
@@ -188,13 +188,13 @@ export default function CartPage() {
                 className="flex items-center gap-2 px-6 py-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
               >
                 <ArrowLeft size={20} />
-                <span>{t('products.actions.continueShopping')}</span>
+                <span>{t('products_actions_continue_shopping')}</span>
               </Link>
               <Link 
                 href="/checkout"
                 className="px-8 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
               >
-                {t('cart.checkout')}
+                {t('cart_checkout')}
               </Link>
             </div>
           </div>

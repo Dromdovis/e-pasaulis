@@ -283,27 +283,28 @@ export const lt: TranslationKeys = {
   return_process_step_4: 'Gavę produktą, atliksime pinigų grąžinimą',
 
   // Stock status
-  stock_status_in_stock: '{{count}} sandėlyje',
+  stock_status_in_stock: 'Prekių likutis',
   stock_status_out_of_stock: 'Išparduota',
-  stock_status_last_item: 'Paskutinis vienetas sandėlyje',
-  stock_status_low_stock: 'Liko tik {{count}}',
+  stock_status_last_item: 'Paskutinis vienetas',
+  stock_status_low_stock: 'Liko mažai',
   
   // Product actions
+  products_actions_continue_shopping: 'Tęsti apsipirkimą',
   products_actions_add_to_cart: 'Į krepšelį',
+  products_actions_add_to_favorites: 'Į mėgstamiausius',
+  products_actions_remove_from_favorites: 'Pašalinti iš mėgstamiausių',
   products_actions_view_details: 'Peržiūrėti detaliau',
   products_actions_buy_now: 'Pirkti dabar',
-  products_actions_add_to_favorites: 'Pridėti į mėgstamus',
-  products_actions_remove_from_favorites: 'Pašalinti iš mėgstamų',
 
   // Language selector
-  select_language: 'LT',
+  select_language: 'Pasirinkite kalbą',
   language_en: 'Anglų',
   language_lt: 'Lietuvių',
   language_ru: 'Rusų',
-  search_placeholder: 'Ieškoti...',
-  search_among_items: 'Ieškoti tarp {{count}} elementų...',
-  search_count: 'Rasta {{count}} rezultatų',
-  search_no_results: 'Rezultatų nerasta',
+  search_placeholder: 'Ieškokite produktų...',
+  search_among_items: 'Ieškoti tarp visų produktų',
+  search_count: 'Ieškoti tarp {{count}} produktų',
+  search_no_results: 'Produktų nerasta',
 
   // User roles
   super_admin: 'Vyriausiasis administratorius',
@@ -527,5 +528,76 @@ export const lt: TranslationKeys = {
   stars: 'žvaigždutės',
   comment: 'Komentaras',
   created: 'Sukurta',
-  unknown_user: 'Nežinomas vartotojas'
+  unknown_user: 'Nežinomas vartotojas',
+
+  // Cart
+  cart_total: 'Krepšelio suma',
+  cart_checkout: 'Apmokėti',
+  cart_empty: 'Jūsų krepšelis tuščias',
+  
+  // Direct stock status keys
+  stockStatus_inStock: 'Prekių likutis',
+  stockStatus_outOfStock: 'Išparduota',
+  stockStatus_lowStock: 'Liko mažai',
+
+  // Checkout specific
+  checkout_title: 'Apmokėjimas',
+  checkout_step_review: 'Peržiūra',
+  checkout_step_details: 'Informacija',
+  checkout_step_payment: 'Mokėjimas',
+  checkout_step_confirmation: 'Patvirtinimas',
+  checkout_order_summary: 'Užsakymo suvestinė',
+  checkout_subtotal: 'Tarpinė suma',
+  checkout_shipping: 'Pristatymas',
+  checkout_discount: 'Nuolaida',
+  checkout_coupon: 'Kuponas',
+  checkout_tax: 'Mokesčiai',
+  checkout_total: 'Iš viso',
+  checkout_items: 'Prekės',
+  checkout_apply_coupon: 'Pritaikyti kuponą',
+  checkout_coupon_code: 'Kupono kodas',
+  checkout_invalid_coupon: 'Neteisingas kupono kodas',
+  checkout_valid_coupon: 'Kuponas pritaikytas',
+  checkout_continue: 'Tęsti',
+  checkout_back: 'Grįžti',
+  checkout_pay_now: 'Mokėti dabar',
+  checkout_place_order: 'Pateikti užsakymą',
+  
+  // Shipping details
+  checkout_shipping_address: 'Pristatymo adresas',
+  checkout_billing_address: 'Atsiskaitymo adresas',
+  checkout_same_as_shipping: 'Toks pat kaip pristatymo adresas',
+  checkout_full_name: 'Vardas Pavardė',
+  checkout_company: 'Įmonė (neprivaloma)',
+  checkout_street_address: 'Gatvė ir namo numeris',
+  checkout_apt_suite: 'Butas/ofisas (neprivaloma)',
+  checkout_city: 'Miestas',
+  checkout_country: 'Šalis',
+  checkout_state: 'Rajonas/Apskritis',
+  checkout_postal_code: 'Pašto kodas',
+  checkout_phone: 'Telefono numeris',
+  checkout_shipping_method: 'Pristatymo būdas',
+  checkout_standard_shipping: 'Standartinis pristatymas',
+  checkout_express_shipping: 'Skubus pristatymas',
+  
+  // Payment details
+  checkout_payment_method: 'Mokėjimo būdas',
+  checkout_card_number: 'Kortelės numeris',
+  checkout_card_holder: 'Kortelės savininkas',
+  checkout_expiration_date: 'Galiojimo data',
+  checkout_cvv: 'CVV kodas',
+  checkout_save_payment_info: 'Išsaugoti mokėjimo informaciją ateičiai',
+  checkout_paypal: 'PayPal',
+  checkout_credit_card: 'Kredito kortelė',
+  checkout_bank_transfer: 'Banko pavedimas',
+  
+  // Order confirmation
+  checkout_order_complete: 'Užsakymas baigtas',
+  checkout_order_number: 'Užsakymo numeris',
+  checkout_order_date: 'Užsakymo data',
+  checkout_order_details: 'Užsakymo detalės',
+  checkout_thank_you: 'Ačiū už jūsų užsakymą!',
+  checkout_confirmation_message: 'Jūsų užsakymas buvo sėkmingai pateiktas. Užsakymo patvirtinimas išsiųstas jūsų el. paštu.',
+  checkout_track_order: 'Sekti užsakymą',
+  checkout_continue_shopping: 'Tęsti apsipirkimą'
 } as const; 
